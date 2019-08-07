@@ -1,0 +1,13 @@
+	base.OnEnter();
+	if (Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race)
+	{
+		this.mConfortDistanceToVehicleAhead = VehicleConstants.vehicleLength * RandomUtility.GetRandom(0.2f, 0.85f);
+	}
+	else
+	{
+		this.mConfortDistanceToVehicleAhead = VehicleConstants.vehicleLength * 2f;
+	}
+	if (this.mRacingVehicle != null && (Game.instance.sessionManager.flag == SessionManager.Flag.SafetyCar || Game.instance.sessionManager.flag == SessionManager.Flag.VirtualSafetyCar))
+	{
+		this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.SafetyFlag);
+	}

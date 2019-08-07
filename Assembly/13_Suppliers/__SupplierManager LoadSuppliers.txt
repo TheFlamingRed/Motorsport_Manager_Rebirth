@@ -1,0 +1,210 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+
+// Token: 0x02000114 RID: 276
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class SupplierManager : InstanceCounter
+{
+	public // Token: 0x06000674 RID: 1652 RVA: 0x0002CA38 File Offset: 0x0002AC38
+	void LoadSuppliers(Database database, params string[] inExcludedSupplierTypes)
+	{
+
+
+				int a = 0;
+		int b = 0;
+		int c = 0;
+		int d = 0;
+		int e = 0;
+		List<string> list = new List<string>(inExcludedSupplierTypes);
+		List<DatabaseEntry> suppliersData = database.suppliersData;
+		
+
+
+		if (suppliersData.Count > 500 && Game.instance.time.now.Month != 3)
+			{
+		for (int i = 0; i < suppliersData.Count; i++)
+		{
+			DatabaseEntry databaseEntry = suppliersData[i];
+			string stringValue = databaseEntry.GetStringValue("Part Type");
+			if (!list.Contains(stringValue))
+			{
+				int num = 1000000;
+				Supplier supplier = new Supplier();
+				supplier.id = databaseEntry.GetIntValue("ID");
+				supplier.logoIndex = databaseEntry.GetIntValue("Logo ID");
+				supplier.name = databaseEntry.GetStringValue("Company Name");
+				supplier.price = Mathf.RoundToInt(databaseEntry.GetFloatValue("Price") * (float)num);
+				supplier.minEngineLevelModifier = databaseEntry.GetIntValue("Starting Level Min");
+				supplier.maxEngineLevelModifier = databaseEntry.GetIntValue("Starting Level Max");
+				supplier.minHarvestEfficiencyModifier = databaseEntry.GetFloatValue("Harvest Efficiency Min");
+				supplier.maxHarvestEfficiencyModifier = databaseEntry.GetFloatValue("Harvest Efficiency Max");
+				supplier.hybridGates = databaseEntry.GetIntValue("Hybrid Gates");
+				supplier.powerGates = databaseEntry.GetIntValue("Power Gates");
+				supplier.chargeSize = databaseEntry.GetIntValue("Charge Size");
+				supplier.tier = databaseEntry.GetIntValue("Tier");
+				supplier.descriptionID = databaseEntry.GetStringValue("Description");
+				string stringValue2 = databaseEntry.GetStringValue("BatteryType");
+				supplier.advancedBatteryType = (Supplier.AdvancedERSBatteryType)((!string.IsNullOrEmpty(stringValue2)) ? ((int)Enum.Parse(typeof(Supplier.AdvancedERSBatteryType), stringValue2)) : 0);
+				this.LoadTeamDiscounts(supplier, databaseEntry);
+				this.LoadTeamsThatCannotBuy(supplier, databaseEntry);
+				float random = RandomUtility.GetRandom01() * 3f;
+				if ((float)supplier.logoIndex < Game.instance.player.stats.financial / 20f - random)
+				{
+					float inDiscountAmount = Mathf.Round(RandomUtility.GetRandom(0f, Game.instance.player.stats.financial) * 2.5f);
+					supplier.AddTeamDiscount(Game.instance.player.team.teamID, inDiscountAmount);
+				}
+				if ((float)supplier.logoIndex > Mathf.Max(1f, random + Game.instance.player.stats.financial - 5f))
+				{
+					supplier.AddTeamsThatCannotBuy(Game.instance.player.team.teamID);
+				}
+				this.AddStat(supplier, CarChassisStats.Stats.TyreWear, "Tyre Wear", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.FuelEfficiency, "Fuel Efficiency", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.TyreHeating, "Tyre Heating", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.Improvability, "Improveability", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.StartingCharge, "Starting Charge", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.HarvestEfficiency, "Harvest Efficiency Min", databaseEntry);
+				this.AddBoundaries(supplier, databaseEntry, true);
+				this.AddBoundaries(supplier, databaseEntry, false);
+				string text = stringValue;
+				if ((text == "Engine" && RandomUtility.GetRandom01() < 0.5f && a < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "Engine" && supplier.logoIndex == 1))
+				{
+					supplier.supplierType = Supplier.SupplierType.Engine;
+					this.engineSuppliers.Add(supplier);
+					if (supplier.tier == Game.instance.player.team.championship.logoID)
+					{
+						a++;
+					}
+				}
+				if ((text == "ECU" && RandomUtility.GetRandom01() < 0.5f && b < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "ECU" && supplier.logoIndex == 1))
+				{
+					supplier.supplierType = Supplier.SupplierType.Brakes;
+					this.brakesSuppliers.Add(supplier);
+					if (supplier.tier == Game.instance.player.team.championship.logoID)
+					{
+						b++;
+					}
+				}
+				if ((text == "Fuel" && RandomUtility.GetRandom01() < 0.5f && c < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "Fuel" && supplier.logoIndex == 1))
+				{
+					supplier.supplierType = Supplier.SupplierType.Fuel;
+					this.fuelSuppliers.Add(supplier);
+					if (supplier.tier == Game.instance.player.team.championship.logoID)
+					{
+						c++;
+					}
+				}
+				if ((text == "ChassisMaterials" && RandomUtility.GetRandom01() < 0.5f && d < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "ChassisMaterials" && supplier.logoIndex ==1))
+				{
+					supplier.supplierType = Supplier.SupplierType.Materials;
+					this.materialsSuppliers.Add(supplier);
+					if (supplier.tier == Game.instance.player.team.championship.logoID)
+					{
+						d++;
+					}
+				}
+				if ((text == "Battery" && RandomUtility.GetRandom01() < 0.5f && e < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "Battery" && supplier.logoIndex == 1))
+				{
+					supplier.supplierType = Supplier.SupplierType.Battery;
+					this.batterySuppliers.Add(supplier);
+					if (supplier.tier == Game.instance.player.team.championship.logoID)
+					{
+						e++;
+					}
+				}
+				if (text == "ERS")
+				{
+					supplier.supplierType = Supplier.SupplierType.ERSAdvanced;
+					this.ersAdvancedSuppliers.Add(supplier);
+				}
+				this.mSuppliers.Add(supplier);
+			}}}
+		if (suppliersData.Count <= 500 || Game.instance.time.now.Month == 3) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		for (int i = 0; i < suppliersData.Count; i++)
+		{
+			DatabaseEntry databaseEntry = suppliersData[i];
+			string stringValue = databaseEntry.GetStringValue("Part Type");
+			if (!list.Contains(stringValue))
+			{
+				int num = 1000000;
+				Supplier supplier = new Supplier();
+				supplier.id = databaseEntry.GetIntValue("ID");
+				supplier.logoIndex = databaseEntry.GetIntValue("Logo ID");
+				supplier.name = databaseEntry.GetStringValue("Company Name");
+				supplier.price = Mathf.RoundToInt(databaseEntry.GetFloatValue("Price") * (float)num);
+				supplier.minEngineLevelModifier = databaseEntry.GetIntValue("Starting Level Min");
+				supplier.maxEngineLevelModifier = databaseEntry.GetIntValue("Starting Level Max");
+				supplier.minHarvestEfficiencyModifier = databaseEntry.GetFloatValue("Harvest Efficiency Min");
+				supplier.maxHarvestEfficiencyModifier = databaseEntry.GetFloatValue("Harvest Efficiency Max");
+				supplier.hybridGates = databaseEntry.GetIntValue("Hybrid Gates");
+				supplier.powerGates = databaseEntry.GetIntValue("Power Gates");
+				supplier.chargeSize = databaseEntry.GetIntValue("Charge Size");
+				supplier.tier = databaseEntry.GetIntValue("Tier");
+				supplier.descriptionID = databaseEntry.GetStringValue("Description");
+				string stringValue2 = databaseEntry.GetStringValue("BatteryType");
+				supplier.advancedBatteryType = (Supplier.AdvancedERSBatteryType)((!string.IsNullOrEmpty(stringValue2)) ? ((int)Enum.Parse(typeof(Supplier.AdvancedERSBatteryType), stringValue2)) : 0);
+				this.LoadTeamDiscounts(supplier, databaseEntry);
+				this.LoadTeamsThatCannotBuy(supplier, databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.TyreWear, "Tyre Wear", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.FuelEfficiency, "Fuel Efficiency", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.TyreHeating, "Tyre Heating", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.Improvability, "Improveability", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.StartingCharge, "Starting Charge", databaseEntry);
+				this.AddStat(supplier, CarChassisStats.Stats.HarvestEfficiency, "Harvest Efficiency Min", databaseEntry);
+				this.AddBoundaries(supplier, databaseEntry, true);
+				this.AddBoundaries(supplier, databaseEntry, false);
+				string text = stringValue;
+				switch (text)
+				{
+				case "Engine":
+					supplier.supplierType = Supplier.SupplierType.Engine;
+					this.engineSuppliers.Add(supplier);
+					break;
+				case "ECU":
+					supplier.supplierType = Supplier.SupplierType.Brakes;
+					this.brakesSuppliers.Add(supplier);
+					break;
+				case "Fuel":
+					supplier.supplierType = Supplier.SupplierType.Fuel;
+					this.fuelSuppliers.Add(supplier);
+					break;
+				case "ChassisMaterials":
+					supplier.supplierType = Supplier.SupplierType.Materials;
+					this.materialsSuppliers.Add(supplier);
+					break;
+				case "Battery":
+					supplier.supplierType = Supplier.SupplierType.Battery;
+					this.batterySuppliers.Add(supplier);
+					break;
+				case "ERS":
+					supplier.supplierType = Supplier.SupplierType.ERSAdvanced;
+					this.ersAdvancedSuppliers.Add(supplier);
+					break;
+				}
+				this.mSuppliers.Add(supplier);
+			}
+		}
+	}
+}
+
+}
+
+

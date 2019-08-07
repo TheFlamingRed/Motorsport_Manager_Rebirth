@@ -1,0 +1,43 @@
+public void OnSessionStarting()
+	{
+		SessionManager sessionManager = Game.instance.sessionManager;
+		if (sessionManager.eventDetails.currentSession.sessionType != SessionDetails.SessionType.Race)
+		{
+			return;
+		}
+		this.mTeamsToCutCorner = sessionManager.championship.seasonDirector.cutCornerSeasonDirector.GetCutCornerTeamsForEvent(sessionManager.eventDetails);
+		this.mCutCornerChunks = new CuttingCornersDirector.CutCornerRaceChunk[10];
+		int num = 0;
+		if (Game.instance.sessionManager.championship.GetNextTierChampionship() != null && Game.instance.sessionManager.championship.GetPreviousTierChampionship() != null)
+		{
+			num = 1;
+		}
+		else if (Game.instance.sessionManager.championship.GetNextTierChampionship() != null)
+		{
+			num = 2;
+		}
+		int i = RandomUtility.GetRandomInc(0, 1 + num);
+		if (sessionManager.circuit.HasPathOfType(PathController.PathType.CutCornerLane))
+		{
+			this.mPathUseCount = new int[Game.instance.sessionManager.circuit.cutCornersPaths.Length];
+		}
+		for (int j = 0; j < this.mCutCornerChunks.Length; j++)
+		{
+			this.mCutCornerChunks[j] = new CuttingCornersDirector.CutCornerRaceChunk();
+			this.mCutCornerChunks[j].normalizedChunkStart = (float)j / ((float)this.mCutCornerChunks.Length - 1f);
+			this.mCutCornerChunks[j].normalizedChunkSize = 1f / ((float)this.mCutCornerChunks.Length - 1f);
+		}
+		if (Game.instance.gameType == Game.GameType.SingleEvent)
+		{
+			i = RandomUtility.GetRandomInc(0, 1);
+		}
+		Debug.LogFormat("CutCorners for this race: {0} ", new object[]
+		{
+			i
+		});
+		while (i > 0)
+		{
+			i--;
+			this.mCutCornerChunks[RandomUtility.GetRandom(0, this.mCutCornerChunks.Length)].cutCornerCount++;
+		}
+	}

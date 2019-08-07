@@ -1,0 +1,103 @@
+private void ApplyUserData(DialogCriteria inUserData, DilemmaSystem.DilemmaMessageData inDilemmaData)
+{
+	string mType = inUserData.mType;
+	switch (mType)
+	{
+	case "VotingPower":
+	{
+		int num2;
+		if (int.TryParse(inUserData.mCriteriaInfo, out num2))
+		{
+			Game.instance.player.team.votingPower += num2;
+		}
+		break;
+	}
+	case "RandomTeam:Marketability":
+	{
+		Team team = StringVariableParser.GetObject("RandomTeam") as Team;
+		int num3;
+		if (team != null && int.TryParse(inUserData.mCriteriaInfo, out num3))
+		{
+			team.AddToMarketebility((float)num3 / 100f);
+		}
+		break;
+	}
+	case "FuelEfficiency":
+		this.ModifyChassisStat(inUserData.mCriteriaInfo, CarChassisStats.Stats.FuelEfficiency);
+		break;
+	case "Improveability":
+		this.ModifyChassisStat(inUserData.mCriteriaInfo, CarChassisStats.Stats.Improvability);
+		break;
+	case "TyreWear":
+		this.ModifyChassisStat(inUserData.mCriteriaInfo, CarChassisStats.Stats.TyreWear);
+		break;
+	case "TyreHeating":
+		this.ModifyChassisStat(inUserData.mCriteriaInfo, CarChassisStats.Stats.TyreHeating);
+		break;
+	case "NewPartPerformance":
+		this.ModifyPartStat(CarPartStats.CarPartStat.MainStat, StringVariableParser.partFrontendUI, inUserData.mCriteriaInfo, inDilemmaData);
+		break;
+	case "NewPartReliability":
+		this.ModifyPartStat(CarPartStats.CarPartStat.Reliability, StringVariableParser.partFrontendUI, inUserData.mCriteriaInfo, inDilemmaData);
+			break;
+	case "SubjectMechanicRelationship":
+		if (StringVariableParser.dilemmaSubject is Driver)
+		{
+			this.ModifyMechanicRelationship(StringVariableParser.dilemmaSubject as Driver, inUserData.mCriteriaInfo);
+		}
+		else if (StringVariableParser.dilemmaSubject is Mechanic)
+		{
+			this.ModifyMechanicRelationship(StringVariableParser.dilemmaSubject as Mechanic, inUserData.mCriteriaInfo);
+		}
+		break;
+	case "BothMechanicRelationships":
+		this.ModifyBothMechanicRelationship(inUserData.mCriteriaInfo);
+		break;
+	case "TeamMarketability":
+		this.ModifyTeamMarketability(inUserData.mCriteriaInfo);
+		break;
+	case "PartLevelledUp":
+		this.carPartsLeveledUp.Add(StringVariableParser.partFrontendUI);
+		break;
+	case "PartRiskLevel":
+		this.ModifyPartRiskLevel(StringVariableParser.partFrontendUI, inUserData.mCriteriaInfo);
+		break;
+	case "PitStopStat":
+		this.ModifyPitCrewStat(inUserData.mCriteriaInfo);
+		break;
+	case "RandomDriverMorale":
+	case "SubjectMorale":
+		this.ModifyPersonMorale(StringVariableParser.dilemmaSubject, inUserData.mCriteriaInfo);
+		break;
+	case "ChairmanMorale":
+		this.ModifyChairmanHappiness(inUserData.mCriteriaInfo);
+		break;
+	case "StaffMorale":
+		this.ModifyStaffMorale(inUserData.mCriteriaInfo);
+		break;
+	case "SenderMorale":
+		this.ModifyPersonMorale(StringVariableParser.sender, inUserData.mCriteriaInfo);
+		break;
+	case "StolenPart":
+		if (inUserData.mCriteriaInfo == "True")
+		{
+			this.CopyBestCarPartFromOtherTeam(StringVariableParser.partFrontendUI);
+		}
+		break;
+	case "BribedFor":
+		if (inUserData.mCriteriaInfo == "True")
+		{
+			this.currentBribe = DilemmaSystem.BribedOption.InFavor;
+		}
+		break;
+	case "BribedAgainst":
+		if (inUserData.mCriteriaInfo == "True")
+		{
+			this.currentBribe = DilemmaSystem.BribedOption.Against;
+		}
+		break;
+	case "AddPersonalityTrait":
+		this.AddPersonalityTrait(inUserData.mCriteriaInfo);
+		break;
+	}
+}

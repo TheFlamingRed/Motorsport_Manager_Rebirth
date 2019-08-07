@@ -1,0 +1,160 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x0200036C RID: 876
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class RaceDirector : InstanceCounter
+{
+	public // Token: 0x06001A0C RID: 6668
+	void ProcessCollisionDamage(Vehicle inVehicle, Vehicle inObstacle)
+	{
+		bool flag = this.VehicleInCorrectStateForCollisionDamage(inVehicle) || this.VehicleInCorrectStateForCollisionDamage(inObstacle);
+		if (Game.instance.sessionManager.eventDetails.currentSession.sessionType != SessionDetails.SessionType.Race || !flag || (inVehicle.behaviourManager.isOutOfRace && inObstacle.behaviourManager.isOutOfRace))
+		{
+			return;
+		}
+		RacingVehicle racingVehicle = inVehicle as RacingVehicle;
+		RacingVehicle racingVehicle2 = inObstacle as RacingVehicle;
+		if (racingVehicle == null || racingVehicle2 == null)
+		{
+			return;
+		}
+		if (inObstacle == inVehicle.pathController.vehicleAheadOnPath)
+		{
+			if (racingVehicle.behaviourManager.currentBehaviour.behaviourType != AIBehaviourStateManager.Behaviour.RaceStart)
+			{
+				if (RandomUtility.GetRandom01() < 0.5f)
+				{
+					racingVehicle.car.OnCollision(CarPart.PartType.FrontWing);
+					racingVehicle.car.OnCollision(CarPart.PartType.FrontWingGET);
+				}
+				if (RandomUtility.GetRandom01() < 0.1f)
+				{
+					racingVehicle.car.OnCollision(CarPart.PartType.Suspension);
+					racingVehicle.car.OnCollision(CarPart.PartType.SuspensionGT);
+					racingVehicle.car.OnCollision(CarPart.PartType.SuspensionGET);
+				}
+				if (RandomUtility.GetRandom01() < 0.1f)
+				{
+					racingVehicle.setup.tyreSet.SetCondition(racingVehicle.setup.tyreSet.GetCondition() - RandomUtility.GetRandom01());
+				}
+				if (RandomUtility.GetRandom01() < 0.1f)
+				{
+					racingVehicle.setup.tyreSet.SetCondition(0f);
+				}
+				if (!racingVehicle.behaviourManager.isOutOfRace)
+				{
+					this.mPenaltyDirector.ApplyPenaltyIfViable(racingVehicle, Penalty.PenaltyCause.Collision);
+				}
+			}
+			if (racingVehicle2.behaviourManager.currentBehaviour.behaviourType != AIBehaviourStateManager.Behaviour.RaceStart && !racingVehicle2.behaviourManager.isOutOfRace)
+			{
+				if (RandomUtility.GetRandom01() < 0.1f)
+				{
+					racingVehicle.car.OnCollision(CarPart.PartType.RearWing);
+					racingVehicle.car.OnCollision(CarPart.PartType.RearWingGT);
+					racingVehicle.car.OnCollision(CarPart.PartType.RearWingGET);
+				}
+				if (RandomUtility.GetRandom01() < 0.2f)
+				{
+					racingVehicle.car.OnCollision(CarPart.PartType.Suspension);
+					racingVehicle.car.OnCollision(CarPart.PartType.SuspensionGT);
+					racingVehicle.car.OnCollision(CarPart.PartType.SuspensionGET);
+				}
+				if (RandomUtility.GetRandom01() < 0.5f)
+				{
+					racingVehicle.setup.tyreSet.SetCondition(racingVehicle.setup.tyreSet.GetCondition() - RandomUtility.GetRandom01());
+				}
+				if (RandomUtility.GetRandom01() < 0.2f)
+				{
+					racingVehicle.setup.tyreSet.SetCondition(0f);
+				}
+			}
+			racingVehicle2.timer.currentLap.AddEvent(LapDetailsData.LapEvents.Collision);
+			racingVehicle.timer.currentLap.AddEvent(LapDetailsData.LapEvents.Collision);
+			CommentaryManager.SendComment(racingVehicle, Comment.CommentType.Collision, new object[]
+			{
+				racingVehicle.driver,
+				racingVehicle2.driver
+			});
+		}
+		else if (inObstacle == inVehicle.pathController.vehicleBehindOnPath)
+		{
+			if (racingVehicle.behaviourManager.currentBehaviour.behaviourType != AIBehaviourStateManager.Behaviour.RaceStart)
+			{
+				if (RandomUtility.GetRandom01() < 0.1f)
+				{
+					racingVehicle.car.OnCollision(CarPart.PartType.RearWing);
+					racingVehicle.car.OnCollision(CarPart.PartType.RearWingGT);
+					racingVehicle.car.OnCollision(CarPart.PartType.RearWingGET);
+				}
+				if (RandomUtility.GetRandom01() < 0.25f)
+				{
+					racingVehicle.car.OnCollision(CarPart.PartType.Suspension);
+					racingVehicle.car.OnCollision(CarPart.PartType.SuspensionGT);
+					racingVehicle.car.OnCollision(CarPart.PartType.SuspensionGET);
+				}
+				if (RandomUtility.GetRandom01() < 0.1f)
+				{
+					racingVehicle.setup.tyreSet.SetCondition(racingVehicle.setup.tyreSet.GetCondition() - RandomUtility.GetRandom01());
+				}
+				if (RandomUtility.GetRandom01() < 0.1f)
+				{
+					racingVehicle.setup.tyreSet.SetCondition(0f);
+				}
+				if (!racingVehicle.behaviourManager.isOutOfRace)
+				{
+					this.mPenaltyDirector.ApplyPenaltyIfViable(racingVehicle, Penalty.PenaltyCause.Collision);
+				}
+			}
+			if (racingVehicle2.behaviourManager.currentBehaviour.behaviourType != AIBehaviourStateManager.Behaviour.RaceStart)
+			{
+				if (RandomUtility.GetRandom01() < 0.5f)
+				{
+					racingVehicle.car.OnCollision(CarPart.PartType.FrontWing);
+					racingVehicle.car.OnCollision(CarPart.PartType.FrontWingGET);
+				}
+				if (RandomUtility.GetRandom01() < 0.2f)
+				{
+					racingVehicle.car.OnCollision(CarPart.PartType.Suspension);
+					racingVehicle.car.OnCollision(CarPart.PartType.SuspensionGT);
+					racingVehicle.car.OnCollision(CarPart.PartType.SuspensionGET);
+				}
+				if (RandomUtility.GetRandom01() < 0.05f)
+				{
+					racingVehicle.setup.tyreSet.SetCondition(racingVehicle.setup.tyreSet.GetCondition() - RandomUtility.GetRandom01());
+				}
+				if (RandomUtility.GetRandom01() < 0.05f)
+				{
+					racingVehicle.setup.tyreSet.SetCondition(0f);
+				}
+			}
+			racingVehicle2.timer.currentLap.AddEvent(LapDetailsData.LapEvents.Collision);
+			racingVehicle.timer.currentLap.AddEvent(LapDetailsData.LapEvents.Collision);
+			CommentaryManager.SendComment(racingVehicle, Comment.CommentType.Collision, new object[]
+			{
+				racingVehicle.driver,
+				racingVehicle2.driver
+			});
+		}
+		racingVehicle.sessionData.crashVictim = racingVehicle2.driver;
+		racingVehicle.sessionData.driverCausedCrash = true;
+		if (racingVehicle.standingsPosition == 1)
+		{
+			racingVehicle.sessionData.crashedWhenInFirstPlace = true;
+		}
+		racingVehicle2.sessionData.crashDriver = racingVehicle.driver;
+		racingVehicle2.sessionData.driverCrashedInto = true;
+		if (racingVehicle.isPlayerDriver)
+		{
+			Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.PlayerDriverCollision, racingVehicle);
+			racingVehicle.teamRadio.GetRadioMessage<RadioMessageCollision>().SendMessageCollisionCause(racingVehicle2);
+		}
+		if (racingVehicle2.isPlayerDriver)
+		{
+			Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.PlayerDriverCollision, racingVehicle);
+			racingVehicle2.teamRadio.GetRadioMessage<RadioMessageCollision>().SendMessageCollisionVictim(racingVehicle);
+		}
+	}
+}

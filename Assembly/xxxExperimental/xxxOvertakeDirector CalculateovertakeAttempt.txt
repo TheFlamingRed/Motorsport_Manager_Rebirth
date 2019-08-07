@@ -1,0 +1,53 @@
+
+public static bool CalculateOvertakeAttempt(global::RacingVehicle inAttackVehicle, global::RacingVehicle inDefendVehicle, global::PathData.Corner inCorner, global::PathData.Straight inStraight)
+{
+	if (inAttackVehicle.driver.contract.GetTeam() == inDefendVehicle.driver.contract.GetTeam() && inDefendVehicle.strategy.teamOrders == global::SessionStrategy.TeamOrders.AllowTeamMateThrough)
+	{
+		return true;
+	}
+	float condition = inAttackVehicle.setup.tyreSet.GetCondition();
+	float condition2 = inDefendVehicle.setup.tyreSet.GetCondition();
+	bool arg_A7_0 = condition > condition2 && condition - condition2 > 0.25f;
+	bool flag = inDefendVehicle.performance.IsExperiencingCriticalIssue();
+	global::TyreSet.Tread recommendedTreadForTrackConditions = global::SessionStrategy.GetRecommendedTreadForTrackConditions();
+	bool flag2 = inAttackVehicle.setup.tyreSet.GetTread() == recommendedTreadForTrackConditions && inDefendVehicle.setup.tyreSet.GetTread() != recommendedTreadForTrackConditions;
+	if (arg_A7_0 | flag2 | flag)
+	{
+		return true;
+	}
+	int num = 0;
+	int num2 = 0;
+	int num3 = 25;
+	num += Mathf.RoundToInt(inAttackVehicle.driver.GetDriverStats().overtaking) * num3;
+	num2 += Mathf.RoundToInt(inDefendVehicle.driver.GetDriverStats().cornering) * num3;
+	num += global::OvertakeDirector.GetPointsForDrivingStyle(inAttackVehicle.performance.drivingStyleMode, global::OvertakeDirector.VehicleType.Attacker);
+	num2 += global::OvertakeDirector.GetPointsForDrivingStyle(inDefendVehicle.performance.drivingStyleMode, global::OvertakeDirector.VehicleType.Defender);
+	num += global::OvertakeDirector.GetPointsForEngineMode(inAttackVehicle.performance.fuel.engineMode);
+	num2 += global::OvertakeDirector.GetPointsForEngineMode(inDefendVehicle.performance.fuel.engineMode);
+	num += global::OvertakeDirector.GetPointsForCurrentCarPerformance(inAttackVehicle.performance.currentPerformance);
+	num2 += global::OvertakeDirector.GetPointsForCurrentCarPerformance(inDefendVehicle.performance.currentPerformance);
+	num += global::OvertakeDirector.GetPointsForTyreCompound(inAttackVehicle);
+	num2 += global::OvertakeDirector.GetPointsForTyreCompound(inDefendVehicle);
+	float num4 = 0.75f;
+	global::PathData.Straight straight = null;
+	if (inStraight != null)
+	{
+		straight = inStraight;
+	}
+	else if (inCorner != null && inCorner.nextStraight != null)
+	{
+		straight = inCorner.nextStraight;
+	}
+	if (straight != null)
+	{
+		num4 = straight.overtakePossibility;
+	}
+	num = Mathf.RoundToInt((float)num * num4);
+	if (straight != null && straight.nextCorner != null && straight.nextCorner.type == global::PathData.Corner.Type.LowSpeed)
+	{
+		num += 200;
+	}
+	int arg_20A_0 = global::RandomUtility.GetRandom(1, num);
+	int random = global::RandomUtility.GetRandom(1, num2);
+	return arg_20A_0 > random;
+}

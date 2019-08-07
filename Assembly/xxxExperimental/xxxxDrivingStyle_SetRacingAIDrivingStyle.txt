@@ -1,0 +1,161 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000411 RID: 1041
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class DrivingStyle : PerformanceImpact
+{
+	// Token: 0x06001E29 RID: 7721
+	public void SetRacingAIDrivingStyle()
+	{
+		float mAggressiveness = this.mVehicle.driver.contract.GetTeam().aiWeightings.mAggressiveness;
+		float num = Mathf.Clamp01(1f - this.mVehicle.pathController.GetRaceDistanceTraveled01());
+		float num2 = GameUtility.MilesToMeters(Game.instance.sessionManager.eventDetails.circuit.trackLengthMiles);
+		float num3 = num2 * (float)Game.instance.sessionManager.lapCount * num;
+		float num4 = (mAggressiveness >= 0.75f) ? (num2 * 0.05f) : (num2 * 0.1f);
+		num3 += num4;
+		float optimalTyreDistance = this.mVehicle.setup.tyreSet.GetOptimalTyreDistance();
+		float num5 = this.mVehicle.performance.fuel.GetFuelDistance() + num4;
+		float condition = this.mVehicle.setup.tyreSet.GetCondition();
+		float temperature = this.mVehicle.setup.tyreSet.GetTemperature();
+		float exp = this.mVehicle.driver.GetDriverStats().experience / 20f;
+		bool flag = this.mVehicle.performance.fuel.engineMode == Fuel.EngineMode.Overtake;
+		float num9 = Mathf.Clamp(mAggressiveness + this.mVehicle.driver.GetDriverStats().experience + this.mVehicle.driver.GetDriverStats().balance, 1f, 2f);
+		float num6 = (this.mVehicle.driver.GetDriverStats().adaptability + this.mVehicle.driver.GetDriverStats().consistency + this.mVehicle.driver.GetDriverStats().fitness + this.mVehicle.driver.GetDriverStats().focus + this.mVehicle.driver.GetDriverStats().smoothness) / 5f;
+		float num7 = num9 * num6;
+		float num8 = 0.69f - exp;
+		if (this.mTimerSinceLastTemperatureSwitch > 60f && MathsUtility.Approximately(1f, temperature, 0.42f))
+		{
+			this.mTimerSinceLastTemperatureSwitch = 0f;
+			if (Mathf.Abs(temperature) > num8)
+			{
+				switch (this.mMode)
+				{
+				case DrivingStyle.Mode.Attack:
+					this.mTimerSinceLastTemperatureSwitch = 10f + num7;
+					this.SetDrivingStyle(DrivingStyle.Mode.Push);
+					return;
+				case DrivingStyle.Mode.Push:
+					this.mTimerSinceLastTemperatureSwitch = 1f + num7;
+					this.SetDrivingStyle(DrivingStyle.Mode.Neutral);
+					return;
+				case DrivingStyle.Mode.Neutral:
+					this.mTimerSinceLastTemperatureSwitch -= num7;
+					this.SetDrivingStyle(DrivingStyle.Mode.Conserve);
+					return;
+				case DrivingStyle.Mode.Conserve:
+					this.SetDrivingStyle(DrivingStyle.Mode.BackUp);
+					return;
+				default:
+					return;
+				}
+			}
+			else if (condition >= 0.5f && Mathf.Abs(temperature) <= num8)
+			{
+				switch (this.mMode)
+				{
+				case DrivingStyle.Mode.Push:
+					this.SetDrivingStyle(DrivingStyle.Mode.Attack);
+					return;
+				case DrivingStyle.Mode.Neutral:
+					this.mTimerSinceLastTemperatureSwitch -= num7;
+					this.SetDrivingStyle(DrivingStyle.Mode.Push);
+					return;
+				case DrivingStyle.Mode.Conserve:
+					this.mTimerSinceLastTemperatureSwitch = 1f + num7;
+					this.SetDrivingStyle(DrivingStyle.Mode.Neutral);
+					return;
+				case DrivingStyle.Mode.BackUp:
+					this.mTimerSinceLastTemperatureSwitch = 10f + num7;
+					this.SetDrivingStyle(DrivingStyle.Mode.Conserve);
+					return;
+				default:
+					return;
+				}
+			}
+		}
+		else if (Mathf.Abs(temperature) <= 0.5f)
+		{
+			if (optimalTyreDistance > num3 || optimalTyreDistance > num5)
+			{
+				if (mAggressiveness >= 0.6f && flag)
+				{
+					this.SetDrivingStyle(DrivingStyle.Mode.Attack);
+					return;
+				}
+				this.SetDrivingStyle(DrivingStyle.Mode.Push);
+				return;
+			}
+			else if (optimalTyreDistance < num3 || optimalTyreDistance < num5)
+			{
+				if (condition >= 0.4f)
+				{
+					if (this.mVehicle.strategy.stintStrategyType == SessionStrategy.StintStrategyType.Conservative)
+					{
+						if (mAggressiveness >= 0.6f)
+						{
+							this.SetDrivingStyle(DrivingStyle.Mode.Conserve);
+							return;
+						}
+						this.SetDrivingStyle(DrivingStyle.Mode.BackUp);
+						return;
+					}
+					else
+					{
+						if (mAggressiveness >= 0.6f && flag)
+						{
+							this.SetDrivingStyle(DrivingStyle.Mode.Attack);
+							return;
+						}
+						this.SetDrivingStyle(DrivingStyle.Mode.Push);
+						return;
+					}
+				}
+				else if (condition >= 0.3f)
+				{
+					if (this.mVehicle.strategy.stintStrategyType == SessionStrategy.StintStrategyType.Conservative)
+					{
+						if (mAggressiveness >= 0.8f)
+						{
+							this.SetDrivingStyle(DrivingStyle.Mode.Neutral);
+							return;
+						}
+						this.SetDrivingStyle(DrivingStyle.Mode.Conserve);
+						return;
+					}
+					else
+					{
+						if (mAggressiveness >= 0.8f)
+						{
+							this.SetDrivingStyle(DrivingStyle.Mode.Push);
+							return;
+						}
+						this.SetDrivingStyle(DrivingStyle.Mode.Neutral);
+						return;
+					}
+				}
+				else
+				{
+					if (condition >= 0.15f && this.mVehicle.strategy.status == SessionStrategy.Status.Pitting)
+					{
+						this.SetDrivingStyle(DrivingStyle.Mode.Push);
+						return;
+					}
+					if (condition < 0.25f)
+					{
+						this.SetDrivingStyle(DrivingStyle.Mode.Conserve);
+						return;
+					}
+					if (condition < 0.15f)
+					{
+						this.SetDrivingStyle(DrivingStyle.Mode.BackUp);
+						return;
+					}
+					this.SetDrivingStyle(DrivingStyle.Mode.Neutral);
+					return;
+				}
+			}
+		}
+	}
+}

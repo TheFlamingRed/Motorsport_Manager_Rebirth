@@ -1,0 +1,18 @@
+	float GetMoraleHit(global::CarOpinion.Happiness inHappiness)
+	{
+		switch (inHappiness)
+		{
+		case global::CarOpinion.Happiness.Angry:
+			return -0.25f;
+		case global::CarOpinion.Happiness.Unhappy:
+			return -0.1f;
+		case global::CarOpinion.Happiness.Content:
+			return -0.05f;
+		case global::CarOpinion.Happiness.Happy:
+			return 0f;
+		case global::CarOpinion.Happiness.Delighted:
+			return 0.1f;
+		default:
+			return 0f;
+		}
+	}

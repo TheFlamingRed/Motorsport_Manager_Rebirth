@@ -1,0 +1,1009 @@
+ID,Trait Name,Name ID,Custom Trait Name,Text ID,Icon Path,Icon,Part,Level,Type,Activation Requirement,Risk Level,Stat Boost,Max Stat Boost,Reliability Boost,Max Reliability Boost,Production Time,Cost,Red Zone,Bonus,Bonus Type,AggressiveTeamWeightings,PassiveTeamWeightings
+2,{Stat}: +20,PSG_10004941,<b>Performance:</b> +20,,PartIconID2,2,All,1,Stock,,,20,,,,,,,,,1,1
+3,Reliability: +15%,PSG_10004942,"<b>Reliability:</b> +15%
+<b>Max Reliability:</b> +10%",,PartIconID3,4,All,1,Stock,,,,,15,10,,,,,,1,1
+4,{Stat}: +25 to Max,PSG_10004943,<b>Performance:</b> +35 to Max,,PartIconID4,2,All,1,Stock,,,,35,,,,,,,,1,1
+5,"{Stat}: +25 to Max
+{Stat}: +15",PSG_10004944,"<b>Performance:</b> +15
+<b>Performance:</b> +25 to Max",,PartIconID5,6,All,1,Risky,,,15,25,,,,,,,,1,1
+6,Red Zone: -10%,PSG_10004945,<b>Red Zone:</b> -10%,,PartIconID6,0,All,1,Stock,,,,,,,,,-10,,,1,1
+7,"{Stat}: +15
+Reliability: +15%",PSG_10004946,"<b>Performance:</b> +15
+<b>Reliability:</b> +15%",,PartIconID7,2,All,1,Stock,,,15,,15,,,,,,,1,1
+8,"{Stat}: +25
+Red Zone: -5%
+Additional Cost: {Cost}",PSG_10004947,"<b>Build Time:</b> +3 Days
+<b>Performance:</b> +25
+<b>Red Zone:</b> -5%",,PartIconID8,7,All,1,Risky,,,25,,,,3,,-5,,,1,1
+9,"Build Time: + 2 Days
+{Stat}: +50
+Additional Cost: {Cost}",PSG_10004948,"<b>Build Time:</b> +6 Days
+<b>Performance:</b> +50",,PartIconID9,4,All,2,Stock,,,50,,,,8,,,,,1,1
+11,"{Stat}: +90
+ During: Qualifying",PSG_10004949,"<b>Performance:</b> +90
+<b>During:</b> Qualifying",,PartIconID2,7,Engine,2,Stock,Qualifying,,90,,,,,,,,,1,1
+12,"Reliability: +30%
+{Stat}: -10",PSG_10004950,"<b>Performance:</b> -10
+<b>Reliability:</b> +30%
+<b>Max Reliability:</b> +15%
+<b>Red Zone</b>: -10%",,PartIconID12,1,All,2,Stock,,,-10,,30,15,,,-10,,,1,1
+13,{Stat}: +30,PSG_10004951,<b>Performance:</b> +30,,PartIconID2,5,All,2,Stock,,,30,,,,,,,,,1,1
+14,"Build Time: +2 Days
+{Stat}: +25
+Reliability: +5%",PSG_10004952,"<b>Build Time:</b> +2 Days
+<b>Performance:</b> +25
+<b>Reliability:</b> +5%",,PartIconID14,1,All,2,Stock,,,25,,5,,4,,,,,1,1
+15,"{Stat}: +50
+ On: Soft, Supers & Ultras",PSG_10008437,"<b>Performance:</b> +50
+ On: Softs, Supers & Ultras",,PartIconID15,6,All,3,Stock,TyreCompoundSoft,,50,,,,,,,,,1,1
+16,"Reliability: +60%
+Risk Level: + 1",PSG_10004954,"<b>Reliability:</b> +30%
+<b>Max Reliability:</b> +30%",,PartIconID16,7,All,3,Stock,,,,,30,30,,,,,,1,1
+17,"{Stat}: +40 to Max
+ -15% Reliability",PSG_10004955,"<b>Performance:</b> +75 to Max
+<b>Reliability:</b> -10%",,PartIconID17,2,All,3,Stock,,,,75,-10,,,,,,,1,1
+18,"{Stat}: -20 to Max
+{Stat}: +40",PSG_10004956,"<b>Performance:</b> -20 to Max
+<b>Performance:</b> +40",,PartIconID18,2,All,3,Stock,,,40,-20,,,,,,,,1,1
+19,"No Condition Loss 
+On: First Race",PSG_10004957,"No Condition Loss 
+On: First Race",,PartIconID19,2,"Gearbox,Brakes,FrontWing,Suspension,RearWing",4,Stock,,,,,,,,,,,NoConditionLossFirstRace,1,1
+20,"{Stat}: +50 
+On: Wet Tyres and Inters",PSG_10008438,"<b>Performance:</b> +50 
+On: Wets and Inters",,PartIconID20,2,All,3,Stock,TyreCompoundWet,,50,,,,,,,,,1,1
+68,"Build Time: +5 Days
+Reliability: +20%
+Red Zone: -20%",PSG_10008439,"<b>Build Time:</b> +5 Days
+<b>Max Reliability:</b> +25%
+<b>Red Zone:</b> -20%",,PartIconID68,2,All,4,Stock,,,,,,25,9,,-20,,,1,1
+69,"{Stat}: +60
+Red Zone: 15%",PSG_10008440,"<b>Performance:</b> +60
+<b>Red Zone:</b> +15%",,PartIconID69,2,All,4,Stock,,,60,,,,,,15,,,1,1
+70,"{Stat}: +50
+Reliability: +30%
+Risk Level: + 1",PSG_10008441,"<b>Performance:</b> +50
+<b>Reliability:</b> +30%",,PartIconID70,7,All,4,Risky,,,50,,30,,,,,,,1,1
+71,"Produce an additional part for extra time, cost and risk",PSG_20009062,"<b>Additional Parts:</b> 1
+<b>Build Time:</b> +10 days
+<b>Additional Cost:</b> 1,000,000",,EngineerIconBuildTime29,5,All,4,Engineer,,,,,,,10,"1,000,000.00",,,SecondPartFree,0.1,0.1
+72,Red Zone: -25%,PSG_10004963,<b>Red Zone:</b> -25%,,PartIconID6,5,All,4,Stock,,,,,,,,,-25,,,1,1
+21,"Build Time: +3 Days
+Red Zone: -15%
+{Stat}: +55",PSG_10004964,"<b>Build Time:</b> +3 Days
+<b>Performance:</b> +55
+<b>Red Zone:</b> -15%",,PartIconID21,2,All,4,Stock,,,55,,,,7,,-15,,,1,1
+22,"Build Time: +3 Days
+{Stat}: +115
+Red Zone: +50%",PSG_10004965,"<b>Build Time:</b> +3 Days
+<b>Performance:</b> +115
+<b>Red Zone:</b> +10%",,PartIconID69,2,All,5,Stock,,,115,,,,8,,10,,,1,1
+23,No Condition Loss Ever,PSG_10004966,No Condition Loss Ever,,PartIconID19,4,"Gearbox,Brakes,FrontWing,Suspension,RearWing",5,Stock,,,,,,,,,,,NoConditionLossEver,1,1
+25,"{Stat}: +65
+Red Zone: -20%
+Cost: {Cost}",PSG_10004967,"<b>Performance:</b> +65
+<b>Performance:</b> +95 to Max
+<b>Red Zone:</b> -20%
+<b>Risk:</b> +2",,PartIconID25,5,All,5,Stock,,2,65,95,,,,,-20,,,1,1
+26,"{Stat}: +40 to Max
+ Red Zone: -15%",PSG_10004968,"<b>Performance:</b> +90 to Max
+ <b>Red Zone:</b> -15%",,PartIconID26,5,All,5,Stock,,,,90,,,,,-15,,,1,1
+27,"{Stat}: +100
+During: Race",PSG_10004969,"<b>Performance:</b> +100
+<b>During:</b> Race",,PartIconID27,0,All,5,Stock,,,100,,,,,,,,,1,1
+28,+60% Reliability,PSG_10004970,<b>Max Reliability:</b> +45%,,PartIconID3,1,All,5,Stock,,,,,,45,,,,,,1,1
+29,Build Time: -1 Day,PSG_10004971,<b>Build Time:</b> -1 Day,,EngineerIconBuildTime29,2,All,1,Engineer,,,,,,,-1,,,,,0.1,0.1
+30,"Build Time: -2 Days
+For: Each Million Spent",PSG_10004972,"<b>Build Time:</b> -2 Days
+For: Each Million Spent",,EngineerIconTimeMoney30,2,All,1,Engineer,,,,,,,,,,-2,TimeReductionPerMillionSpent,0.1,0.1
+32,"Build Time: Take No Time
+Components: Good",PSG_10004973,"<b>Build Time:</b> Take No Time
+Components: Good",,EngineerIconNoTime32,6,All,3,Engineer,,,,,,,,,,2,ComponentLevelAddNoDays,0.1,0.1
+33,"Build Time: -2 Days
+Cost: {Cost}",PSG_10004974,"<b>Build Time:</b> -2 Days
+Cost: 500,000",,EngineerIconTimeMoney30,6,All,2,Engineer,,,,,,,-2,"500,000.00",,,,0.1,0.1
+34,"{Stat}: +20 to Max
+ Reliability: -10%",PSG_10004975,"<b>Performance:</b> +20 to Max
+ <b>Reliability:</b> -10%",,EngineerIconBuildStatUpRelDown34,2,All,2,Engineer,,,,20,-10,,,,,,,0.1,0.1
+35,"Adds a Random """"Great"""" Component",PSG_10004976,"Adds a Random ""Great"" Component",,EngineerIconRandom35,3,All,2,Engineer,,,,,,,,,,3,AddRandomLevelComponent,0.1,0.1
+36,"Reliability: +2%
+For: Each day in Production",PSG_10004977,"<b>Reliability:</b> +2%
+For: Each day in Production",,EngineerIconEachDayReli,5,All,3,Engineer,,,,,,,,,,2,ReliabilityPerDayInProduction,0.1,0.1
+37,"{Stat}: +40
+Reliability: -10% 
+During: Race",PSG_10004978,"<b>Performance:</b> +40
+<b>Reliability:</b> -10% 
+<b>During:</b> Race",,EngineerIconStatReliInRace37,4,All,3,Engineer,Race,,40,,-10,,,,,,,0.1,0.1
+38,Risk Level: -1,PSG_10004979,<b>Risk:</b> -1,,EngineerIconRiskLevelDown38,4,All,4,Engineer,,-1,,,,,,,,,,0.1,0.1
+40,"Reliability: +5%
+For: Each day in Production",PSG_10004980,"<b>Reliability:</b> +5%
+For: Each day in Production",,EngineerIconNoTime32,4,All,5,Engineer,,,,,,,,,,5,ReliabilityPerDayInProduction,0.1,0.1
+41,"Adds a Random """"Legendary"""" Component",PSG_10004981,"Adds a Random ""Legendary"" Component",,EngineerIconExtraSlot41,4,All,4,Engineer,,,,,,,,,,5,AddRandomLevelComponent,0.1,0.1
+42,Max Performance: Instant,PSG_10004982,<b>Max Performance:</b> Instant,,EngineerIconMaxPerformance42,4,All,5,Engineer,,,,,,,,,,,PerformanceAutoImproved,0.1,0.1
+43,Risk Level: None,PSG_10004983,<b>Risk:</b> None,,EngineerIconNoRisk43,4,All,5,Engineer,,-10,,,,,,,,,,0.1,0.1
+44,"Reliability: +20% 
+For: Each ""Good"" Component",PSG_10004984,"<b>Reliability:</b> +20% 
+For: Each ""Good"" Component",,EngineerIconID45,4,All,5,Engineer,,,,,20,,,,,2,ReliabilityBonusPerComponentOfLevel,0.1,0.1
+45,Reliability: +40%,PSG_10004985,<b>Reliability:</b> +40%,,EngineerIconID45,4,All,4,Engineer,,,,,40,,,,,,,0.1,0.1
+46,"{Stat}: +60
+Reliability: +20% 
+During: Qualifying",PSG_10004986,"<b>Performance:</b> +60
+<b>Reliability:</b> +20% 
+<b>During:</b> Qualifying",,EngineerIconID46,4,All,3,Engineer,Qualifying,,60,,20,,,,,,,0.1,0.1
+47,"{Stat}: +50
+ Reliability: -25%
+ On: Soft, Supers & Ultras",PSG_10008442,"<b>Performance:</b> +50
+<b>Reliability:</b> -25%
+On: Softs, Supers & Ultras",,EngineerIconID47,4,All,3,Engineer,TyreCompoundSoft,,50,,-25,,,,,,,0.1,0.1
+48,"{Stat}: +25
+ Reliability: -10%
+ On: Wet Tyres and Inters",PSG_10008443,"<b>Performance:</b> +25
+<b>Reliability:</b> -10%
+On: Wets and Inters",,EngineerIconID48,4,All,2,Engineer,TyreCompoundWet,,25,,-10,,,,,,,0.1,0.1
+57,"{Stat}: +60
+{Stat}: +50 to Max",PSG_10007582,"<b>Performance:</b> +60
+<b>Performance:</b> +50 to Max",,PartIconID57,3,All,5,Stock,,,60,50,,,,,,,,1,1
+58,"{Stat}: +40
+Reliability: -20%",PSG_10008444,"<b>Performance:</b> +40
+<b>Reliability:</b> -20%",,PartIconID58,5,All,2,Stock,,,40,,-20,,,,,,,1,1
+59,"Max Reliability: +40%
+Additional Cost: {ComponentCost}",PSG_10008445,"<b>Max Reliability:</b> +35%
+<b>Risk:</b> +1",,PartIconID59,5,All,2,Risky,,1,,,,35,,,,,,1,1
+60,"{Stat}: +35
+Red Zone: -10%
+Additional Cost: {Cost}",PSG_10008446,"<b>Build Time:</b> +5 Days
+<b>Performance:</b> +35
+<b>Red Zone:</b> -10%",,PartIconID8,,All,2,Risky,,,35,,,,7,,-10,,,1,1
+61,"Build Time: -3 Days
+{Stat}: +30
+Additional Cost: {Cost}",PSG_10008447,"<b>Build Time:</b> -3 Days
+<b>Performance:</b> +30",,PartIconID61,1,All,2,Risky,,,30,,,,-3,,,,,1,1
+62,"{Stat}: +60
+Risk Level: + 1",PSG_10008448,"<b>Performance:</b> +60
+<b>Risk:</b> +1",,PartIconID62,7,All,3,Risky,,1,60,,,,,,,,,1,1
+63,"Risk Level - 1
+Cost: {Cost}",PSG_10007583,"<b>Risk:</b> -1
+<b>Cost:</b> 1,000,000",,PartIconID63,4,All,3,Stock,,-1,,,,,,"1,000,000.00",,,,1,1
+64,"{Stat}: +70 to Max
+Risk Level: + 1",PSG_10008449,"<b>Performance:</b> +10
+<b>Performance:</b> +90 to Max
+<b>Risk:</b> +1",,PartIconID64,2,All,3,Risky,,1,10,90,,,,,,,,1,1
+65,"{Stat}: +15
+ Reliability: -10%
+ On: Soft, Supers & Ultras",PSG_10008450,"<b>Performance:</b> +15
+<b>Reliability:</b> -10%
+On: Softs, Supers & Ultras",,EngineerIconID47,4,All,2,Engineer,TyreCompoundSoft,,15,,-10,,,,,,,0.1,0.1
+66,"No Condition Loss
+On: First Race",PSG_10008451,"<b><i>No Condition Loss</i></b>
+<b>On:</b> First Race",,EngineerIconID66,2,All,3,Engineer,,,,,,,,,,,NoConditionLossFirstRace,0.1,0.1
+67,"Build Time: -4 Days
+Cost: {Cost}",PSG_10007584,"<b>Build Time:</b> -4 Days
+<b>Cost:</b> 1,000,000",,EngineerIconTimeMoney30,2,All,4,Engineer,,,,,,,-4,"1,000,000.00",,,,0.1,0.1
+73,"{Stat}: +70
+Reliability: +35%
+Risk Level: + 1",PSG_10008452,"<b>Performance:</b> +70
+<b>Reliability:</b> +35%
+<b>Risk:</b> +1",,PartIconID16,,All,4,Risky,,1,70,,35,,,,,,,1,1
+74,"Reliability: +15%
+For: Each 'Average' Component
+Risk Level: + 1",PSG_10008453,"<b>Reliability:</b> +15%
+For: Each 'Average' Component
+<b>Risk:</b> +1",,PartIconID16,,All,4,Risky,,1,15,,,,,,,1,ReliabilityBonusPerComponentOfLevel,1,1
+75,{Stat}: +50,PSG_10008454,<b>Performance:</b> +50,,PartIconID2,2,All,4,Stock,,,50,,,,,,,,,1,1
+76,"Production Time: +4 Days
+{Stat}: +40
+Reliability: +25%",PSG_10008455,"<b>Build Time:</b> +4 Days
+<b>Performance:</b> +40
+<b>Reliability:</b> +25%",,PartIconID14,2,All,4,Stock,,,40,,25,,8,,,,,1,1
+77,"Build Time: +5 Days
+{Stat}: +40 to Max",PSG_10008456,"<b>Build Time:</b> +5 Days
+<b>Performance:</b> +65 to Max",,PartIconID77,1,All,2,Stock,,,,65,,,4,,,,,1,1
+78,"Build Time: +2 Days
+{Stat}: +25 to Max
+{Stat}: +20",PSG_10008457,"<b>Build Time:</b> +2 Days
+<b>Performance:</b> +20
+<b>Performance:</b> +25 to Max",,PartIconID78,1,All,2,Stock,,,20,25,,,4,,,,,1,1
+79,{Stat}: +90,PSG_10008458,<b>Performance:</b> +90,,PartIconID2,1,All,5,Stock,,,90,,,,,,,,,1,1
+83,"{Stat}: +75
+Reliability: +50%",PSG_10008459,"<b>Performance:</b> +50
+<b>Reliability:</b> +50%",,PartIconID7,1,All,5,Stock,,,50,,50,,,,,,,1,1
+80,"Adds a Random """"Good"""" Component",PSG_10008460,"Adds a Random ""Good"" Component",,EngineerIconRandom35,4,All,1,Engineer,,,,,,,,,,2,AddRandomLevelComponent,0.1,0.1
+81,"{Stat}: +20 to Max
+Red Zone: -10%
+Risk Level: +1",PSG_10008461,"<b>Performance:</b> +20 to Max
+<b>Red Zone:</b> -10%
+<b>Risk:</b> +1",,EngineerIconMaxPerformance42,4,All,2,Engineer,,1,,20,,,,,-10,,,0.1,0.1
+82,"Reliability: +15% 
+For: Each ""Good"" Component
+Risk Level: +1",PSG_10008462,"<b>Reliability:</b> +15% 
+For: Each ""Good"" Component
+<b>Risk:</b> +1",,EngineerIconID45,4,All,3,Engineer,,1,,,15,,,,,2,ReliabilityBonusPerComponentOfLevel,0.1,0.1
+84,"Build Time: +5 Days
+Unlocks an Additional ""Good"" Component Slot",PSG_10010294,"<b>Build Time:</b> +5 Days
+Unlocks an Additional ""Good"" Component Slot",,EngineerIconExtraSlot41,4,All,1,Engineer,,,,,,,5,,,2,UnlockExtraSlotOfLevel,0.1,0.1
+85,"Build Time: +10 Days
+Unlocks an Additional ""Great"" Component Slot",PSG_10010295,"<b>Build Time:</b> +10 Days
+Unlocks an Additional ""Great"" Component Slot",,EngineerIconExtraSlot41,4,All,2,Engineer,,,,,,,10,,,3,UnlockExtraSlotOfLevel,0.1,0.1
+86,"Reliability: +40%
+{Stat}: -5",PSG_10010771,"<b>Reliability:</b> +40%
+<b>Performance:</b> -5",,EngineerIconID45,2,All,1,Engineer,,,-5,,40,,,,,,,0.1,0.1
+87,"{Stat}: -15
+Red Zone: -5%
+Max Reliability: +10%",PSG_20009000,"<b>Performance:</b> -5
+<b>Red Zone:</b> -5%
+<b>Max Reliability:</b> +15%",,PartIconID12,1,All,1,Stock,,,-5,,,15,,,-5,,,1,1
+88,"{Stat}: +3
+5
+Max Reliability:  -5%
+Red Zone: +10%",PSG_20009001,"<b>Performance:</b> +45
+<b>Max Reliability:</b>  -5%
+<b>Red Zone:</b> +10%",,PartIconID58,5,All,1,Stock,,,45,,,-5,,,10,,,1,1
+89,"Reliability: +35%
+Max Reliability: +15%",PSG_20009002,"<b>Reliability:</b> +35%
+<b>Max Reliability:</b> +15%",,PartIconID3,1,All,1,Stock,,,,,35,15,,,,,,1,1
+90,"Build Time: +5 Days
+{Stat}: +50
+Max Reliability: -5%
+Additional Cost: {Cost}",PSG_20009003,"<b>Build Time:</b> +6 Days
+<b>Performance:</b> +45",,PartIconID58,5,All,1,Stock,,,45,,,,6,,,,,1,1
+91,"{Stat}: +15
+{Stat}: +25 to Max
+Max Reliability: -5%",PSG_20009004,"<b>Performance:</b> +15
+<b>Performance:</b> +25 to Max
+<b>Max Reliability:</b> -5%",,PartIconID17,2,All,1,Stock,,,15,25,,-5,,,,,,1,1
+92,"{Stat}: +15
+{Stat}: +15 to Max
+Max Reliability: +15%
+Additional Cost: {Cost}",PSG_20009005,"<b>Performance:</b> +15
+<b>Performance:</b> +10 to Max
+<b>Max Reliability:</b> +5%",,PartIconID7,2,All,1,Stock,,,15,10,,5,,,,,,1,1
+93,"{Stat}: +40
+Red Zone: -5%
+Max Reliability: -10%
+Additional Cost: {Cost}",PSG_20009006,"<b>Performance:</b> +35
+<b>Max Reliability:</b> -5%",,PartIconID25,5,All,1,Stock,,,35,,,-5,,,,,,1,1
+94,"{Stat}: +10
+Red Zone: -5%
+Max Reliability: +5%",PSG_20009007,"<b>Performance:</b> +10
+<b>Red Zone:</b> -5%
+<b>Max Reliability:</b> +5%",,PartIconID7,2,All,1,Stock,,,10,,,5,,,-5,,,1,1
+95,"{Stat}: +50
+Max Reliability: -10%
+Additional Cost: {Cost}",PSG_20009008,"<b>Performance:</b> +45
+<b>Max Reliability:</b> -10%
+<b>Red Zone:</b> +5%",,PartIconID58,5,All,1,Stock,,,45,,,-10,,,5,,,1,1
+96,"Build Time: -4 Days
+Max Reliability: -15%",PSG_20009009,"<b>Build Time:</b> -4 Days
+<b>Performance:</b> +10
+<b>Max Reliability:</b> -15%",,PartIconID3,,All,1,Stock,,,10,,,-15,-4,,,,,1,1
+97,"Build Time: +3 Days
+{Stat}: +10
+{Stat}: +50 to Max
+Additional Cost: {Cost}",PSG_20009010,"<b>Build Time:</b> +5 Days
+<b>Performance:</b> +10
+<b>Performance:</b> +35 to Max
+<b>Red Zone:</b> -10%",,PartIconID78,1,All,1,Stock,,,10,35,,,5,,-10,,,1,1
+98,Max Reliability: +15%,PSG_20009011,<b>Max Reliability:</b> +15%,,PartIconID3,,All,1,Stock,,,,,,15,,,,,,1,1
+99,"Build Time: +6 Days
+{Perf}: +15
+{Perf}: +30 to Max",PSG_20009012,"<b>Build Time:</b> +6 Days
+<b>Performance:</b> +20
+<b>Performance:</b> +45 to Max",,PartIconID78,1,All,2,Stock,,,20,45,,,8,,,,,1,1
+100,"{Stat}: +25
+{Stat}: +30 to Max
+Additional Cost: {Cost}",PSG_20009013,"<b>Performance:</b> +25
+<b>Performance:</b> +30 to Max",,PartIconID57,3,All,2,Stock,,,25,30,,,,,,,,1,1
+101,"Build Time: -2 Days
+{Stat}: +20
+{Stat}: +20 to Max
+Max Reliability: -10%",PSG_20009014,"<b>Build Time:</b> -2 Days
+<b>Performance:</b> +20
+<b>Performance:</b> +20 to Max
+<b>Max Reliability:</b> -10%",,PartIconID17,2,All,2,Stock,,,20,20,,-10,-2,,,,,1,1
+102,"Build Time: +8 Days
+{Stat}: +10
+Relaibility: +65%",PSG_20009015,"<b>Build Time:</b> +7 Days
+<b>Performance:</b> +10
+<b>Reliability:</b> +65%",,PartIconID14,2,All,2,Stock,,,10,,65,,9,,-10,,,1,1
+103,"{Stat}: +3
+5
+Max Reliability: -5%",PSG_20009016,"<b>Performance:</b> +35
+<b>Max Reliability:</b> -5%",,PartIconID17,2,All,2,Stock,,,35,,,-5,,,,,,1,1
+104,"Build Time: +2 Days
+{Stat}: +35 to Max",PSG_20009017,"<b>Build Time:</b> -2 Days
+<b>Performance:</b> +35 to Max",,PartIconID77,1,All,2,Stock,,,,35,,,-2,,,,,1,1
+105,Max Reliability: +25%,PSG_20009018,<b>Max Reliability:</b> +25%,,PartIconID3,,All,2,Stock,,,,,,25,,,,,,1,1
+106,"Build Time: +3 Days
+{Stat}: +65
+Additional Cost: {Cost}",PSG_20009019,"<b>Build Time:</b> +2 Days
+<b>Performance:</b> +65
+<b>Risk:</b> +1",,PartIconID78,1,All,2,Risky,,1,65,,,,4,,,,,1,1
+107,"{Stat}: +30
+Max Reliability: +10%
+Red Zone: +5%
+Additional Cost: {Cost}",PSG_20009020,"<b>Performance:</b> +30
+<b>Max Reliability:</b> +10%
+<b>Red Zone:</b> +5%",,PartIconID3,1,All,2,Stock,,,30,,,10,,,5,,,1,1
+108,"Reliability: +40%
+Max Reliability: +25%
+Additional Cost: {Cost}",PSG_20009021,"<b>Reliability:</b> +40%
+<b>Max Reliability:</b> +15%",,PartIconID3,1,All,2,Stock,,,,,40,15,,,,,,1,1
+109,"{Stat}: -30
+Reliability: +60%
+Max Reliability: +35%",PSG_20009022,"<b>Performance:</b> -30
+<b>Reliability:</b> +60%
+<b>Max Reliability:</b> +35%",,PartIconID12,1,All,2,Stock,,,-30,,60,35,,,,,,1,1
+110,"Build Time: -2 Days
+{Stat}: +25
+{Stat}: +15 to Max
+Additional Cost: {Cost}",PSG_20009023,"<b>Build Time:</b> -2 Days
+<b>Performance:</b> +25
+<b>Performance:</b> +15 to Max",,PartIconID17,2,All,2,Stock,,,25,15,,,-2,,,,,1,1
+111,"Build Time: +8 Days
+{Stat}: +80
+Max Reliability: -20%",PSG_20009024,"<b>Build Time:</b> +8 Days
+<b>Performance:</b> +80
+<b>Max Reliability:</b> -20%",,PartIconID78,1,All,3,Stock,,,80,,,-20,11,,,,,1,1
+112,"Build Time: +4 Days
+{Stat}: +35
+{Stat}: +45 to Max",PSG_20009025,"<b>Build Time:</b> +4 Days
+<b>Performance:</b> +35
+<b>Performance:</b> +45 to Max",,PartIconID78,1,All,3,Stock,,,35,45,,,7,,,,,1,1
+113,"Build Time: -3 Days
+Max Reliability: -35%",PSG_20009026,"<b>Build Time:</b> -3 Days
+<b>Performance:</b> +75
+<b>Max Reliability:</b> -20%",,PartIconID3,,All,3,Stock,,,75,,,-20,-3,,,,,1,1
+114,"{Stat}: +160
+During: Qualifying",PSG_20009027,"<b>Performance:</b> +160
+<b>During:</b> Qualifying",,PartIconID2,7,Engine,3,Stock,Qualifying,,160,,,,,,,,,1,1
+115,"Reliability: +55%
+Max Reliability: +40%
+Additional Cost: {Cost}",PSG_20009028,"<b>Reliability:</b> +60%
+<b>Max Reliability:</b> +40%
+<b>Risk:</b> +1",,PartIconID3,1,All,3,Risky,,1,,,60,40,,,,,,1,1
+116,"{Stat}: -25
+Max Reliability: +60%
+<b>Risk:</b> +1",PSG_20009029,"<b>Performance:</b> -25
+<b>Max Reliability:</b> +60%
+<b>Risk:</b> +1",,PartIconID12,1,All,3,Risky,,1,-25,,,60,,,,,,1,1
+117,Max Reliability: +30%,PSG_20009030,<b>Max Reliability:</b> +30%,,PartIconID3,,All,3,Stock,,,,,,30,,,,,,1,1
+118,"Build Time: +10 Days
+{Stat}: +60
+{Stat}: +30 to Max",PSG_20009031,"<b>Build Time:</b> +10 Days
+<b>Performance:</b> +60
+<b>Performance:</b> +30 to Max",,PartIconID78,1,All,3,Stock,,,60,30,,,13,,,,,1,1
+119,"Build Time: +4 Days
+{Stat}: +55
+{Stat}: +15 to Max
+Additional Cost: {Cost}",PSG_20009032,"<b>Build Time:</b> +7 Days
+<b>Performance:</b> +65
+<b>Performance:</b> +25 to Max",,PartIconID78,1,All,3,Stock,,,65,25,,,7,,,,,1,1
+120,"Build Time: -2 Days
+{Stat}: +35
+<b>Risk:</b> +1",PSG_20009033,"<b>Build Time:</b> -2 Days
+<b>Performance:</b> +35
+<b>Risk:</b> +1",,PartIconID61,1,All,3,Risky,,1,35,,,,-2,,,,,1,1
+121,"{Stat}: +200
+During: Qualifying",PSG_20009034,"<b>Performance:</b> +200
+<b>During:</b> Qualifying",,PartIconID2,7,Engine,4,Stock,Qualifying,,200,,,,,,,,,1,1
+122,"{Stat}: +90
+{Stat}: +25 to Max
+Max Reliability: -25%",PSG_20009035,"<b>Performance:</b> +90
+<b>Performance:</b> +25 to Max
+<b>Max Reliability:</b> -25%",,PartIconID58,5,All,4,Stock,,,90,25,,-25,,,,,,1,1
+123,{Stat}: +60,PSG_20009036,<b>Performance:</b> +60,,PartIconID2,2,All,4,Stock,,,60,,,,,,,,,1,1
+124,"{Stat}: +35
+{Stat}: +75 to Max",PSG_20009037,"<b>Performance:</b> +35
+<b>Performance:</b> +75 to Max",,PartIconID5,6,All,4,Stock,,,35,75,,,,,,,,1,1
+125,"{Stat}: +115
+<b>Risk:</b> +2",PSG_20009038,"<b>Performance:</b> +115
+<b>Performance:</b> -15 to Max
+<b>Max Reliability:</b> -10%
+<b>Risk:</b> +1",,PartIconID62,7,All,4,Risky,,1,115,-15,,-10,,,,,,1,1
+126,"Red Zone: -40%
+<b>Risk:</b> +1",PSG_20009039,"<b>Red Zone:</b> -40%
+<b>Risk:</b> +1",,PartIconID6,5,All,4,Risky,,1,,,,,,,-40,,,1,1
+127,"{Stat}: -35
+<b>Risk:</b> -1",PSG_20009040,"<b>Performance:</b> -35
+<b>Risk:</b> -1",,EngineerIconNoRisk43,4,All,4,Stock,,-1,-35,,,,,,,,,1,1
+128,"Max Reliability: -15%
+<b>Risk:</b> -2
+Additional Cost: {Cost}",PSG_20009041,"<b>Max Reliability:</b> -15%
+<b>Risk:</b> -2
+<b>Additional Cost:</b> 735,000",,EngineerIconNoRisk43,4,All,4,Stock,,-2,,,,-15,,"735,000.00",,,,1,1
+129,"Build Time: +5 Days
+{Stat}: +100
+<b>Risk:</b> +1",PSG_20009042,"<b>Build Time:</b> +6 Days
+<b>Performance:</b> +100
+<b>Risk:</b> +1",,PartIconID9,4,All,4,Risky,,1,100,,,,10,,,,,1,1
+130,"{Stat}: + 145
+Red Zone: -15%
+<b>Risk:</b> +3",PSG_20009043,"<b>Build Time:</b> +4 Days
+<b>Performance:</b> +220
+<b>Performance:</b> -40 to Max
+<b>Risk:</b> +3",,PartIconID8,7,All,5,Risky,,3,220,-40,,,9,,,,,1,1
+131,"{Stat}: +50
+{Stat}: +110 to Max
+<b>Risk:</b> +2",PSG_20009044,"<b>Performance:</b> +50
+<b>Performance:</b> +160 to Max
+<b>Max Reliability:</b> +15%
+<b>Red Zone:</b> -15%
+<b>Risk:</b> +2",,PartIconID5,6,All,5,Risky,,2,50,160,,15,,,-15,,,1,1
+132,"{Stat}: +160
+{Stat}: -30 to Max
+Additional Cost: {Cost}",PSG_20009045,"<b>Performance:</b> +160
+<b>Performance:</b> -30 to Max
+<b>Risk:</b> +2",,PartIconID18,2,All,5,Stock,,2,160,-30,,,,,,,,1,1
+133,"{Stat}: +350
+During: Qualifying (engine only)",PSG_20009046,"<b>Performance:</b> +350
+<b>During:</b> Qualifying",,PartIconID2,7,Engine,5,Stock,Qualifying,,350,,,,,,,,,1,1
+134,"Red Zone: -35%
+Max Reliability: +25%",PSG_20009047,"<b>Red Zone:</b> -35%
+<b>Max Reliability:</b> +25%",,PartIconID3,,All,5,Stock,,,,,,25,,,-35,,,1,1
+135,"Build Time: +15 Days
+{Stat}: +130
+Reliability: +70%
+Additional Cost: {Cost}
+<b>Risk:</b> +1",PSG_20009048,"<b>Build Time:</b> +16 Days
+<b>Performance:</b> +130
+<b>Reliability:</b> +70%",,PartIconID9,4,All,5,Risky,,,130,,70,,21,,,,,1,1
+136,"Build Time: +6 Days
+{Stat}: +95
+Max Reliability: +10%",PSG_20009049,"<b>Build Time:</b> +6 Days
+<b>Performance:</b> +95
+<b>Max Reliability:</b> +10%",,PartIconID14,1,All,5,Stock,,,95,,,10,11,,,,,1,1
+137,"Build Time: -2 Days
+{Stat}: +70
+{Stat}: +15 to Max",PSG_20009050,"<b>Build Time:</b> -2 Days
+<b>Performance:</b> +70
+<b>Performance:</b> +15 to Max",,PartIconID57,3,All,5,Stock,,,70,15,,,-2,,,,,1,1
+138,"Max Reliability: +20%
+{Stat}: -5",PSG_20009051,"<b>Max Reliability:</b> +20%
+<b>Performance:</b> -5",,EngineerIconID45,2,All,1,Engineer,,,-5,,,20,,,,,,0,0.2
+139,"Max Reliability: +15%
+Red Zone: -10%
+{Stat}: -10",PSG_20009052,"<b>Max Reliability:</b> +15%
+<b>Red Zone:</b> -10%
+<b>Performance:</b> -10",,EngineerIconID45,2,All,1,Engineer,,,-10,,,15,,,-10,,,0,0.3
+140,"Build Time: +3 Days
+Discount: {ComponentCost}",PSG_20009053,"<b>Build Time:</b> +3 Days
+<b>Discount:</b> 70,000",,EngineerIconTimeMoney30,2,All,1,Engineer,,,,,,,3,"-70,000.00",,,,0,0
+141,Produce an additional part with additional cost and reduced performance and max reliability,PSG_20009054,"<b>Additional Parts:</b> 1
+<b>Build Time:</b> +5 days
+<b>Max Reliability:</b> -10%
+<b>Risk:</b> +1
+<b>Additional Cost:</b> 500,000",,EngineerIconBuildTime29,5,All,2,Engineer,,1,,,,-10,5,"500,000.00",,,SecondPartFree,0.2,0
+142,"Max Reliability: +35%
+{Stat}: -10",PSG_20009055,"<b>Max Reliability:</b> +35%
+<b>Performance:</b> -10",,EngineerIconID45,2,All,2,Engineer,,,-10,,,35,,,,,,0,0.3
+143,"Build Time: +5 Days
+Discount: {ComponentCost}",PSG_20009056,"<b>Build Time:</b> +5 Days
+<b>Discount:</b> 90,000",,EngineerIconTimeMoney30,2,All,2,Engineer,,,,,,,5,"-90,000.00",,,,0,0
+144,"Produce an additional part for extra time and cost, with reduced performance and max reliability",PSG_20009057,"<b>Additional Parts:</b> 1
+<b>Build Time:</b> +8 days
+<b>Max Reliability:</b> -5%
+<b>Risk:</b> +1
+<b>Additional Cost:</b> 750,000",,EngineerIconBuildTime29,5,All,3,Engineer,,1,,,,-5,8,"750,000.00",,,SecondPartFree,0.2,0
+145,"Max Reliability: +15%
+Red Zone: -10%",PSG_20009058,"<b>Max Reliability:</b> +15%
+<b>Red Zone:</b> -10%",,EngineerIconID45,4,All,3,Engineer,,,,,,15,,,-10,,,0,0.4
+146,"Build Time: +8 Days
+Discount: 135,000",PSG_20009059,"<b>Build Time:</b> +8 Days
+<b>Discount:</b> 135,000",,EngineerIconTimeMoney30,2,All,3,Engineer,,,,,,,8,"-135,000.00",,,,0,0
+147,"Build Time: +17 Days
+Unlocks an additional Epic component slot",PSG_20009060,"<b>Build Time:</b> +17 Days
+Unlocks an additional Epic component slot",,EngineerIconExtraSlot41,4,All,3,Engineer,,,,,,,17,,,4,UnlockExtraSlotOfLevel,0,0
+148,Max Reliability: +25%,PSG_20009061,<b>Max Reliability:</b> +25%,,EngineerIconID45,4,All,3,Engineer,,,,,,25,,,,,,0,0.3
+150,"Max Reliability: +35%
+Red Zone: -15%
+<b>Risk:</b> +1",PSG_20009063,"<b>Max Reliability:</b> +35%
+<b>Red Zone:</b> -15%
+<b>Risk:</b> +1",,EngineerIconID45,2,All,4,Engineer,,1,,,35,,,,-15,,,0.1,0.1
+151,"Build Time: +12 Days
+Discount: 240,000",PSG_20009064,"<b>Build Time:</b> +12 Days
+<b>Discount:</b> 240,000",,EngineerIconTimeMoney30,2,All,4,Engineer,,,,,,,12,"-240,000.00",,,,0,0
+152,"Build Time: +26 Days
+Unlocks and additional Legendary component slot",PSG_20009065,"<b>Build Time:</b> +26 Days
+Unlocks an additional Legendary component slot",,EngineerIconExtraSlot41,4,All,4,Engineer,,,,,,,26,,,5,UnlockExtraSlotOfLevel,0,0
+153,Max Reliability: +30%,PSG_20009066,<b>Max Reliability:</b> +30%,,EngineerIconID45,4,All,4,Engineer,,,,,,30,,,,,,0.1,0.4
+154,"Produce an additional part for extra time, cost and risk",PSG_20009067,"<b>Additional Parts:</b> 1
+<b>Performance:</b> -30
+<b>Max Reliability:</b> -15%
+<b>Risk:</b> +1
+<b>Additional Cost:</b> 300,000",,EngineerIconBuildTime29,5,All,1,Engineer,,1,-30,,,-15,,"300,000.00",,,SecondPartFree,0.3,0
+155,"Max Reliability: +50%
+Red Zone: -20%
+<b>Risk:</b> +2",PSG_20009068,"<b>Max Reliability:</b> +50%
+<b>Red Zone:</b> -20%
+<b>Risk:</b> +2",,EngineerIconID45,2,All,5,Engineer,,2,,,,50,,,-20,,,0,0
+156,"Build Time: +16 Days
+Discount: 350,000",PSG_20009069,"<b>Build Time:</b> +16 Days
+<b>Discount:</b> 350,000",,EngineerIconTimeMoney30,2,All,5,Engineer,,,,,,,16,"-350,000.00",,,,0,0
+157,Max Reliability: +40%,PSG_20009070,<b>Max Reliability:</b> +40%,,EngineerIconID45,4,All,5,Engineer,,,,,,40,,,,,,0.1,0.4
+158,"{Stat}: +30
+{Stat}: -10 to Max",PSG_20009071,"<b>Performance:</b> +30
+<b>Performance:</b> -10 to Max",,PartIconID18,2,All,1,Stock,,,30,-10,,,,,,,,1,1
+159,"{Stat}: +45 to Max
+Reliability: -20%",PSG_20009072,"<b>Performance:</b> +45 to Max
+<b>Reliability:</b> -20%",,PartIconID17,2,All,1,Stock,,,,45,-20,,,,,,,1,1
+160,"Build Time: +2 Days
+{Stat}: +90 to Max",PSG_20009073,"<b>Build Time:</b> +2 Days
+<b>Performance:</b> +90 to Max",,PartIconID77,1,All,3,Stock,,,,90,,,5,,,,,1,1
+161,"Build Time: +10 Days
+{Stat}: +65
+Red Zone: -20%
+<b>Risk:</b> +1",PSG_20009074,"<b>Build Time:</b> +10 Days
+<b>Performance:</b> +65
+<b>Red Zone:</b> -20%
+<b>Risk:</b> +1",,PartIconID21,2,All,3,Risky,,1,65,,,,13,,-20,,,1,1
+162,"{Stat}: +80
+Additional Cost: {Cost}",PSG_20009075,"<b>Performance:</b> +80
+<b>Risk:</b> +1",,PartIconID2,2,All,3,Stock,,1,80,,,,,,,,,1,1
+163,Red Zone: -20%,PSG_20009076,<b>Red Zone:</b> -20%,,PartIconID6,0,All,3,Stock,,,,,,,,,-20,,,1,1
+164,"Red Zone: -30%
+<b>Risk:</b> +1",PSG_20009077,"<b>Red Zone:</b> -30%
+<b>Risk:</b> +1",,PartIconID6,0,All,3,Risky,,1,,,,,,,-30,,,1,1
+165,"{Stat}: +10
+Max Reliability: +15%
+Red Zone: -10%",PSG_20009078,"<b>Performance:</b> +10
+<b>Max Reliability:</b> +15%
+<b>Red Zone:</b> -10%",,PartIconID7,2,All,3,Stock,,,10,,,15,,,-10,,,1,1
+166,"{Stat}: +90
+{Stat}: -20 to Max
+<b>Risk:</b> +1",PSG_20009079,"<b>Performance:</b> +90
+<b>Performance:</b> -20 to Max
+<b>Risk:</b> +1",,PartIconID18,2,All,4,Risky,,1,90,-20,,,,,,,,1,1
+167,"Build Time: +8 Days
+Max Reliability: +35%
+Red Zone: -10%",PSG_20009080,"<b>Build Time:</b> +8 Days
+<b>Max Reliability:</b> +35%
+<b>Red Zone:</b> -10%",,PartIconID68,2,All,4,Stock,,,,,,35,12,,-10,,,1,1
+168,"Build Time: +3 Days
+{Stat}: +40
+{Stat}: +70 to Max
+Reliability: -30%",PSG_20009081,"<b>Build Time:</b> +3 Days
+<b>Performance:</b> +40
+<b>Performance:</b> +70 to Max
+<b>Reliability:</b> -30%",,PartIconID58,5,All,4,Stock,,,40,70,-30,,7,,,,,1,1
+169,"{Stat}: +30
+Max Reliability: +10%",PSG_20009082,"<b>Performance:</b> +30
+<b>Max Reliability:</b> +10%",,PartIconID7,2,All,4,Stock,,,30,,,10,,,,,,1,1
+170,"Build Time: +9 Days
+{Stat}: +160
+Max Reliability: -10%
+<b>Risk:</b> +3",PSG_20009083,"<b>Performance:</b> +160
+<b>Reliability:</b> -10%
+<b>Risk:</b> +2",,PartIconID58,5,All,5,Risky,,2,160,,-10,,,,,,,1,1
+171,"Build Time: +8 Days
+{Stat}: +90
+{Stat}: +45 to Max",PSG_20009084,"<b>Build Time:</b> +8 Days
+<b>Performance:</b> +90
+<b>Performance:</b> +45 to Max",,PartIconID78,1,All,5,Stock,,,90,45,,,13,,,,,1,1
+172,"Build Time: +3 Days
+{Stat}: +160 to Max",PSG_20009085,"<b>Build Time:</b> +3 Days
+<b>Performance:</b> +160 to Max",,PartIconID77,1,All,5,Stock,,,,160,,,8,,,,,1,1
+173,"Build Time: -3 Days
+{Stat}: +25
+{Stat}: +100 to Max",PSG_20009086,"<b>Build Time:</b> -3 Days
+<b>Performance:</b> +25
+<b>Performance:</b> +100 to Max",,PartIconID78,1,All,5,Stock,,,25,100,,,-3,,,,,1,1
+174,"Build Time: -3 Days
+{Stat}: +45
+{Stat}: +110 to Max
+<b>Risk:</b> +2",PSG_20009087,"<b>Build Time:</b> -6 Days
+<b>Performance:</b> +75
+<b>Performance:</b> +135 to Max
+<b>Risk:</b> +2",,PartIconID78,1,All,5,Risky,,2,75,135,,,-6,,,,,1,1
+175,"Reliability: +50%
+Max Reliability: +30%",PSG_20009088,"<b>Reliability:</b> +50%
+<b>Max Reliability:</b> +30%",,PartIconID3,1,All,5,Stock,,,,,50,30,,,,,,1,1
+176,"Build Time: -2 Days
+Red Zone: -35%",PSG_20009089,"<b>Build Time:</b> -2 Days
+<b>Red Zone:</b> -35%",,PartIconID6,0,All,5,Stock,,,,,,,-2,,-35,,,1,1
+177,{Stat}: +65,PSG_20009090,<b>Performance:</b> +65,,PartIconID2,2,All,5,Stock,,,65,,,,,,,,,1,1
+178,"Build Time: +2 Day
+s
+{Stat}: +60
+{Stat}: +35 to Max",PSG_20009091,"<b>Build Time:</b> +2 Days
+<b>Performance:</b> +60
+<b>Performance:</b> +35 to Max",,PartIconID78,1,All,5,Stock,,,60,35,,,7,,,,,1,1
+179,"{Stat}: +140
+Additional Cost: {Cost}",PSG_20009092,"<b>Performance:</b> +140
+<b>Risk:</b> +2",,PartIconID62,7,All,5,Stock,,2,140,,,,,,,,,1,1
+180,"{Stat}: +100
+{Stat}: +60 to Max
+Additional Cost: {Cost}",PSG_20009093,"<b>Build Time:</b> -2 Days
+<b>Performance:</b> +100
+<b>Performance:</b> +110 to Max
+<b>Risk:</b> +2",,PartIconID57,3,All,5,Stock,,2,100,110,,,-2,,,,,1,1
+181,"{Stat}: +50
+{Stat}: +5 to Max
+<b>Risk:</b> +1",PSG_20009094,"<b>Performance:</b> +50
+<b>Performance:</b> +5 to Max
+<b>Risk:</b> +1",,PartIconID5,6,All,1,Risky,,1,50,5,,,,,,,,1,1
+182,"{Stat}: +60
+Max Reliability: -5%
+<b>Risk:</b> +1",PSG_20009095,"<b>Performance:</b> +60
+<b>Max Reliability:</b> -5%
+<b>Risk:</b> +1",,PartIconID62,5,All,1,Risky,,1,60,,,-5,,,,,,1,1
+183,"Reliability: +15%
+Max Reliability: +15%
+Red Zone: -15%
+<b>Risk:</b> +1",PSG_20009096,"<b>Reliability:</b> +15%
+<b>Max Reliability:</b> +15%
+<b>Red Zone:</b> -15%
+<b>Risk:</b> +1",,PartIconID16,4,All,1,Risky,,1,,,15,15,,,-15,,,1,1
+184,"Build Time: -4 Days
+{Stat}: +30
+<b>Risk:</b> +1",PSG_20009097,"<b>Build Time:</b> -4 Days
+<b>Performance:</b> +30
+<b>Risk:</b> +1",,PartIconID62,4,All,1,Risky,,1,30,,,,-4,,,,,1,1
+185,"{Stat}: +85
+Reliability: -10%
+Max Reliability: -10%
+<b>Risk:</b> +1",PSG_20009098,"<b>Performance:</b> +85
+<b>Reliability:</b> -10%
+<b>Max Reliability:</b> -10%
+<b>Risk:</b> +1",,PartIconID62,5,All,2,Risky,,1,85,,-10,-10,,,,,,1,1
+186,"{Stat}: +60
+Max Reliability: +10%
+Red Zone: +5%
+<b>Risk:</b> +1",PSG_20009099,"<b>Performance:</b> +60
+<b>Max Reliability:</b> +10%
+<b>Red Zone:</b> +5%
+<b>Risk:</b> +1",,PartIconID70,2,All,2,Risky,,1,60,,,10,,,5,,,1,1
+187,"{Stat}: +45
+Reliability: -20%
+Max Reliability: +10%
+Red Zone: -5%
+<b>Risk:</b> +1",PSG_20009100,"<b>Performance:</b> +45
+<b>Reliability:</b> -20%
+<b>Max Reliability:</b> +10%
+<b>Red Zone:</b> -5%
+<b>Risk:</b> +1",,PartIconID70,2,All,2,Risky,,1,45,,-20,10,,,-5,,,1,1
+188,"Build Time: -2 Days
+Reliability: +30%
+Max Reliability: +15%
+Red Zone: -15%
+<b>Risk:</b> +1",PSG_20009101,"<b>Build Time:</b> -2 Days
+<b>Reliability:</b> +30%
+<b>Max Reliability:</b> +15%
+<b>Red Zone:</b> -15%
+<b>Risk:</b> +1",,PartIconID16,4,All,2,Risky,,1,,,30,15,-2,,-15,,,1,1
+189,"Build Time: -5 Days
+{Stat}: +45
+<b>Risk:</b> +1",PSG_20009102,"<b>Build Time:</b> -5 Days
+<b>Performance:</b> +45
+<b>Risk:</b> +1",,PartIconID62,4,All,2,Risky,,1,45,,,,-5,,,,,1,1
+190,"{Stat}: +90
+Reliability: -20%
+<b>Risk:</b> +1",PSG_20009103,"<b>Performance:</b> +90
+<b>Reliability:</b> -20%
+<b>Risk:</b> +1",,PartIconID62,5,All,3,Risky,,1,90,,-20,,,,,,,1,1
+191,"{Stat} +135
+Max Relability: -10%
+Red Zone: +5%
+<b>Risk:</b> +2",PSG_20009104,"<b>Performance:</b> +135
+<b>Max Reliability:</b> -10%
+<b>Red Zone:</b> +5%
+<b>Risk:</b> +2",,PartIconID62,5,All,3,Risky,,2,135,,,-10,,,5,,,1,1
+192,"Build Time: -4 Days
+{Stat}: +75
+Reliability: -10%
+<b>Risk:</b> +1",PSG_20009105,"<b>Build Time:</b> -4 Days
+<b>Performance:</b> +75
+<b>Reliability:</b> -10%
+<b>Risk:</b> +1",,PartIconID62,4,All,3,Risky,,1,75,,-10,,-4,,,,,1,1
+193,"Build Time: +2 Day
+s
+{Stat}: +60
+{Stat}: +75 to Max
+<b>Risk:</b> +1",PSG_20009106,"<b>Build Time:</b> +2 Days
+<b>Performance:</b> +60
+<b>Performance:</b> +75 to Max
+<b>Risk:</b> +1",,PartIconID5,6,All,3,Risky,,1,60,75,,,5,,,,,1,1
+194,"{Stat}: +15
+Reliability: +40%
+Max Reliability: +20%
+Red Zone: -20%
+<b>Risk:</b> +1",PSG_20009107,"<b>Performance:</b> +15
+<b>Reliability:</b> +40%
+<b>Max Reliability:</b> +20%
+<b>Red Zone:</b> -20%
+<b>Risk:</b> +1",,PartIconID70,2,All,3,Risky,,1,15,,40,20,,,-20,,,1,1
+195,"Build Time: +10 Days
+{Stat}: +115
+<b>Risk:</b> +1",PSG_20009108,"<b>Build Time:</b> +10 Days
+<b>Performance:</b> +115
+<b>Risk:</b> +1",,PartIconID9,4,All,3,Risky,,1,115,,,,13,,,,,1,1
+196,"Build Time: +4 Days
+{Stat}: +120
+{Stat}: +15 to Max
+<b>Risk:</b> +2",PSG_20009109,"<b>Build Time:</b> +4 Days
+<b>Performance:</b> +120
+<b>Performance:</b> +15 to Max
+<b>Risk:</b> +2",,PartIconID9,6,All,3,Risky,,2,120,15,,,7,,,,,1,1
+197,"Build Time: -6 Days
+{Stat}: +135 to Max
+Max Reliability: +10%
+Red Zone: -10%
+<b>Risk:</b> +2",PSG_20009110,"<b>Build Time:</b> -6 Days
+<b>Performance:</b> +135 to Max
+<b>Max Reliability:</b> +10%
+<b>Red Zone:</b> -10%
+<b>Risk:</b> +2",,PartIconID70,2,All,3,Risky,,2,,135,,10,-6,,-10,,,1,1
+198,"{Stat}: +100
+{Stat}: +20 to Max
+<b>Risk:</b> +1",PSG_20009111,"<b>Performance:</b> +100
+<b>Performance:</b> +20 to Max
+<b>Risk:</b> +1",,PartIconID5,6,All,4,Risky,,1,100,20,,,,,,,,1,1
+199,"{Stat}: +150
+Reliability: -20%
+Max Reliability: -10%
+Red Zone: +15%
+<b>Risk:</b> +1",PSG_20009112,"<b>Performance:</b> +150
+<b>Reliability:</b> -20%
+<b>Max Reliability:</b> -10%
+<b>Red Zone:</b> +15%
+<b>Risk:</b> +1",,PartIconID62,5,All,4,Risky,,1,150,,-20,-10,,,15,,,1,1
+200,"Build Time: +12 Days
+{Stat}: +170
+<b>Risk:</b> +2",PSG_20009113,"<b>Build Time:</b> +12 Days
+<b>Performance:</b> +170
+<b>Risk:</b> +2",,PartIconID9,4,All,4,Risky,,2,170,,,,16,,,,,1,1
+201,"Build Time: -5 Days
+{Stat}: +90
+<b>Risk:</b> +1",PSG_20009114,"<b>Build Time:</b> -5 Days
+<b>Performance:</b> +90
+<b>Risk:</b> +1",,PartIconID62,4,All,4,Risky,,1,90,,,,-5,,,,,1,1
+202,"{Stat}: +120
+Max Reliability: +10%
+<b>Risk:</b> +2",PSG_20009115,"<b>Performance:</b> +120
+<b>Max Reliability:</b> +10%
+<b>Risk:</b> +2",,PartIconID70,2,All,4,Risky,,2,120,,,10,,,,,,1,1
+203,"{Stat}: +100
+{Stat}: +10 to Max
+Max Reliability: +10%
+Red Zone: -10%
+<b>Risk:</b> +2",PSG_20009116,"<b>Performance:</b> +100
+<b>Performance:</b> +10 to Max
+<b>Max Reliability:</b> +10%
+<b>Red Zone:</b> -10%
+<b>Risk:</b> +2",,PartIconID70,2,All,4,Risky,,2,100,10,,10,,,-10,,,1,1
+204,"{Stat}: +150 to Max
+Max Reliability: +20%
+Red Zone: -10%
+<b>Risk:</b> +1",PSG_20009117,"<b>Performance:</b> +150 to Max
+<b>Max Reliability:</b> +20%
+<b>Red Zone:</b> -10%
+<b>Risk:</b> +1",,PartIconID70,2,All,4,Risky,,1,,150,,20,,,-10,,,1,1
+205,"Build Time: -6 Days
+{Stat}: +80
+{Stat}: +90 to Max
+<b>Risk:</b> +2",PSG_20009118,"<b>Build Time:</b> -6 Days
+<b>Performance:</b> +80
+<b>Performance:</b> +90 to Max
+<b>Risk:</b> +2",,PartIconID5,6,All,4,Risky,,2,80,90,,,-6,,,,,1,1
+206,"Build Time: -10 Days
+Reliability: +65%
+Max Reliability: +25%
+Red Zone: -10%
+<b>Risk:</b> +1",PSG_20009119,"<b>Build Time:</b> -10 Days
+<b>Reliability:</b> +65%
+<b>Max Reliability:</b> +25%
+<b>Red Zone:</b> -10%
+<b>Risk:</b> +1",,PartIconID16,4,All,4,Risky,,1,,,65,25,-10,,-10,,,1,1
+207,"Build Time: +7 Days
+{Stat}: +160
+{Stat}: +50 to Max
+<b>Risk:</b> +2",PSG_20009120,"<b>Build Time:</b> +7 Days
+<b>Performance:</b> +160
+<b>Performance:</b> +50 to Max
+<b>Risk:</b> +2",,PartIconID5,6,All,5,Risky,,2,160,50,,,12,,,,,1,1
+208,"Build Time: +17 Days
+{Stat}: +210
+<b>Risk:</b> +2",PSG_20009121,"<b>Build Time:</b> +17 Days
+<b>Performance:</b> +210
+<b>Risk:</b> +2",,PartIconID9,4,All,5,Risky,,2,210,,,,22,,,,,1,1
+209,"Build Time: -5 Days
+{Stat}: +110 to Max
+Max Reliability: +35%
+Red Zone: -25%
+<b>Risk:</b> +2",PSG_20009122,"<b>Build Time:</b> -5 Days
+<b>Performance:</b> +110 to Max
+<b>Max Reliability:</b> +35%
+<b>Red Zone:</b> -25%
+<b>Risk:</b> +2",,PartIconID70,2,All,5,Risky,,2,,110,,35,-5,,-25,,,1,1
+210,"{Stat}: +85
+Reliability: +50%
+Max Reliability: +25%
+Red Zone: -15%
+<b>Risk:</b> +2",PSG_20009123,"<b>Performance:</b> +85
+<b>Reliability:</b> +50%
+<b>Max Reliability:</b> +25%
+<b>Red Zone:</b> -15%
+<b>Risk:</b> +2",,PartIconID70,2,All,5,Risky,,2,85,,50,25,,,-15,,,1,1
+211,"Build Time: -6 Days
+{Stat}: +210 to Max
+Max Reliability: +20%
+Red Zone: -10%
+<b>Risk:</b> +2",PSG_20009124,"<b>Build Time:</b> -6 Days
+<b>Performance:</b> +210 to Max
+<b>Max Reliability:</b> +20%
+<b>Red Zone:</b> -10%
+<b>Risk:</b> +2",,PartIconID70,2,All,5,Risky,,2,,210,,20,,,-10,,,1,1
+212,"Build Time: +15 Days
+{Stat}: +240
+<b>Risk:</b> +3",PSG_20009125,"<b>Build Time:</b> +15 Days
+<b>Performance:</b> +240
+<b>Risk:</b> +3",,PartIconID9,4,All,5,Risky,,3,240,,,,20,,,,,1,1
+213,"{Stat}: +130
+{Stat}: +110 to Max
+Max Reliability: +5%
+Red Zone: -5%
+<b>Risk:</b> +3",PSG_20009126,"<b>Performance:</b> +130
+<b>Performance:</b> +110 to Max
+<b>Max Reliability:</b> +5%
+<b>Red Zone:</b> -5%
+<b>Risk:</b> +3",,PartIconID70,2,All,5,Risky,,3,130,110,,5,,,-5,,,1,1
+214,"Build Time: -5 Days
+{Stat}: +175
+<b>Risk:</b> +3",PSG_20009127,"<b>Build Time:</b> -5 Days
+<b>Performance:</b> +175
+<b>Risk:</b> +3",,PartIconID62,4,All,5,Risky,,3,175,,,,-5,,,,,1,1
+215,"Build Time: -10 Days
+{Stat}: +240 to Max
+Max Reliability: +20%
+Red Zone: -20%
+<b>Risk:</b> +3",PSG_20009128,"<b>Build Time:</b> -10 Days
+<b>Performance:</b> +240 to Max
+<b>Max Reliability:</b> +20%
+<b>Red Zone:</b> -20%
+<b>Risk:</b> +3",,PartIconID70,2,All,5,Risky,,3,,240,,20,-10,,-20,,,1,1
+216,"{Stat}: +65
+{Stat}: +120 to Max
+Reliability: +80%
+Max Reliability: +40%
+<b>Risk:</b> +3",PSG_20009129,"<b>Performance:</b> +65
+<b>Performance:</b> +120 to Max
+<b>Reliability:</b> +80%
+<b>Max Reliability:</b> +40%
+<b>Risk:</b> +3",,PartIconID70,2,All,5,Risky,,3,65,120,80,40,,,,,,1,1
+217,"{Stat}: +10
+{Stat}: +25 to Max",PSG_20009130,"<b>Performance:</b> +10
+<b>Performance:</b> +25 to Max",,PartIconID2,,All,1,Stock,,,10,25,,,,,,,,1,1
+218,"{Stat}: +10
+Red Zone: -10%",PSG_20009131,"<b>Performance:</b> +10
+<b>Red Zone:</b> -10%",,PartIconID7,,All,1,Stock,,,10,,,,,,-10,,,1,1
+219,"Build Time: -3 Days
+{Stat}: +20",PSG_20009132,"<b>Build Time:</b> -3 Days
+<b>Performance:</b> +20",,PartIconID2,,All,1,Stock,,,20,,,,-3,,,,,1,1
+220,"Build Time: +2 Days
+{Stat}: +35",PSG_20009133,"<b>Build Time:</b> +2 Days
+<b>Performance:</b> +35",,PartIconID2,,All,1,Stock,,,35,,,,2,,,,,1,1
+221,"Max Reliability: +10%
+Red Zone: -20%
+<b>Risk:</b> +1",PSG_20009134,"<b>Max Reliability:</b> +10%
+<b>Red Zone:</b> -20%
+<b>Risk:</b> +1",,PartIconID16,,All,1,Risky,,1,,,,10,,,-20,,,1,1
+222,{Stat}: +35,PSG_20009135,<b>Performance:</b> +35,,PartIconID2,,All,2,Stock,,,35,,,,,,,,,1,1
+223,"{Stat}: +30
+{Stat}: +15 to Max",PSG_20009136,"<b>Performance:</b> +30
+<b>Performance:</b> +15 to Max",,PartIconID2,,All,2,Stock,,,30,15,,,,,,,,1,1
+224,"{Stat}: +40 to Max
+Max Reliability: +5%",PSG_20009137,"<b>Performance:</b> +40 to Max
+<b>Max Reliability:</b> +5%",,PartIconID4,,All,2,Stock,,,,40,,5,,,,,,1,1
+225,"{Stat}: +40 to Max
+Red Zone: -5%",PSG_20009138,"<b>Performance:</b> +40 to Max
+<b>Red Zone:</b> -5%",,PartIconID26,,All,2,Stock,,,,40,,,,,-5,,,1,1
+226,"Reliability: +30%
+Max Reliability: +10%",PSG_20009139,"<b>Reliability:</b> +30%
+<b>Max Reliability:</b> +10%",,PartIconID3,,All,2,Stock,,,,,30,10,,,,,,1,1
+227,"Build Time: -4 Days
+Max Reliability: +5%
+Red Zone: -5%",PSG_20009140,"<b>Build Time:</b> -4 Days
+<b>Max Reliability:</b> +5%
+<b>Red Zone:</b> -5%",,PartIconID3,,All,2,Stock,,,,,,5,-4,,-5,,,1,1
+228,"{Stat}: +15
+Max Reliability: +10%",PSG_20009141,"<b>Performance:</b> +15
+<b>Max Reliability:</b> +10%",,PartIconID7,,All,2,Stock,,,15,,,10,,,,,,1,1
+229,"{Stat}: +15
+{Stat}: +15 to Max",PSG_20009142,"<b>Performance:</b> +15
+<b>Performance:</b> +15 to Max",,PartIconID2,,All,2,Stock,,,15,15,,,,,,,,1,1
+230,{Stat}: +50,PSG_20009143,<b>Performance:</b> +50,,PartIconID2,,All,3,Stock,,,50,,,,,,,,,1,1
+231,"Build Time: -3 Days
+Max Reliability: +10%
+Red Zone: -10%",PSG_20009144,"<b>Build Time:</b> -3 Days
+<b>Max Reliability:</b> +10%
+<b>Red Zone:</b> -10%",,PartIconID3,,All,3,Stock,,,,,,10,-3,,-10,,,1,1
+232,{Stat}: +70,PSG_20009145,<b>Performance:</b> +70,,PartIconID2,,All,4,Stock,,,70,,,,,,,,,1,1
+233,"{Stat}: +90 to Max
+Max Reliability: +10%",PSG_20009146,"<b>Performance:</b> +90 to Max
+<b>Max Reliability:</b> +10%",,PartIconID4,,All,4,Stock,,,,90,,10,,,,,,1,1
+234,"Build Time: -4 Days
+Max Reliability: +15%
+Red Zone: -15%",PSG_20009147,"<b>Build Time:</b> -4 Days
+<b>Max Reliability:</b> +15%
+<b>Red Zone:</b> -15%",,PartIconID3,,All,4,Stock,,,,,,15,-4,,-15,,,1,1
+235,"Build Time: +4 Days
+Max Reliability: +20%
+Red Zone: -20%",PSG_20009148,"<b>Build Time:</b> +4 Days
+<b>Max Reliability:</b> +20%
+<b>Red Zone:</b> -20%",,PartIconID68,,All,4,Stock,,,,,,20,8,,-20,,,1,1
+236,"{Stat}: +30
+{Stat}: +50 to Max",PSG_20009149,"<b>Performance:</b> +30
+<b>Performance:</b> +50 to Max",,PartIconID2,,All,4,Stock,,,30,50,,,,,,,,1,1
+237,"Build Time: +2 Days
+{Stat}: +40
+{Stat}: +70 to Max",PSG_20009150,"<b>Build Time:</b> +2 Days
+<b>Performance:</b> +40
+<b>Performance:</b> +70 to Max",,PartIconID78,,All,4,Stock,,,40,70,,,6,,,,,1,1
+238,"Build Time: +5 Days
+{Stat}: +85",PSG_20009151,"<b>Build Time:</b> +5 Days
+<b>Performance:</b> +85",,PartIconID2,,All,4,Stock,,,85,,,,9,,,,,1,1
+239,"{Stat}: +25
+Max Reliability: +15%",PSG_20009152,"<b>Performance:</b> +25
+<b>Max Reliability:</b> +15%",,PartIconID7,,All,4,Stock,,,25,,,15,,,,,,1,1
+240,"{Stat}: +60
+Reliability: +10%
+Max Reliability: +5%",PSG_20009153,"<b>Performance:</b> +60
+<b>Reliability:</b> +10%
+<b>Max Reliability:</b> +5%",,PartIconID7,,All,4,Stock,,,60,,10,5,,,,,,1,1
+241,"{Stat}: +90
+Red Zone: +15%",PSG_20009154,"<b>Performance:</b> +90
+<b>Red Zone:</b> +15%",,PartIconID69,,All,4,Stock,,,90,,,,,,15,,,1,1
+242,"{Stat}: +45
+Red Zone: -10%",PSG_20009155,"<b>Performance:</b> +45
+<b>Red Zone:</b> -10%",,,,All,4,Stock,,,45,,,,,,-10,,,1,1
+243,Max Reliability: +30%,PSG_20009156,<b>Max Reliability:</b> +30%,,PartIconID3,,All,4,Stock,,,,,,30,,,,,,1,1
+244,"Build Time: +7 Days
+Max Reliability: +20%
+Red Zone: -20%",PSG_20009157,"<b>Build Time:</b> +7 Days
+<b>Max Reliability:</b> +20%
+<b>Red Zone:</b> -20%",,PartIconID68,,All,4,Stock,,,,,,20,11,,-20,,,1,1
+245,"Build Time: +4 Days
+Max Reliability: +15%
+Red Zone: -15%",PSG_20009158,"<b>Build Time:</b> +4 Days
+<b>Max Reliability:</b> +15%
+<b>Red Zone:</b> -15%",,PartIconID68,,All,4,Stock,,,,,,15,8,,-15,,,1,1
+246,"{Stat}: +20
+{Stat}: +95 to Max",PSG_20009159,"<b>Performance:</b> +20
+<b>Performance:</b> +95 to Max",,PartIconID2,,All,4,Stock,,,20,95,,,,,,,,1,1
+247,"Build Time: -4 Days
+{Stat}: +95 to Max",PSG_20009160,"<b>Build Time:</b> -4 Days
+<b>Performance:</b> +95 to Max",,,,All,4,Stock,,,,95,,,-4,,,,,1,1
+248,{Stat}: +95,PSG_20009161,<b>Performance:</b> +95,,PartIconID2,,All,5,Stock,,,95,,,,,,,,,1,1
+249,"Build Time: +4 Days
+Max Reliability: +25%
+Red Zone: -25%",PSG_20009162,"<b>Build Time:</b> +4 Days
+<b>Max Reliability:</b> +25%
+<b>Red Zone:</b> -25%",,PartIconID68,,All,5,Stock,,,,,,25,9,,-25,,,1,1
+250,"Driver's Overtaking: +2
+During: Race",PSG_10013557,,,PartIconDriverOvertaking,1,"Gearbox,Engine",4,Stock,Race,,,,,,,,,2,DriverOvertaking,0.1,0.1
+251,"Driver's Braking: +2
+During: Race",PSG_10013558,,,PartIconDriverBracking,1,Brakes,4,Stock,Race,,,,,,,,,2,DriverBraking,0.1,0.1
+252,No Mistakes When Fixing In The Pit,PSG_10013559,,,EngineerIconNoMistakes,1,All,2,Engineer,,,,,,,,,,,NoMistakeWhenPitFixing,0,0
+253,"Part Pit Stop Fix Time:
+-3 seconds",PSG_10013560,,,EngineerIconID46,1,All,5,Engineer,,,,,,,,,,-3,PitstopFixTime,0,0
+254,Fuel Efficiency: +5%,PSG_10013561,,,PartIconProFuelEfficiency,1,Engine,1,Stock,,,,,,,,,,0.05,FuelEfficiency,0.3,0.3
+255,Tyre Wear Efficiency: +5%,PSG_10013562,,,PartIconTyreWear,1,Brakes,1,Stock,,,,,,,,,,0.05,TyreWearEfficiency,0.3,0.3
+256,"Weight Stripping Performance Bonus: x2
+{Stat}: +25",PSG_10013563,,,PartIconWeightStripping,4,All,3,Stock,,,15,,,,,,,2,WeightStrippingPerformanceBonus,0.1,0.1
+257,"Produce an Additional Part 
+for No Extra Cost or Time
+Red Zone: +25%",PSG_10013564,,,PartIconAdditionalpartNoCost,4,All,4,Stock,,,,,,,,,25,,SecondPartFree,0,0
+258,"Tyre Wear Efficiency: +5%
+Reliability: -10%",PSG_10013565,,,PartIconProFuelNegReliability,4,Suspension,3,Stock,,,,,-10,,,,,0.05,TyreWearEfficiency,0.2,0.1
+259,"Fuel Efficiency: +5%
+Reliability: -20%",PSG_10013566,,,PartIconProFuelNegReliability,4,FrontWing; RearWing,3,Stock,,,,,-20,,,,,0.05,FuelEfficiency,0,0
+260,"Driver's Consistency: +2
+During: Race",PSG_10013567,,,PartIconDriverConsistency,4,All,4,Stock,Race,,,,,,,,,2,DriverConsistency,0,0
+261,"Driver's Cornering: +2
+During: Race",PSG_10013568,,,PartIconDriverCornering,1,Suspension,4,Stock,Race,,,,,,,,,2,DriverCornering,0,0
+262,"Build Time: -3 Days
+Reliability: -10%
+Red Zone: +5%",PSG_10013569,,,PartIconPosTimeNegReliability,1,All,2,Stock,,,,,-10,,-3,,5,,,0,0
+263,"Build Time: -5 Days
+Reliability: -15%
+Red Zone: +10%",PSG_10013570,,,PartIconPosTimeNegReliability,1,All,4,Stock,,,,,-15,,-5,,10,,,0,0
+264,"Driver's Focus: +2
+During: Race",PSG_10013793,,,EngineerIconDriverConsis,1,All,4,Engineer,Race,,,,,,,,,2,DriverCornering,0,0

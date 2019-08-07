@@ -1,0 +1,155 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x0200014E RID: 334
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Championship : Entity
+{
+	// Token: 0x060007E2 RID: 2018
+	public void ProcessChampionshipPromotions(bool inPlayerAcceptPromotion = true)
+	{
+		Championship nextTierChampionship = this.GetNextTierChampionship();
+		bool flag = (!this.isPlayerChampionship) ? (RandomUtility.GetRandom01() <= 0.85f) : inPlayerAcceptPromotion;
+		bool flag2 = true;
+		for (int i = 0; i < 7; i++)
+		{
+			if (Game.instance.championshipManager.GetChampionshipByID(i).mChampionshipPromotions.champion.IsPlayersTeam())
+			{
+				flag2 = false;
+			}
+		}
+		if (nextTierChampionship != null && nextTierChampionship.championshipPromotions.lastPlace.IsPlayersTeam())
+		{
+			Game.instance.dialogSystem.OnPlayerTeamRelegatable(flag, this.championshipID);
+		}
+		if (nextTierChampionship != null & flag)
+		{
+			if (this.championshipID == 1 && nextTierChampionship.standings.teamEntryCount < 12 && this.standings.teamEntryCount > 8 && (RandomUtility.GetRandom01() < 0.25f & flag2))
+			{
+				Team entity = this.standings.GetTeamEntry(1).GetEntity<Team>();
+				this.RemoveTeamEntry(entity);
+				nextTierChampionship.AddTeamEntry(entity);
+				StringVariableParser.rumourTeam = entity;
+				Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+				{
+					new DialogCriteria("Who", "MediaPerson"),
+					new DialogCriteria("Source", "Add"),
+					new DialogCriteria("Type", "Header")
+				});
+			}
+			if (this.championshipID == 2 && nextTierChampionship.standings.teamEntryCount < 12 && this.standings.teamEntryCount > 8 && (RandomUtility.GetRandom01() < 0.25f & flag2))
+			{
+				Team entity2 = this.standings.GetTeamEntry(1).GetEntity<Team>();
+				this.RemoveTeamEntry(entity2);
+				nextTierChampionship.AddTeamEntry(entity2);
+				StringVariableParser.rumourTeam = entity2;
+				Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+				{
+					new DialogCriteria("Who", "MediaPerson"),
+					new DialogCriteria("Source", "Add"),
+					new DialogCriteria("Type", "Header")
+				});
+			}
+			if (this.championshipID == 4 && nextTierChampionship.standings.teamEntryCount < 12 && this.standings.teamEntryCount > 8 && (RandomUtility.GetRandom01() < 0.25f & flag2))
+			{
+				Team entity3 = this.standings.GetTeamEntry(1).GetEntity<Team>();
+				this.RemoveTeamEntry(entity3);
+				nextTierChampionship.AddTeamEntry(entity3);
+				StringVariableParser.rumourTeam = entity3;
+				Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+				{
+					new DialogCriteria("Who", "MediaPerson"),
+					new DialogCriteria("Source", "Add"),
+					new DialogCriteria("Type", "Header")
+				});
+			}
+			if (this.championshipID == 6 && nextTierChampionship.standings.teamEntryCount < 8 && this.standings.teamEntryCount > 4 && (RandomUtility.GetRandom01() < 0.25f & flag2))
+			{
+				Team entity4 = this.standings.GetTeamEntry(1).GetEntity<Team>();
+				this.RemoveTeamEntry(entity4);
+				nextTierChampionship.AddTeamEntry(entity4);
+				StringVariableParser.rumourTeam = entity4;
+				Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+				{
+					new DialogCriteria("Who", "MediaPerson"),
+					new DialogCriteria("Source", "Add"),
+					new DialogCriteria("Type", "Header")
+				});
+			}
+			if ((this.championshipID == 1 && nextTierChampionship.standings.teamEntryCount > 10 && this.standings.teamEntryCount < 12 && RandomUtility.GetRandom01() < 0.25f) & flag2)
+			{
+				Team entity5 = nextTierChampionship.standings.GetTeamEntry(nextTierChampionship.standings.teamEntryCount - 2).GetEntity<Team>();
+				nextTierChampionship.RemoveTeamEntry(entity5);
+				this.AddTeamEntry(entity5);
+				StringVariableParser.rumourTeam = entity5;
+				Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+				{
+					new DialogCriteria("Who", "MediaPerson"),
+					new DialogCriteria("Source", "Remove"),
+					new DialogCriteria("Type", "Header")
+				});
+			}
+			if ((this.championshipID == 2 && nextTierChampionship.standings.teamEntryCount > 9 && this.standings.teamEntryCount < 12 && RandomUtility.GetRandom01() < 0.25f) & flag2)
+			{
+				Team entity6 = nextTierChampionship.standings.GetTeamEntry(nextTierChampionship.standings.teamEntryCount - 2).GetEntity<Team>();
+				nextTierChampionship.RemoveTeamEntry(entity6);
+				this.AddTeamEntry(entity6);
+				StringVariableParser.rumourTeam = entity6;
+				Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+				{
+					new DialogCriteria("Who", "MediaPerson"),
+					new DialogCriteria("Source", "Remove"),
+					new DialogCriteria("Type", "Header")
+				});
+			}
+			if ((this.championshipID == 4 && nextTierChampionship.standings.teamEntryCount > 9 && this.standings.teamEntryCount < 12 && RandomUtility.GetRandom01() < 0.25f) & flag2)
+			{
+				Team entity7 = nextTierChampionship.standings.GetTeamEntry(nextTierChampionship.standings.teamEntryCount - 2).GetEntity<Team>();
+				nextTierChampionship.RemoveTeamEntry(entity7);
+				this.AddTeamEntry(entity7);
+				StringVariableParser.rumourTeam = entity7;
+				Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+				{
+					new DialogCriteria("Who", "MediaPerson"),
+					new DialogCriteria("Source", "Remove"),
+					new DialogCriteria("Type", "Header")
+				});
+			}
+			if ((this.championshipID == 6 && nextTierChampionship.standings.teamEntryCount > 4 && this.standings.teamEntryCount < 8 && RandomUtility.GetRandom01() < 0.25f) & flag2)
+			{
+				Team entity8 = nextTierChampionship.standings.GetTeamEntry(nextTierChampionship.standings.teamEntryCount - 2).GetEntity<Team>();
+				nextTierChampionship.RemoveTeamEntry(entity8);
+				this.AddTeamEntry(entity8);
+				StringVariableParser.rumourTeam = entity8;
+				Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+				{
+					new DialogCriteria("Who", "MediaPerson"),
+					new DialogCriteria("Source", "Remove"),
+					new DialogCriteria("Type", "Header")
+				});
+			}
+			Team lastPlace = nextTierChampionship.championshipPromotions.lastPlace;
+			nextTierChampionship.championshipPromotions.lastPlaceStatus = ChampionshipPromotions.Status.Relegated;
+			nextTierChampionship.RemoveTeamEntry(lastPlace);
+			this.RemoveTeamEntry(this.mChampionshipPromotions.champion);
+			this.mChampionshipPromotions.championStatus = ChampionshipPromotions.Status.Promoted;
+			nextTierChampionship.SetPromotedTeam(this.mChampionshipPromotions.champion, this, this.mChampionshipPromotions.championPartRankings);
+			nextTierChampionship.AddTeamEntry(this.mChampionshipPromotions.champion);
+			this.SetRelegatedTeam(lastPlace, nextTierChampionship, nextTierChampionship.championshipPromotions.lastPlacePartRankings);
+			this.AddTeamEntry(lastPlace);
+			nextTierChampionship.standings.UpdateStandings();
+			this.standings.UpdateStandings();
+		}
+		else
+		{
+			this.mChampionshipPromotions.championStatus = ChampionshipPromotions.Status.RefusedPromotion;
+			if (nextTierChampionship != null)
+			{
+				nextTierChampionship.mChampionshipPromotions.championStatus = ChampionshipPromotions.Status.SavedFromRelegation;
+			}
+		}
+		this.completedPromotions = true;
+	}
+}

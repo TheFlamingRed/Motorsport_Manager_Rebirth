@@ -1,0 +1,11 @@
+static HQsBuilding_v1()
+{
+	global::HQsBuilding_v1.OnBuildingNotification = null;
+	global::HQsBuilding_v1.designCentrePartDaysPerLevel = new float[]
+	{
+		0f,
+		-1f,
+		-2f,
+		-3f
+	};
+}

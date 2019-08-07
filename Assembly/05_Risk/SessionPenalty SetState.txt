@@ -1,0 +1,21 @@
+	public void SetState(SessionPenalty.State inState)
+	{
+		this.mState = inState;
+		switch (this.mState)
+		{
+		case SessionPenalty.State.None:
+			this.mCurrentPenalty = null;
+			return;
+		case SessionPenalty.State.UnderInvestigation:
+			this.mTimer = RandomUtility.GetRandom(10f, 180f);
+			return;
+		case SessionPenalty.State.Cleared:
+			this.mTimer = 5f;
+			return;
+		case SessionPenalty.State.Underway:
+			this.mTimer = 5f;
+			return;
+		default:
+			return;
+		}
+	}

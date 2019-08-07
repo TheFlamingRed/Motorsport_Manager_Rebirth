@@ -1,0 +1,10 @@
+	public bool IsTyreLockUpViable(RacingVehicle inVehicle)
+	{
+		bool isTutorialActiveInCurrentGameState = Game.instance.tutorialSystem.isTutorialActiveInCurrentGameState;
+		bool flag = Game.instance.sessionManager.flag == SessionManager.Flag.Chequered;
+		bool flag2 = inVehicle.timer.gapToAhead < 6f - inVehicle.driver.GetDriverStats().braking / 4f;
+		bool flag3 = Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackWater() > inVehicle.driver.GetDriverStats().adaptability / 20f;
+		bool flag4 = Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackRubber() < (20f - inVehicle.driver.GetDriverStats().cornering) / 20f;
+		bool flag5 = Game.instance.sessionManager.GetNormalizedSessionTime() > inVehicle.driver.GetDriverStats().fitness / 20f;
+		return inVehicle.speed <= GameUtility.MilesPerHourToMetersPerSecond(50f) && !isTutorialActiveInCurrentGameState && !inVehicle.behaviourManager.isOutOfRace && (!flag & (flag2 | flag3 | flag4 | flag5)) && inVehicle.sessionEvents.IsReadyTo(SessionEvents.EventType.LockUp);
+	}

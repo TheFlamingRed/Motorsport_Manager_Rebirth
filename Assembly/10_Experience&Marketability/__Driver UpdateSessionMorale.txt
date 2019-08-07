@@ -1,0 +1,36 @@
+public void UpdateSessionMorale(string inUpdateHistoryEntryName, float inOverallWeight, int inPosition, int inNumEntries, SessionDetails.SessionType inSessionType)
+	{
+		bool flag = inSessionType == SessionDetails.SessionType.Race;
+		float num = 0f;
+		float num2 = 0f;
+		int num3 = this.expectedRacePosition - inPosition;
+		bool flag2 = inPosition <= this.expectedRacePosition;
+		num += (float)num3 / (float)inNumEntries;
+		float num4 = (!flag) ? 0f : ((!flag2) ? this.moraleFailedExpectedPositionBonus : this.moraleAchieveExpectedPositionBonus);
+		float num5 = this.moraleChampionshipPositionNormalModifier;
+		Team team = this.contract.GetTeam();
+		if (team.championship.eventNumber > 1)
+		{
+			int num6 = this.startOfSeasonExpectedChampionshipPosition - this.GetChampionshipEntry().GetCurrentChampionshipPosition();
+			num5 = ((num3 >= 0 || num6 < 0) ? this.moraleChampionshipPositionNormalModifier : this.moraleKeptChampionshipExpectedPositionModifier);
+		}
+		if (flag && inPosition <= 3)
+		{
+			num4 = this.moraleSessionPodiumBonus;
+		}
+		if (flag)
+		{
+			int totalCareerWins = this.careerHistory.GetTotalCareerWins();
+			int totalCareerChampionships = this.careerHistory.GetTotalCareerChampionships();
+			int num7 = totalCareerWins - this.GetDesiredWins();
+			int num8 = totalCareerChampionships - this.desiredChampionships;
+			num2 += (float)num7 / 100f;
+			num2 += (float)num8 / 100f;
+		}
+		float num9 = num * this.moraleRacePerformanceWeight + ((!flag) ? 0f : (num2 * this.moraleGoalsWeight));
+		num9 /= this.moraleRacePerformanceWeight + ((!flag) ? 0f : this.moraleGoalsWeight);
+		num9 *= num5;
+		this.ModifyMorale(Mathf.Clamp((num9 + num4) * inOverallWeight, this.moraleMinSessionChange, this.moraleMaxSessionChange), inUpdateHistoryEntryName, true);
+		this.mStats.marketability += (11f - inPosition)/1000f;
+		this.mStats.experience += 3f / 100f;
+	}

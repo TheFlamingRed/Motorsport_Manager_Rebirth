@@ -1,0 +1,196 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000233 RID: 563
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class PlayerBackStory
+{
+	// Token: 0x06001093 RID: 4243
+	public PlayerBackStory()
+	{
+		this.mDriverFeedBackStatModifier = 3f;
+		this.mDriverImprovementRateModifier = 0.1f;
+		this.mPartDesignTimeModifier = new TimeSpan(1, 0, 0, 0);
+		this.mVotePowerModifier = 4;
+		this.mPaymentsModifier = 5;
+		this.mBackStory = PlayerBackStory.PlayerBackStoryType.Outsider;
+	}
+
+	// Token: 0x06001094 RID: 4244
+	public string GetPlayerBackstoryString()
+	{
+		switch (this.playerBackStory)
+		{
+		case PlayerBackStory.PlayerBackStoryType.ExDriver:
+			return Localisation.LocaliseID("PSG_10005817", null);
+		case PlayerBackStory.PlayerBackStoryType.ExEngineer:
+			return Localisation.LocaliseID("PSG_10005818", null);
+		case PlayerBackStory.PlayerBackStoryType.Financial:
+			return Localisation.LocaliseID("PSG_10002338", null);
+		case PlayerBackStory.PlayerBackStoryType.Politico:
+			return Localisation.LocaliseID("PSG_10002340", null);
+		case PlayerBackStory.PlayerBackStoryType.Outsider:
+			return Localisation.LocaliseID("PSG_10002342", null);
+		case PlayerBackStory.PlayerBackStoryType.MotorsportLegend:
+			return Localisation.LocaliseID("PSG_10012276", null);
+		case PlayerBackStory.PlayerBackStoryType.UpandComingManager:
+			return Localisation.LocaliseID("PSG_91000000", null);
+		default:
+			return Localisation.LocaliseID("PSG_10005817", null);
+		}
+	}
+
+	// Token: 0x06001095 RID: 4245
+	public string GetPlayerBackstoryDescriptionString()
+	{
+		switch (this.playerBackStory)
+		{
+		case PlayerBackStory.PlayerBackStoryType.ExDriver:
+			return Localisation.LocaliseID("PSG_10007341", null);
+		case PlayerBackStory.PlayerBackStoryType.ExEngineer:
+			return Localisation.LocaliseID("PSG_10007342", null);
+		case PlayerBackStory.PlayerBackStoryType.Financial:
+			return Localisation.LocaliseID("PSG_10007344", null);
+		case PlayerBackStory.PlayerBackStoryType.Politico:
+			return Localisation.LocaliseID("PSG_10007343", null);
+		case PlayerBackStory.PlayerBackStoryType.Outsider:
+			return Localisation.LocaliseID("PSG_10007345", null);
+		case PlayerBackStory.PlayerBackStoryType.MotorsportLegend:
+			return Localisation.LocaliseID("PSG_10012277", null);
+		case PlayerBackStory.PlayerBackStoryType.UpandComingManager:
+			return Localisation.LocaliseID("PSG_91000001", null);
+		default:
+			return Localisation.LocaliseID("PSG_10007345", null);
+		}
+	}
+
+	// Token: 0x06001096 RID: 4246
+	public static bool isBackstoryUnlocked(PlayerBackStory.PlayerBackStoryType inBackstoryType)
+	{
+		return inBackstoryType != PlayerBackStory.PlayerBackStoryType.MotorsportLegend || App.instance.challengeRewardsManager.IsRewardUnlocked(ChallengeReward.Type.PlayerBackstoryMotorsportLegend);
+	}
+
+	// Token: 0x170001DC RID: 476
+	// (get) Token: 0x06001097 RID: 4247
+	public float driverFeedBackStatModifier
+	{
+		get
+		{
+			if (this.playerBackStory == PlayerBackStory.PlayerBackStoryType.ExDriver)
+			{
+				return this.mDriverFeedBackStatModifier;
+			}
+			return 0f;
+		}
+	}
+
+	// Token: 0x170001DD RID: 477
+	// (get) Token: 0x06001098 RID: 4248
+	public float driverImprovementRateModifier
+	{
+		get
+		{
+			if (this.playerBackStory == PlayerBackStory.PlayerBackStoryType.ExDriver)
+			{
+				return this.mDriverImprovementRateModifier;
+			}
+			return 0f;
+		}
+	}
+
+	// Token: 0x170001DE RID: 478
+	// (get) Token: 0x06001099 RID: 4249
+	public TimeSpan designPartTimeModifier
+	{
+		get
+		{
+			if (this.playerBackStory == PlayerBackStory.PlayerBackStoryType.ExEngineer)
+			{
+				return this.mPartDesignTimeModifier;
+			}
+			return default(TimeSpan);
+		}
+	}
+
+	// Token: 0x170001DF RID: 479
+	// (get) Token: 0x0600109A RID: 4250
+	public int paymentsModifier
+	{
+		get
+		{
+			if (this.playerBackStory == PlayerBackStory.PlayerBackStoryType.Financial)
+			{
+				return this.mPaymentsModifier;
+			}
+			return 0;
+		}
+	}
+
+	// Token: 0x170001E0 RID: 480
+	// (get) Token: 0x0600109B RID: 4251
+	public int votePowerModifier
+	{
+		get
+		{
+			if (this.playerBackStory == PlayerBackStory.PlayerBackStoryType.Politico)
+			{
+				return this.mVotePowerModifier;
+			}
+			return 0;
+		}
+	}
+
+	// Token: 0x170001E1 RID: 481
+	// (get) Token: 0x0600109C RID: 4252
+	// (set) Token: 0x0600109D RID: 4253
+	public PlayerBackStory.PlayerBackStoryType playerBackStory
+	{
+		get
+		{
+			return this.mBackStory;
+		}
+		set
+		{
+			this.mBackStory = value;
+		}
+	}
+
+	public // Token: 0x04000E5A RID: 3674
+	readonly float mDriverFeedBackStatModifier;
+
+	public // Token: 0x04000E5B RID: 3675
+	readonly float mDriverImprovementRateModifier;
+
+	public // Token: 0x04000E5C RID: 3676
+	readonly TimeSpan mPartDesignTimeModifier;
+
+	public // Token: 0x04000E5D RID: 3677
+	readonly int mVotePowerModifier;
+
+	public // Token: 0x04000E5E RID: 3678
+	readonly int mPaymentsModifier;
+
+	public // Token: 0x04000E5F RID: 3679
+	PlayerBackStory.PlayerBackStoryType mBackStory;
+
+	// Token: 0x02000234 RID: 564
+	public enum PlayerBackStoryType
+	{
+		// Token: 0x04000E61 RID: 3681
+		ExDriver,
+		// Token: 0x04000E62 RID: 3682
+		ExEngineer,
+		// Token: 0x04000E63 RID: 3683
+		Financial,
+		// Token: 0x04000E64 RID: 3684
+		Politico,
+		// Token: 0x04000E65 RID: 3685
+		Outsider,
+		// Token: 0x04000E66 RID: 3686
+		MotorsportLegend,
+		// Token: 0x04000E67 RID: 3687
+		Count = 7,
+		// Token: 0x04004E11 RID: 19985
+		UpandComingManager = 6
+	}
+}

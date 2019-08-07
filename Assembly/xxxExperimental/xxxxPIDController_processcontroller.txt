@@ -1,0 +1,29 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000472 RID: 1138
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class PIDController
+{
+	// Token: 0x0600210A RID: 8458
+	public float ProcessController(float inError)
+	{
+		this.mProportional = 0.0001f;
+		this.mIntegral = 0.00015f;
+		this.mDerivative = 8E-05f;
+		this.mIntegralTermClamp = 0.001f;
+		float result = 0f;
+		if (!MathsUtility.ApproximatelyZero(GameTimer.simulationDeltaTime))
+		{
+			float num4 = this.mProportional * inError * GameTimer.simulationDeltaTime;
+			this.mIntegralTerm += this.mIntegral * inError * GameTimer.simulationDeltaTime;
+			this.mIntegralTerm = Mathf.Clamp(this.mIntegralTerm, -this.mIntegralTermClamp, this.mIntegralTermClamp);
+			float num2 = this.mIntegralTerm;
+			float num3 = this.mDerivative * ((inError - this.mPreviousError) / GameTimer.simulationDeltaTime);
+			result = num4 + num2 + num3;
+			this.mPreviousError = inError;
+		}
+		return result;
+	}
+}

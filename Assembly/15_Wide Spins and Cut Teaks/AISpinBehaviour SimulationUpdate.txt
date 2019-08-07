@@ -1,0 +1,34 @@
+public override void SimulationUpdate()
+	{
+		this.SetTarget();
+		switch (this.mState)
+		{
+		case AISpinBehaviour.SpinState.SpiningOut:
+			this.mTimer += GameTimer.simulationDeltaTime;
+			if (this.mRacingVehicle.HasStopped())
+			{
+				this.SetState(AISpinBehaviour.SpinState.Refocus);
+				this.mRacingVehicle.unityVehicle.ActivateCrashParticleEffect(PathData.GateParticleType.TyreWhiteSmoke, false);
+			}
+			break;
+		case AISpinBehaviour.SpinState.Refocus:
+			this.mTimer += GameTimer.simulationDeltaTime;
+			if (this.mTimer > this.mRecoveryTime)
+			{
+				this.SetState(AISpinBehaviour.SpinState.GoBackToTrack);
+			}
+			break;
+		case AISpinBehaviour.SpinState.GoBackToTrack:
+			if (this.mQueuedBehaviour == null)
+			{
+				this.mRacingVehicle.behaviourManager.ReturnToPreviousBehaviour();
+				this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.BlueFlag);
+			}
+			else
+			{
+				this.mRacingVehicle.behaviourManager.ChangeBehaviour(this.mQueuedBehaviour.behaviourType);
+				this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.BlueFlag);
+			}
+			break;
+		}
+	}

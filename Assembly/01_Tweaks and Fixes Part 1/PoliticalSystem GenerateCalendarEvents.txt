@@ -1,0 +1,107 @@
+public void GenerateCalendarEvents()
+{
+	this.mNextVoteIndex = 0;
+	this.mNewRuleAproved = 0;
+	this.mVoteResultsForSeason.Clear();
+	this.mVotesForSeason.Clear();
+	this.mCalendarEvents.Clear();
+	if (Game.instance.challengeManager.ArePoliticsVoteBlocked())
+	{
+		return;
+	}
+	List<DateTime> list = new List<DateTime>();
+	DateTime d = new DateTime(this.mChampionship.preSeasonStartDate.Year, 5, 1);
+	TimeSpan timeSpan = this.mChampionship.preSeasonStartDate - d;
+	int num = 0;
+	while ((double)num < timeSpan.TotalDays)
+	{
+		DateTime item = d.AddDays((double)num);
+		if (item.DayOfWeek == DayOfWeek.Wednesday)
+		{
+			list.Add(item);
+		}
+		num++;
+	}
+	int num2 = RandomUtility.GetRandomInc(3, 8);
+	int num3 = 0;
+	List<PoliticalVote> newSeasonVoteList = this.GetNewSeasonVoteList(num2);
+	for (int i = 0; i < list.Count; i++)
+	{
+		float f = (float)list.Count / (float)num2 * (float)num3;
+		if (num3 >= num2)
+		{
+			break;
+		}
+		if (Mathf.Round(f) <= (float)i)
+		{
+			DateTime triggerDate = list[i];
+			PoliticalVote politicalVote = newSeasonVoteList[num3];
+			this.mVotesForSeason.Add(politicalVote);
+			if (num3 == 0)
+			{
+				this.mActiveVote = politicalVote;
+			}
+			CalendarEvent_v1 calendarEvent_v = new CalendarEvent_v1
+			{
+				category = CalendarEventCategory.Politics,
+				showOnCalendar = false,
+				triggerDate = triggerDate,
+				triggerState = GameState.Type.FrontendState,
+				OnEventTrigger = MMAction.CreateFromAction(new Action(this.Vote)),
+				displayEffect = new ChampionshipDisplayEffect
+				{
+					changeDisplay = true,
+					changeInterrupt = true,
+					championship = this.mChampionship
+				}
+			};
+			StringVariableParser.vote = politicalVote;
+			politicalVote.ApplyImpactSpecialStrings(false);
+			calendarEvent_v.SetDynamicDescription("PSG_10011112");
+			StringVariableParser.vote = null;
+			Game.instance.calendar.AddEvent(calendarEvent_v);
+			this.mCalendarEvents.Add(calendarEvent_v);
+			if (!(triggerDate.AddDays(-7.0) < Game.instance.time.now))
+			{
+				CalendarEvent_v1 calendarEvent_v2 = new CalendarEvent_v1
+				{
+					category = CalendarEventCategory.Politics,
+					showOnCalendar = false,
+					triggerDate = triggerDate.AddDays(-7.0),
+					triggerState = GameState.Type.FrontendState,
+					OnEventTrigger = MMAction.CreateFromAction(new Action(this.SendMessageAboutUpcomingVote))
+				};
+				calendarEvent_v2.SetDynamicDescription("Politics Vote Message");
+				Game.instance.calendar.AddEvent(calendarEvent_v2);
+				if (i == 0)
+				{
+					CalendarEvent_v1 calendarEvent_v3 = new CalendarEvent_v1
+					{
+						category = CalendarEventCategory.Politics,
+						showOnCalendar = false,
+						triggerDate = triggerDate.AddDays(-14.0),
+						triggerState = GameState.Type.FrontendState,
+						OnEventTrigger = MMAction.CreateFromAction(new Action(this.SendFirstMessageOfPoliticalSeason))
+					};
+					calendarEvent_v3.SetDynamicDescription("Politics Vote Message");
+					Game.instance.calendar.AddEvent(calendarEvent_v3);
+				}
+				num3++;
+			}
+		}
+	}
+	if (list.Count > 0)
+	{
+		int index = Mathf.RoundToInt((float)list.Count / (float)num2 * 1.5f);
+		DateTime dateTime = list[index];
+		CalendarEvent_v1 calendarEvent = new CalendarEvent_v1
+		{
+			category = CalendarEventCategory.Politics,
+			showOnCalendar = false,
+			triggerDate = dateTime.AddDays(-7.0),
+			triggerState = GameState.Type.FrontendState,
+			OnEventTrigger = MMAction.CreateFromAction(new Action(this.GeneratePlayerVoteMessage))
+		};
+		Game.instance.calendar.AddEvent(calendarEvent);
+	}
+}

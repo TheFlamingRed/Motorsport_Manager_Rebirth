@@ -1,0 +1,25 @@
+private static float GetPointsForDriverStats(SessionEvents.EventType inEventType, DriverStats inStats, bool addFitness)
+{
+	float num = 0f;
+	num += 0.5f - inStats.focus / 20f;
+	if (addFitness)
+	{
+		num += 0.5f - inStats.fitness / 20f;
+	}
+	float num2 = (float)Game.instance.sessionManager.lapCount;
+	float num3 = inStats.focus + inStats.braking + inStats.consistency;
+	float num4 = inStats.fitness + inStats.braking + inStats.consistency;
+	if (!addFitness && Mathf.Lerp(1f, 0.5f, num3 * num3 / 3600f) >= RandomUtility.GetRandom(0f, num3 * 500000f * num2 * 1E+07f))
+	{
+		num += 2500f;
+	}
+	if (addFitness && Mathf.Lerp(1f, 0.5f, num4 * num4 / 3600f) >= RandomUtility.GetRandom(0f, num4 * 500000f * num2 * 1E+07f))
+	{
+		num += 2500f;
+	}
+	if (Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackWater() > 0.2f && Mathf.Lerp(1f, 0.5f, inStats.adaptability * inStats.adaptability / 400f) >= RandomUtility.GetRandom(0f, (20f - inStats.adaptability) * 3f * 1000000f * num2 * 1E+07f))
+	{
+		num += 2500f;
+	}
+	return num * 0.5f;
+}

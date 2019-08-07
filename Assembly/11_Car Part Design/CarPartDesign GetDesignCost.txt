@@ -1,0 +1,18 @@
+public int GetDesignCost()
+{
+	if (this.mTeam.IsPlayersTeam())
+	{
+		float num = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()].materialsCost;
+		num += (float)this.GetComponentDesignCostBonus();
+		num = Math.Max(0f, num);
+		return Mathf.RoundToInt(num);
+	}
+	if (!this.mTeam.IsPlayersTeam())
+	{
+		float num2 = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()].materialsCost * 0.1f;
+		num2 += (float)this.GetComponentDesignCostBonus();
+		num2 = Math.Max(0f, num2);
+		return Mathf.RoundToInt(num2);
+	}
+	return 0;
+}

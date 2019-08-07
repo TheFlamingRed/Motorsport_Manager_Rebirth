@@ -1,0 +1,9 @@
+	public void AddRaceManagement(int inPositionDiff)
+	{
+		if (Game.IsActive() && !this.IsUnemployed() && Game.instance.player.playerBackStoryType != PlayerBackStory.PlayerBackStoryType.UpandComingManager)
+		{
+			float num = Mathf.Min(Player.raceManagementStatPositionMultiplier + (float)Mathf.Abs(inPositionDiff) * Player.raceManagementStatPositionMultiplier, Player.raceManagementStatMaxChange);
+			float value = this.stats.raceManagement + ((inPositionDiff < 0) ? (-num) : num);
+			this.stats.raceManagement = Mathf.Clamp(value, 0f, 20f);
+		}
+	}

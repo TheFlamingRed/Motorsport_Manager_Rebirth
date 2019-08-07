@@ -1,0 +1,11 @@
+Investor ID,Name,Location,Sponsor Logo ID,Fuel Efficiency,Improveability,Tyre Wear,Tyre Heating,Bonus Marketability,Starting Buildings,Part Risk Bonus,Driver Min Age,Driver Improvement Rate Multiplier,Bonus Description ID,Pressure,StartingMoney,Reward ID
+1,Root Investments,SouthAfrica,31,12,12,12,12,,,,,,PSG_10011823,1,5,
+2,Stonewell Bank,UK,12,,,,,40,,,,,PSG_10011824,2,10,
+3,Golden Tiger Bank,China,60,,,,,,Test Track,,,,PSG_10011825,3,15,
+4,Nippon Motors,Japan,56,,,,,,,-1,,,PSG_10012274,2,10,
+5,Jandermole,Netherlands,40,,,,,,,,20,2,PSG_10012275,2,10,
+6,El Banco,Spain,32,,,,,,Scouting Facility,,,,PSG_99999999,1,20,
+7,Root Investments,SouthAfrica,31,,,,,,Road Car Factory,,,,PSG_99999998,1,1,
+8,Stonewell Bank,UK,12,-50,-50,-50,-50,,,,,,PSG_99999997,2,0.5,
+9,Golden Tiger Bank,China,60,,,,,,Test Track; Wind Tunnel; Simulator; Brakes Research Facility; Ride Handling Development; Telemetry Centre,,,,PSG_99999996,3,-5,
+,,,,,,,,,,,,,,,,

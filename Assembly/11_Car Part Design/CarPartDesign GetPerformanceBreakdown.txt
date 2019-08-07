@@ -1,0 +1,29 @@
+	public string GetPerformanceBreakdown()
+	{
+		int num = this.seasonPartStartingStat[this.mCarPart.GetPartType()];
+		Engineer engineer = (Engineer)this.mTeam.contractManager.GetPersonOnJob(Contract.Job.EngineerLead);
+		string text = string.Empty;
+		StringVariableParser.ordinalNumberString = num.ToString("N0");
+		text += Localisation.LocaliseID("PSG_10010514", null);
+		StringVariableParser.ordinalNumberString = Mathf.FloorToInt(engineer.stats.partContributionStats.GetStat(this.mCarPart.stats.statType) * 3f).ToString("N0");
+		text = text + "\n" + Localisation.LocaliseID("PSG_10010515", null);
+		if (this.mCarPart.stats.performance != 0f)
+		{
+			StringVariableParser.ordinalNumberString = this.mCarPart.stats.performance.ToString("N0");
+			text = text + "\n" + Localisation.LocaliseID("PSG_10010637", null);
+		}
+		float num2 = 0f;
+		for (int i = 0; i < this.mCarPart.components.Count; i++)
+		{
+			if (this.mCarPart.components[i] != null)
+			{
+				num2 += this.mCarPart.components[i].statBoost;
+			}
+		}
+		if (num2 != 0f)
+		{
+			StringVariableParser.ordinalNumberString = num2.ToString("N0");
+			text = text + "\n" + Localisation.LocaliseID("PSG_10010516", null);
+		}
+		return text;
+	}

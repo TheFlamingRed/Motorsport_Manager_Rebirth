@@ -1,0 +1,72 @@
+public void OnLoad()
+{
+	App.instance.gameStateManager.OnLoad();
+	this.LoadGameData();
+	App.instance.modManager.ReviseSubscribedModsInfo(ref this.savedSubscribedModsInfo);
+	App.instance.LoadCarPartComponentsAndTeamColors();
+	if (this.driverStatsProgressionManager == null)
+	{
+		this.driverStatsProgressionManager = new DriverStatsProgressionManager();
+		this.driverStatsProgressionManager.LoadDriverProgressionFromDatabase(App.instance.database);
+	}
+	if (this.engineerStatsProgressionManager == null)
+	{
+		this.engineerStatsProgressionManager = new EngineerStatsProgressionManager();
+		this.engineerStatsProgressionManager.LoadEngineerProgressionFromDatabase(App.instance.database);
+	}
+	if (this.mechanicStatsProgressionManager == null)
+	{
+		this.mechanicStatsProgressionManager = new MechanicStatsProgressionManager();
+		this.mechanicStatsProgressionManager.LoadMechanicProgressionFromDatabase(App.instance.database);
+	}
+	this.liveryManager.OnLoad();
+	this.challengeManager.OnLoad();
+	if (this.entityManager != null)
+	{
+		this.entityManager.OnLoad();
+	}
+	this.messageManager.OnLoad();
+	this.notificationManager.OnLoad();
+	this.championshipManager.OnLoad();
+	this.teamManager.OnLoad();
+	this.driverManager.OnLoad();
+	this.engineerManager.OnLoad();
+	this.mechanicManager.OnLoad();
+	this.vehicleManager.OnLoad();
+	this.dilemmaSystem.OnLoad();
+	this.scoutingManager.OnLoad();
+	this.sponsorManager.OnLoad();
+	this.headquartersManager.OnLoad();
+	this.supplierManager.LoadFromDatabase(App.instance.database);
+	this.tutorialSystem.OnLoad();
+	this.personalityTraitManager.OnLoad();
+	App.instance.uiTeamColourManager.SetToPlayerTeamColour();
+	this.stateInfo.OnLoadGame();
+	this.calendar.OnLoad();
+	if (this.circuitManager.GetCircuitByIndex(0).locationName == string.Empty)
+	{
+		List<DatabaseEntry> locationData = App.instance.database.locationData;
+		for (int i = 0; i < locationData.Count; i++)
+		{
+			DatabaseEntry databaseEntry = locationData[i];
+			int intValue = databaseEntry.GetIntValue("Circuit ID");
+			string stringValue = databaseEntry.GetStringValue("Location");
+			Circuit circuitByID = this.circuitManager.GetCircuitByID(intValue);
+			if (circuitByID != null)
+			{
+				circuitByID.locationName = stringValue;
+			}
+		}
+	}
+	if (this.mSerializedPreferences == null)
+	{
+		this.mSerializedPreferences = new SerializedPreferences();
+	}
+	if (Game.OnGameDataChanged != null)
+	{
+		Game.OnGameDataChanged();
+	}
+	UIManager.instance.OnGameDataChanged();
+	this.time.OnLoad();
+	this.dialogSystem.OnLoad();
+}

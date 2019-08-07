@@ -1,0 +1,52 @@
+	public void AdaptPartsForNewSeason2(float min, float max)
+		{{
+	CarPart carPart = null;
+	List<CarPart> list = new List<CarPart>();
+	CarPart.PartType[] partType = CarPart.GetPartType(this.mTeam.championship.series, false);
+	for (int i = 0; i < CarManager.carCount; i++)
+	{
+		for (int j = 0; j < partType.Length; j++)
+		{
+			CarPart.PartType inType = partType[j];
+			CarPart highestStatPartOfType = this.partInventory.GetHighestStatPartOfType(inType);
+			if (highestStatPartOfType != null)
+			{
+				this.partInventory.RemovePart(highestStatPartOfType);
+				list.Add(highestStatPartOfType);
+			}
+		}
+	}
+	this.partInventory.DestroyAllParts();
+	Engineer personOnJob = this.mTeam.contractManager.GetPersonOnJob<Engineer>(Contract.Job.EngineerLead);
+	for (int k = 0; k < list.Count; k++)
+	{
+		CarPart carPart2 = list[k];
+		Debug.Assert(!carPart2.isBanned, "Banned part got through to next season, this should not happen ever.");
+		if (!this.mTeam.championship.rules.specParts.Contains(carPart2.GetPartType()))
+		{
+			float statWithPerformance = carPart2.stats.statWithPerformance;
+			carPart2.stats.level = 0;
+			float inValue = 0.4f + RandomUtility.GetRandom(0f, 0.1f);
+			carPart2.stats.SetStat(CarPartStats.CarPartStat.Reliability, inValue);
+			carPart2.stats.SetStat(CarPartStats.CarPartStat.Condition, inValue);
+			carPart2.stats.SetStat(CarPartStats.CarPartStat.Performance, 0f);
+			carPart2.stats.maxPerformance = (float)RandomUtility.GetRandom(1, 10);
+			carPart2.partCondition.redZone = GameStatsConstants.initialRedZone;
+			carPart2.components = new List<CarPartComponent>();
+			carPart2.buildDate = Game.instance.time.now;
+			float stat = personOnJob.stats.partContributionStats.GetStat(CarPart.GetStatForPartType(carPart2.GetPartType()));
+			if (carPart == null)
+			{
+				carPart2.stats.SetStat(CarPartStats.CarPartStat.MainStat, (statWithPerformance + stat) * RandomUtility.GetRandom(min, max));
+			}
+			else
+			{
+				CarPart.GetStatForPartType(carPart2.GetPartType());
+			}
+		}
+		this.partInventory.AddPart(carPart2);
+	}
+	this.AutoFit(this.GetCar(0), CarManager.AutofitOptions.Performance, CarManager.AutofitAvailabilityOption.UnfitedParts);
+	this.AutoFit(this.GetCar(1), CarManager.AutofitOptions.Performance, CarManager.AutofitAvailabilityOption.UnfitedParts);
+	this.SetMechanicsContribution(list);
+}}

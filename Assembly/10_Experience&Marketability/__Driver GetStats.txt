@@ -1,0 +1,30 @@
+	public override PersonStats GetStats()
+	{
+		DriverStats driverStats = null;
+		if (this.personalityTraitController != null)
+		{
+			driverStats = this.personalityTraitController.GetDriverStatsModifier();
+		}
+		else
+		{
+			global::Debug.LogErrorFormat("{0} does not have  personality trait controller", new object[]
+			{
+				this.name
+			});
+		}
+		this.mModifiedStats.Clear();
+		if (driverStats != null)
+		{
+			this.mModifiedStats.Add(driverStats);
+		}
+		this.mModifiedStats.Add(this.mStats);
+		this.mModifiedStats.marketability += driverStats.marketability;
+		this.mModifiedStats.marketability += this.mStats.marketability;
+		this.mModifiedStats.experience += this.mStats.experience;
+		if (this.IsPlayersDriver())
+		{
+			this.mModifiedStats.feedback += Game.instance.player.driverFeedBackStatModifier;
+		}
+		this.mModifiedStats.ClampStats();
+		return this.mModifiedStats;
+	}

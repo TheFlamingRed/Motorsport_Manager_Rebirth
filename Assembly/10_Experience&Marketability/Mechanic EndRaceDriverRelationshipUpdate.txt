@@ -1,0 +1,31 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001F4 RID: 500
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Mechanic : Person
+{
+	// Token: 0x06000DD9 RID: 3545
+	public void EndRaceDriverRelationshipUpdate(Driver inDriver, int inRacePosition)
+	{
+		Mechanic.DriverRelationship relationshipWithDriver = this.GetRelationshipWithDriver(inDriver);
+		Game.instance.teamManager.CalculateDriverExpectedPositionsInChampionship(inDriver.contract.GetTeam().championship);
+		int num = inDriver.GetRaceExpectedPosition() - inRacePosition;
+		num = ((num < 0) ? num : (num + 1));
+		float num2 = Mathf.Clamp(Mathf.Abs((float)num / this.positionRange), 0f, 1f);
+		float num3;
+		if (num >= 0)
+		{
+			num3 = Mathf.Max(0f, this.endRaceRelationshipIncreaseRate * (this.stats.speed / 10f)) * num2;
+			relationshipWithDriver.relationshipAmount = Math.Min(100f, relationshipWithDriver.relationshipAmount + num3);
+		}
+		else
+		{
+			num3 = -(this.endRaceRelationshipDecreaseRate * num2);
+			relationshipWithDriver.relationshipAmount = Math.Max(0f, relationshipWithDriver.relationshipAmount + num3);
+		}
+		this.GetRelationshipModificationHistoryWithDriver(inDriver).AddStatModificationEntry(Game.instance.sessionManager.eventDetails.circuit.locationNameID, num3, false);
+	}
+}

@@ -1,0 +1,25 @@
+public bool CanRunWide(RacingVehicle inVehicle, PathController.Path inPath)
+	{
+		if (RandomUtility.GetRandom01() < (float)this.mRunWidePathUseCount[inPath.pathID] / 3f)
+		{
+			return false;
+		}
+		bool flag = inVehicle.setup.tyreSet.GetTread() != SessionStrategy.GetRecommendedTreadRightNow() && RandomUtility.GetRandom01() < 0.1f;
+		if (this.mActiveRunWideChunk.runWideCount <= 0 || this.mCooldown >= 0f)
+		{
+			return false;
+		}
+		if (Game.instance.sessionManager.eventDetails.currentSession.sessionType == SessionDetails.SessionType.Qualifying)
+		{
+			return flag;
+		}
+		float t = inVehicle.driver.GetDriverStats().focus / 20f;
+		float num = Mathf.Lerp(1.5f, 2f, t);
+		SessionWeatherDetails currentSessionWeather = Game.instance.sessionManager.currentSessionWeather;
+		bool flag2 = Game.instance.sessionManager.flag == SessionManager.Flag.Green;
+		bool flag3 = currentSessionWeather.GetNormalizedTrackWater() > 0.5f && currentSessionWeather.GetNormalizedRain() > 0.2f;
+		bool flag4 = inVehicle.timer.gapToAhead > 0.1f && inVehicle.timer.gapToAhead < num;
+		bool flag5 = inVehicle.timer.gapToBehind > 0.1f && inVehicle.timer.gapToBehind < num;
+		bool flag6 = flag5 || flag4;
+		return flag2 && (flag6 || flag || flag3);
+	}

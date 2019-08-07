@@ -1,0 +1,69 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020002AA RID: 682
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TeamManager : GenericManager<Team>
+{
+	public // Token: 0x060013D8 RID: 5080
+	void AddTeamsFromDatabase(Database database)
+{
+	EntityManager entityManager = Game.instance.entityManager;
+	List<DatabaseEntry> teamData = database.teamData;
+	int index;
+	int teamcounting = 0;
+	if (teamData.Count > 72)
+			{
+			DatabaseEntry d;
+			teamcounting = 62 - teamData.Count + teamData[0].GetIntValue("Opinions - Manager");
+			}
+			
+			
+	for (index = 0; index < teamData.Count + teamcounting; index++)
+	{
+		DatabaseEntry databaseEntry = teamData[index];
+		Team team = entityManager.CreateEntity<Team>();
+		base.AddEntity(team);
+		team.teamID = index;
+		team.name = databaseEntry.GetStringValue("Name");
+		team.SetShortName(databaseEntry.GetStringValue("Short Name"));
+		team.SetTeamStartDescriptionID(databaseEntry.GetStringValue("Team Start Description"));
+		team.locationID = databaseEntry.GetStringValue("Location ID");
+		team.pressure = databaseEntry.GetIntValue("Pressure");
+		team.aggression = databaseEntry.GetFloatValue("Aggression");
+		team.marketability = (float)databaseEntry.GetIntValue("Marketability") / 5f;
+		team.fanBase = databaseEntry.GetFloatValue("Fan Base");
+		team.colorID = databaseEntry.GetIntValue("Color");
+		team.liveryID = databaseEntry.GetIntValue("Livery");
+		team.driversHatStyle = databaseEntry.GetIntValue("Driver HatStyle");
+		team.driversBodyStyle = databaseEntry.GetIntValue("Driver BodyStyle");
+		team.nationality = Nationality.GetNationalityByName(databaseEntry.GetStringValue("Location"));
+		team.customStartDescription = databaseEntry.GetStringValue("Custom Start Description");
+		int num = 1000000;
+		team.financeController.racePayment = (long)(databaseEntry.GetFloatValue("Race Payment Offset") * (float)num);
+		team.financeController.racePaymentOffset = team.financeController.racePayment;
+		team.financeController.availableFunds = (long)(databaseEntry.GetFloatValue("Budget") * (float)num);
+		DatabaseEntry databaseEntry2 = database.teamAIWeightings.Find((DatabaseEntry x) => x.GetIntValue("Team Index") == index);
+		if (databaseEntry2 == null)
+		{
+			Debug.LogErrorFormat("Missing AIWeightingsEntry for team ID: {0}", new object[]
+			{
+				index
+			});
+			databaseEntry2 = database.teamAIWeightings[0];
+		}
+		team.aiWeightings = new TeamAIWeightings(databaseEntry2);
+		team.PostInitialise();
+		team.votingCharacteristics = this.GetCharacteristics(databaseEntry.GetStringValue("Political Attributes"));
+	}
+	for (int i = 0; i < teamData.Count + teamcounting; i++)
+	{
+		Team entity = base.GetEntity(i);
+		DatabaseEntry databaseEntry3 = teamData[i];
+		int inIndex = databaseEntry3.GetIntValue("Rival") - 2;
+		entity.rivalTeam = base.GetEntity(inIndex);
+		entity.startOfSeasonExpectedChampionshipResult = this.CalculateExpectedPositionForChampionship(entity);
+	}
+}
+}

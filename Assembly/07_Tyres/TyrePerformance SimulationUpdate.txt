@@ -1,0 +1,30 @@
+public override void SimulationUpdate(float inDeltaTime)
+{
+	base.SimulationUpdate(inDeltaTime);
+	this.ClearTimeCost();
+	TyreSet tyreSet = this.mVehicle.setup.tyreSet;
+	if (!this.mVehicle.pathState.IsInPitlaneArea())
+	{
+		float num = this.mVehicle.pathController.distanceSinceLastGate * this.mVehicle.performance.drivingStyle.GetTyreWearRateImpact() * this.GetMechanicImpactTyreWearRate() + tyreSet.GetTemperature() * 0.05f - (0.1f - this.mVehicle.driver.GetDriverStats().smoothness / 100f);
+		float normalizedTrackWater = this.mWeatherDetails.GetNormalizedTrackWater();
+		if (tyreSet.GetTread() != TyreSet.Tread.Slick && normalizedTrackWater < this.mTyreDesignData.minLightTreadSurfaceWaterRange)
+		{
+			num *= 2f;
+		}
+		if (Game.instance.sessionManager.isSafetyCarFlag)
+		{
+			num *= 0.3f;
+		}
+		tyreSet.ApplyTyreWear(num);
+	}
+	base.IncreaseTimeCost(tyreSet.GetTimeCost());
+	if (MathsUtility.ApproximatelyZero(tyreSet.GetCondition()) || tyreSet.GetCondition() <= tyreSet.GetCliffCondition())
+	{
+		base.IncreaseTimeCost(tyreSet.GetCliffConditionTimeCost());
+		base.SetIsExperiencingCriticalIssue(true);
+	}
+	float currentPerformanceForSurfaceWater = this.GetCurrentPerformanceForSurfaceWater();
+	float num2 = 1f - currentPerformanceForSurfaceWater;
+	base.IncreaseTimeCost(tyreSet.GetWrongTreadForWaterLevelTimeCost() * num2);
+	base.IncreaseTimeCost(2f - tyreSet.GetTemperature() * 2f);
+}

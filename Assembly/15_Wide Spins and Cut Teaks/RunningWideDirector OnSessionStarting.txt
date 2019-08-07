@@ -1,0 +1,58 @@
+public void OnSessionStarting()
+	{
+		this.mRunWideCount = new RunningWideDirector.RunWidePerRaceChunk[10];
+		int num = 5;
+		if (Game.instance.sessionManager.championship.GetNextTierChampionship() != null && Game.instance.sessionManager.championship.GetPreviousTierChampionship() != null)
+		{
+			num = 10;
+		}
+		else if (Game.instance.sessionManager.championship.GetNextTierChampionship() != null)
+		{
+			num = 15;
+		}
+		int i;
+		i = 0;
+		if (Game.instance.sessionManager.circuit.HasPathOfType(PathController.PathType.RunWideLane))
+		{
+			i = RandomUtility.GetRandom(0, 5 + num);
+			this.mRunWidePathUseCount = new int[Game.instance.sessionManager.circuit.runWidePaths.Length];
+		}
+		float normalizedChunkSize = 1f / (float)this.mRunWideCount.Length;
+		for (int j = 0; j < this.mRunWideCount.Length; j++)
+		{
+			this.mRunWideCount[j] = new RunningWideDirector.RunWidePerRaceChunk();
+			this.mRunWideCount[j].normalizedChunkStart = (float)j / (float)this.mRunWideCount.Length;
+			this.mRunWideCount[j].normalizedChunkSize = normalizedChunkSize;
+		}
+		Debug.LogFormat("RunWides for this race: {0} ", new object[]
+		{
+			i
+		});
+		while (i > 0)
+		{
+			i--;
+			this.mRunWideCount[RandomUtility.GetRandom(0, this.mRunWideCount.Length)].runWideCount++;
+		}
+		List<RacingVehicle> list = new List<RacingVehicle>(Game.instance.vehicleManager.GetAllVehicles());
+		int k = RandomUtility.GetRandom(0, 2);
+		while (k > 0)
+		{
+		k--;
+			RacingVehicle racingVehicle = list[RandomUtility.GetRandom(0, list.Count)];
+			Team team = racingVehicle.driver.contract.GetTeam();
+			bool flag = true;
+			for (int l = 0; l < this.mVehiclesToRunWideOnFirstCorner.Count; l++)
+			{
+				if (this.mVehiclesToRunWideOnFirstCorner[l].driver.contract.GetTeam() == team)
+				{
+					flag = false;
+					break;
+				}
+			}
+			if (flag)
+			{
+				this.mVehiclesToRunWideOnFirstCorner.Add(racingVehicle);
+			}
+			list.Remove(racingVehicle);
+		}
+	}

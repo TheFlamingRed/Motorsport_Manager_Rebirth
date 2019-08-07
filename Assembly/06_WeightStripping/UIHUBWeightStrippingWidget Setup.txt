@@ -1,0 +1,20 @@
+	public void Setup()
+	{
+		GameUtility.SetActive(this, Game.instance.sessionManager.GetPlayerChampionship().rules.isWeightStrippingEnabled && Game.instance.sessionManager.GetPlayerChampionship().GetCurrentEventDetails().eventDate.Month >= 8);
+		for (int i = 0; i < CarManager.carCount; i++)
+		{
+			float num = 0f;
+			float num2 = 0f;
+			Car car = Game.instance.player.team.carManager.GetCar(i);
+			for (int j = 0; j < car.seriesCurrentParts.Length; j++)
+			{
+				float totalWeightStripping = car.seriesCurrentParts[j].stats.GetTotalWeightStripping();
+				num += totalWeightStripping;
+				num2 += totalWeightStripping * car.seriesCurrentParts[j].stats.performancePerReliabilityPointWithModifiers;
+			}
+			StringVariableParser.intValue1 = Mathf.RoundToInt(num);
+			this.totalReliabilityLost[i].text = Localisation.LocaliseID("PSG_10012370", null) + "%";
+			StringVariableParser.intValue1 = Mathf.RoundToInt(num2);
+			this.totalPerformanceGained[i].text = Localisation.LocaliseID("PSG_10012371", null);
+		}
+	}

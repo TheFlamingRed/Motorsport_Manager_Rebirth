@@ -1,0 +1,9 @@
+	private void CheckForSpinOutOpportunity()
+	{
+		if (this.mRacingVehicle.pathController.GetCurrentPath().pathType == PathController.PathType.Track && Game.instance.sessionManager.raceDirector.spinOutDirector.IsSpinOutViable(this.mRacingVehicle))
+		{
+			this.mRacingVehicle.sessionEvents.EventActivated(SessionEvents.EventType.SpinOut);
+			this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.Spin);
+			Game.instance.sessionManager.raceDirector.spinOutDirector.OnSpinOutIncident(this.mRacingVehicle);
+		}
+	}

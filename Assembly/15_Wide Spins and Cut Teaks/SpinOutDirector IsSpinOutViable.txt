@@ -1,0 +1,21 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000375 RID: 885
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class SpinOutDirector
+{
+	// Token: 0x06001A50 RID: 6736 RVA: 0x000AC570 File Offset: 0x000AA770
+	public bool IsSpinOutViable(RacingVehicle inVehicle)
+	{
+		bool isTutorialActiveInCurrentGameState = Game.instance.tutorialSystem.isTutorialActiveInCurrentGameState;
+		bool flag = Game.instance.sessionManager.flag == SessionManager.Flag.Chequered;
+		bool flag2 = inVehicle.timer.gapToAhead < 5.2f - inVehicle.driver.GetDriverStats().overtaking / 4f;
+		bool flag3 = inVehicle.speed < 50f;
+		bool flag4 = Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackWater() > inVehicle.driver.GetDriverStats().adaptability / 20f;
+		bool flag5 = Game.instance.sessionManager.GetNormalizedSessionTime() > inVehicle.driver.GetDriverStats().fitness / 20f;
+		return Game.instance.sessionManager.lap >= Mathf.RoundToInt(inVehicle.driver.GetDriverStats().focus) && !flag3 && (flag2 & (flag4 | flag5)) && !isTutorialActiveInCurrentGameState && !inVehicle.behaviourManager.isOutOfRace && !flag && inVehicle.sessionEvents.IsReadyTo(SessionEvents.EventType.SpinOut);
+	}
+	
+}

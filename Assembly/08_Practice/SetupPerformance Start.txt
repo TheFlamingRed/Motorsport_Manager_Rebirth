@@ -1,0 +1,69 @@
+	public override void Start(RacingVehicle inVehicle)
+	{
+		base.Start(inVehicle);
+		DriverStats driverStats = this.mVehicle.driver.GetDriverStats();
+		Circuit circuit = Game.instance.sessionManager.eventDetails.circuit;
+		if (Game.instance.persistentEventData.hasStoredOptimalSetups)
+		{
+			this.mOptimalSetup.setupOutput.aerodynamics = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id).setupOutput.aerodynamics;
+			this.mOptimalSetup.setupOutput.speedBalance = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id).setupOutput.speedBalance;
+			this.mOptimalSetup.setupOutput.handling = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id).setupOutput.handling;
+			for (int i = 0; i < this.mOptimalSetup.visualRangeOffsetMultiplier.Length; i++)
+			{
+				this.mOptimalSetup.visualRangeOffsetMultiplier[i] = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id).visualRangeOffsetMultiplier[i];
+			}
+			this.mOptimalSetup.setupOutput.aerodynamics += RandomUtility.GetRandom(-0.02f, 0.02f);
+			this.mOptimalSetup.setupOutput.speedBalance += RandomUtility.GetRandom(-0.02f, 0.02f);
+			this.mOptimalSetup.setupOutput.handling += RandomUtility.GetRandom(-0.02f, 0.02f);
+			return;
+		}
+		this.mRelevantPartCount = 0;
+		this.mOptimalSetup.setupOutput.aerodynamics = 0f;
+		this.mOptimalSetup.setupOutput.speedBalance = 0f;
+		this.mOptimalSetup.setupOutput.handling = 0f;
+		for (int j = 0; j < 6; j++)
+		{
+			CarStats.StatType inStat = (CarStats.StatType)j;
+			CarStats.RelevantToCircuit relevancy = CarStats.GetRelevancy(Mathf.RoundToInt(circuit.trackStatsCharacteristics.GetStat(inStat)));
+			switch (inStat)
+			{
+			case CarStats.StatType.TopSpeed:
+				this.CalculateTopSpeedInfluence(relevancy);
+				break;
+			case CarStats.StatType.Acceleration:
+				this.CalculateAccelerationInfluence(relevancy);
+				break;
+			case CarStats.StatType.Braking:
+				this.CalculateBrakingInfluence(relevancy);
+				break;
+			case CarStats.StatType.LowSpeedCorners:
+				this.CalculateLowSpeedCornersInfluence(relevancy);
+				break;
+			case CarStats.StatType.MediumSpeedCorners:
+				this.CalculateMediumSpeedCornersInfluence(relevancy);
+				break;
+			case CarStats.StatType.HighSpeedCorners:
+				this.CalculateHighSpeedCornersInfluence(relevancy);
+				break;
+			}
+			if (relevancy != CarStats.RelevantToCircuit.No)
+			{
+				this.mRelevantPartCount++;
+			}
+		}
+		this.mOptimalSetup.setupOutput.aerodynamics /= (float)this.mRelevantPartCount;
+		this.mOptimalSetup.setupOutput.speedBalance /= (float)this.mRelevantPartCount;
+		this.mOptimalSetup.setupOutput.handling /= (float)this.mRelevantPartCount;
+		this.mOptimalSetup.setupOutput.aerodynamics = (1f + this.mOptimalSetup.setupOutput.aerodynamics) * 0.8f + this.mOptimalSetup.setupOutput.aerodynamics;
+		this.mOptimalSetup.setupOutput.aerodynamics += RandomUtility.GetRandom(-0.1f, 0.1f);
+		this.mOptimalSetup.setupOutput.speedBalance += RandomUtility.GetRandom(-0.1f, 0.1f);
+		this.mOptimalSetup.setupOutput.handling += RandomUtility.GetRandom(-0.1f, 0.1f);
+		this.mOptimalSetup.setupOutput.handling += driverStats.balance * RandomUtility.GetRandom(0.05f, 0.2f);
+		this.mOptimalSetup.setupOutput.aerodynamics = Mathf.Clamp(this.mOptimalSetup.setupOutput.aerodynamics, -1f, 1f);
+		this.mOptimalSetup.setupOutput.speedBalance = Mathf.Clamp(this.mOptimalSetup.setupOutput.speedBalance, -1f, 1f);
+		this.mOptimalSetup.setupOutput.handling = Mathf.Clamp(this.mOptimalSetup.setupOutput.handling, -1f, 1f);
+		for (int k = 0; k < this.mOptimalSetup.visualRangeOffsetMultiplier.Length; k++)
+		{
+			this.mOptimalSetup.visualRangeOffsetMultiplier[k] = RandomUtility.GetRandom01();
+		}
+	}

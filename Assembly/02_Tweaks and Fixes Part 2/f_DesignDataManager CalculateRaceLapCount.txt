@@ -1,0 +1,74 @@
+	public static int CalculateRaceLapCount(Championship inChampionship, float inlapDistance, bool inGetPreferencesSessionLengthOnly = false)
+	{
+		int num;
+		if (inChampionship.rules.raceType == ChampionshipRules.RaceType.Laps)
+		{
+			PrefGameRaceLength.Type gameLength = DesignDataManager.GetGameLength(inGetPreferencesSessionLengthOnly);
+			float minimumRaceDistance = DesignDataManager.GetMinimumRaceDistance(gameLength);
+			num = Mathf.CeilToInt(minimumRaceDistance / inlapDistance);
+			ChampionshipRules.SessionLength sessionLength = inChampionship.rules.raceLength[0];
+			if (gameLength == PrefGameRaceLength.Type.Short)
+			{
+				switch (sessionLength)
+				{
+				case ChampionshipRules.SessionLength.Short:
+					num += Mathf.CeilToInt((float)DesignDataManager.instance.raceLengthData.shortRaceLengthShortSessionRulesLapDelta / inlapDistance);
+					break;
+				case ChampionshipRules.SessionLength.Long:
+					num += Mathf.CeilToInt((float)DesignDataManager.instance.raceLengthData.shortRaceLengthLongSessionRulesLapDelta / inlapDistance);
+					break;
+				}
+			}
+			else if (gameLength == PrefGameRaceLength.Type.Medium)
+			{
+				switch (sessionLength)
+				{
+				case ChampionshipRules.SessionLength.Short:
+					num += Mathf.CeilToInt((float)DesignDataManager.instance.raceLengthData.mediumRaceLengthShortSessionRulesLapDelta / inlapDistance);
+					break;
+				case ChampionshipRules.SessionLength.Long:
+					num += Mathf.CeilToInt((float)DesignDataManager.instance.raceLengthData.mediumRaceLengthLongSessionRulesLapDelta / inlapDistance);
+					break;
+				}
+			}
+			else
+			{
+				switch (sessionLength)
+				{
+				case ChampionshipRules.SessionLength.Short:
+					num += Mathf.CeilToInt((float)DesignDataManager.instance.raceLengthData.longRaceLengthShortSessionRulesLapDelta / inlapDistance);
+					break;
+				case ChampionshipRules.SessionLength.Long:
+					num += Mathf.CeilToInt((float)DesignDataManager.instance.raceLengthData.longRaceLengthLongSessionRulesLapDelta / inlapDistance);
+					break;
+				}
+			}
+		}
+		else
+		{
+			CarStatsDesignData carStatsDesignData = DesignDataManager.instance.carStatsData;
+			CarStats carStats = new CarStats();
+			carStats.topSpeed = GameUtility.MilesPerHourToMetersPerSecond(carStatsDesignData.topSpeedMph);
+			carStats.acceleration = carStatsDesignData.acceleration;
+			carStats.braking = carStatsDesignData.braking;
+			carStats.highSpeedCorners = carStatsDesignData.highSpeedCorners;
+			carStats.mediumSpeedCorners = carStatsDesignData.mediumSpeedCorners;
+			carStats.lowSpeedCorners = carStatsDesignData.lowSpeedCorners;
+			float num2;
+			if (Game.instance.sessionManager.isCircuitLoaded)
+			{
+				num2 = 35f * inlapDistance;
+			}
+			else if (inlapDistance > 0f)
+			{
+				num2 = 35f * inlapDistance;
+			}
+			else
+			{
+				num2 = 90f;
+			}
+			float raceLength = inChampionship.rules.GetRaceLength();
+			num = Mathf.CeilToInt(raceLength / num2);
+		}
+		return num;
+	}

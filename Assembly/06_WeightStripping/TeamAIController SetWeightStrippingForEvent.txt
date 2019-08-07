@@ -1,0 +1,45 @@
+public void SetWeightStrippingForEvent(RaceEventDetails inDetails)
+	{
+		if ((!this.mTeam.championship.rules.isWeightStrippingEnabled && this.mTeam.championship.GetCurrentEventDetails().eventDate.Month <= 8) || this.mTeam.championship.rules.weightStrippingRatio <= 0f)
+		{
+			return;
+		}
+		bool flag = this.mTeam.aggression > 0.5f;
+		bool flag2 = this.mTeam.championship == Game.instance.championshipManager.GetMainChampionship(this.mTeam.championship.series);
+		for (int i = 0; i < CarManager.carCount; i++)
+		{
+			Car car = this.mTeam.carManager.GetCar(i);
+			for (int j = 0; j < car.seriesCurrentParts.Length; j++)
+			{
+				CarPart carPart = car.seriesCurrentParts[j];
+				if (!carPart.isSpecPart)
+				{
+					CarStats.RelevantToCircuit relevancy = inDetails.circuit.GetRelevancy(CarPart.GetStatForPartType(carPart.GetPartType()));
+					float num = 0f;
+					switch (relevancy)
+					{
+					case CarStats.RelevantToCircuit.No:
+						num = 0.7f;
+						break;
+					case CarStats.RelevantToCircuit.Useful:
+						num = 0.75f;
+						break;
+					case CarStats.RelevantToCircuit.VeryUseful:
+						num = 0.8f;
+						break;
+					case CarStats.RelevantToCircuit.VeryImportant:
+						num = 0.85f;
+						break;
+					}
+					if (flag)
+					{
+						num -= 0.05f;
+					}
+					if (!flag2 || this.mTeam.championship.series == Championship.Series.EnduranceSeries)
+					{
+						num += 0.1f;
+					}
+					carPart.stats.SetWeightStripping(Mathf.Max(0f, carPart.reliability - num) * 100f, SessionDetails.SessionType.Practice);
+				}
+			}
+		}

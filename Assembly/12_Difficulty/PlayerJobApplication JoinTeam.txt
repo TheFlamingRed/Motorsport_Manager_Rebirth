@@ -1,0 +1,24 @@
+	public void JoinTeam(Team inTeam)
+	{
+		if (Game.IsActive() && App.instance.gameStateManager.currentState is FrontendState)
+		{
+			int years = 0;
+			if (!this.IsUnemployed())
+			{
+				years = Game.instance.player.careerHistory.GetYearsAtCurrentTeam();
+				Game.instance.MakePlayerUnemployed();
+			}
+			Game.instance.MakePlayerEmployed(inTeam);
+			MovieScreen expr_61 = UIManager.instance.GetScreen<MovieScreen>();
+			expr_61.PlayTeamMovie(SoundID.Video_TeamLogo, inTeam.teamID);
+			expr_61.SetNextScreen("PlayerScreen", 1.5f, null);
+			UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+			UIManager.instance.ClearNavigationStacks();
+			this.UpdatePlayerJoinedTeamAchievements();
+			Game.instance.dialogSystem.SendPlayerRuleDependentMails();
+			if (Game.instance.player.playerBackStoryType == PlayerBackStory.PlayerBackStoryType.UpandComingManager)
+			{
+				Game.instance.player.stats.raceManagement += 1f + (float)years*3f;
+			}
+		}
+	}

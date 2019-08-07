@@ -1,0 +1,5 @@
+public void SetVirtualSafetyCarFlag()
+{
+	this.mSessionManager.SetDesiredFlag(SessionManager.Flag.VirtualSafetyCar);
+	this.mVirtualSafetyFlagDuration = (float)(Mathf.RoundToInt((float)RandomUtility.GetRandomInc(0, 5)) * 15 + 50);
+}

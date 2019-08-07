@@ -1,0 +1,70 @@
+public override void OnStart(Database database)
+{
+	base.OnStart(database);
+	this.AddTeamsFromDatabase(database);
+	EntityManager arg_18_0 = Game.instance.entityManager;
+	List<DatabaseEntry> teamData = App.instance.database.teamData;
+	RandomUtility.GetRandom01();
+	int num = 62;
+	if (teamData.Count > 100)
+	{
+		num = 62 + teamData[0].GetIntValue("Opinions - Manager");
+	}
+	if (teamData[0].GetIntValue("Opinions - Manager") > 0)
+	{
+		for (int i = 62; i < num; i++)
+		{
+			int num2 = i;
+			int num3 = RandomUtility.GetRandom(62, teamData.Count);
+			for (int j = 0; j < i; j++)
+			{
+				if (num3 == base.GetEntity(j).teamID)
+				{
+					num3 = j;
+					num2 = i - 1;
+				}
+			}
+			base.GetEntity(i).name = teamData[num3].GetStringValue("Name");
+			base.GetEntity(i).locationID = teamData[num3].GetStringValue("Location ID");
+			base.GetEntity(i).colorID = teamData[num3].GetIntValue("Color");
+			base.GetEntity(i).liveryID = teamData[num3].GetIntValue("Livery");
+			base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[num3].GetStringValue("Location"));
+			base.GetEntity(i).teamID = num3;
+			base.GetEntity(i).aggression = teamData[num3].GetFloatValue("Aggression");
+			base.GetEntity(i).fanBase = teamData[num3].GetFloatValue("Fan Base");
+			base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[num3].GetStringValue("Political Attributes"));
+			base.GetEntity(i).financeController.availableFunds = (long)(teamData[num3].GetFloatValue("Budget") * 1000000f);
+			base.GetEntity(i).customStartDescription = teamData[num3].GetStringValue("Custom Start Description");
+			base.GetEntity(i).SetTeamStartDescriptionID(teamData[num3].GetStringValue("Team Start Description"));
+			i = num2;
+		}
+	}
+	if (teamData[0].GetIntValue("Opinions - Manager") == 0)
+	{
+		for (int k = 0; k < 10; k++)
+		{
+			int l = RandomUtility.GetRandomInc(0, 61);
+			int num4 = RandomUtility.GetRandom(62, teamData.Count);
+			for (int m = 0; m < 62; m++)
+			{
+				if (num4 == base.GetEntity(m).teamID)
+				{
+					num4 = m;
+					k--;
+				}
+			}
+			base.GetEntity(l).name = teamData[num4].GetStringValue("Name");
+			base.GetEntity(l).locationID = teamData[num4].GetStringValue("Location ID");
+			base.GetEntity(l).colorID = teamData[num4].GetIntValue("Color");
+			base.GetEntity(l).liveryID = teamData[num4].GetIntValue("Livery");
+			base.GetEntity(l).nationality = Nationality.GetNationalityByName(teamData[num4].GetStringValue("Location"));
+			base.GetEntity(l).teamID = num4;
+			base.GetEntity(l).aggression = teamData[num4].GetFloatValue("Aggression");
+			base.GetEntity(l).fanBase = teamData[num4].GetFloatValue("Fan Base");
+			base.GetEntity(l).votingCharacteristics = this.GetCharacteristics(teamData[num4].GetStringValue("Political Attributes"));
+			base.GetEntity(l).financeController.availableFunds = (long)(teamData[num4].GetFloatValue("Budget") * 1000000f);
+			base.GetEntity(l).customStartDescription = teamData[num4].GetStringValue("Custom Start Description");
+			base.GetEntity(l).SetTeamStartDescriptionID(teamData[num4].GetStringValue("Team Start Description"));
+		}
+	}
+}

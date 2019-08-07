@@ -1,0 +1,3 @@
+Gender,Nationality,DOB,Race Management,Financial,Loyalty,Skin Colour,Hair,Hair Colour,Glasses,Accessory,Facial Hair,Body Type
+M,UK,01/01/1996,5,5,5,1,7,7,0,0,7,0
+F,UK,01/01/1996,5,5,5,1,3,7,0,0,5,0

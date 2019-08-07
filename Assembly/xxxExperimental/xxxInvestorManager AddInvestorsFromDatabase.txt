@@ -1,0 +1,33 @@
+private void AddInvestorsFromDatabase(Database database)
+	{
+		EntityManager entityManager = Game.instance.entityManager;
+		List<DatabaseEntry> investorData = database.investorData;
+		int i = 0;
+		for (int j = 0; j < investorData.Count; j++)
+		{
+			if (investorData.Count < 5 || i == 0 || (i < 5 && RandomUtility.GetRandom01() < 0.5f))
+			{
+				DatabaseEntry databaseEntry = investorData[j];
+				Investor investor = entityManager.CreateEntity<Investor>();
+				base.AddEntity(investor);
+				investor.investorID = databaseEntry.GetIntValue("Investor ID");
+				investor.name = databaseEntry.GetStringValue("Name");
+				investor.nationality = Nationality.GetNationalityByName(databaseEntry.GetStringValue("Location"));
+				investor.logoID = databaseEntry.GetIntValue("Sponsor Logo ID");
+				investor.startingMoney = (long)databaseEntry.GetIntValue("StartingMoney") * GameStatsConstants.millionScalar;
+				investor.fuelEfficiency = databaseEntry.GetIntValue("Fuel Efficiency");
+				investor.improveability = databaseEntry.GetIntValue("Improveability");
+				investor.tyreWear = databaseEntry.GetIntValue("Tyre Wear");
+				investor.tyreHeating = databaseEntry.GetIntValue("Tyre Heating");
+				investor.bonusMarketability = (float)databaseEntry.GetIntValue("Bonus Marketability") / 100f;
+				investor.startBuilding = this.GetBuildings(databaseEntry.GetStringValue("Starting Buildings"));
+				investor.partRiskBonus = databaseEntry.GetIntValue("Part Risk Bonus");
+				investor.driverMinAge = databaseEntry.GetIntValue("Driver Min Age");
+				investor.driverImprovementRateMultiplier = databaseEntry.GetFloatValue("Driver Improvement Rate Multiplier");
+				investor.bonusDescriptionID = databaseEntry.GetStringValue("Bonus Description ID");
+				investor.pressure = databaseEntry.GetIntValue("Pressure");
+				investor.rewardID = databaseEntry.GetIntValue("Reward ID");
+				i++;
+			}
+		}
+	}

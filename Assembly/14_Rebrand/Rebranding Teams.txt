@@ -1,0 +1,200 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020002AA RID: 682
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TeamManager : GenericManager<Team>
+{
+	// Token: 0x06001400 RID: 5120
+	public void TeamRebrand()
+	{
+		EntityManager arg_0A_0 = Game.instance.entityManager;
+		List<DatabaseEntry> teamData = App.instance.database.teamData;
+		if (teamData.Count >= 100)
+		{
+			for (int i = 0; i < 62; i++)
+			{
+				if (base.count <= 123)
+				{
+					base.AddEntity(base.GetEntity(0));
+				}
+				base.GetEntity(i + 61).name = base.GetEntity(i).name;
+				base.GetEntity(i).liveryID = RandomUtility.GetRandomInc(0, 74);
+				float random = RandomUtility.GetRandom01();
+				int random2 = RandomUtility.GetRandom(0, teamData.Count);
+				int num = i;
+				if (i < 30)
+				{
+					for (int j = 0; j < 30; j++)
+					{
+						if (random2 == base.GetEntity(j).teamID)
+						{
+							num = i - 1;
+						}
+					}
+				}
+				if (i >= 30 && i < 50)
+				{
+					for (int k = 30; k < 50; k++)
+					{
+						if (random2 == base.GetEntity(k).teamID)
+						{
+							num = i - 1;
+						}
+					}
+				}
+				if (i >= 50)
+				{
+					for (int l = 50; l < 62; l++)
+					{
+						if (random2 == base.GetEntity(l).teamID)
+						{
+							num = i - 1;
+						}
+					}
+				}
+				if (base.GetEntity(i).financeController.finance.currentBudget < -2000000L && !base.GetEntity(i).isCreatedByPlayer && random < 0.2f && num == i)
+				{
+					base.GetEntity(i).name = teamData[random2].GetStringValue("Name");
+					base.GetEntity(i).locationID = teamData[random2].GetStringValue("Location ID");
+					base.GetEntity(i).colorID = teamData[random2].GetIntValue("Color");
+					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[random2].GetStringValue("Location"));
+					base.GetEntity(i).teamID = random2;
+					base.GetEntity(i).aggression = teamData[random2].GetFloatValue("Aggression");
+					base.GetEntity(i).fanBase = teamData[random2].GetFloatValue("Fan Base");
+					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[random2].GetStringValue("Political Attributes"));
+					if (RandomUtility.GetRandom01() < 0.8f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(0), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(1), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(2), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 4f)
+					{
+						base.GetEntity(i).financeController.finance.currentBudget = (long)(teamData[random2].GetFloatValue("Budget") * 1000000f);
+					}
+					if (RandomUtility.GetRandom01() < 0.8f)
+					{
+						base.GetEntity(i).headquarters.ResetHeadquarters();
+					}
+					if (RandomUtility.GetRandom01() < 0.8f)
+					{
+						base.GetEntity(i).sponsorController.ClearAllSponsors();
+						base.GetEntity(i).sponsorController.ClearAllSponsorOffers();
+					}
+					if (RandomUtility.GetRandom01() < 1f)
+					{
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason1(0.7f, 1f);
+					}
+					StringVariableParser.promotedTeam = base.GetEntity(i + 61);
+					StringVariableParser.rumourTeam = base.GetEntity(i);
+					Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+					{
+						new DialogCriteria("Who", "MediaPerson"),
+						new DialogCriteria("Source", "FinancialTakeover"),
+						new DialogCriteria("Type", "Header")
+					});
+				}
+				if ((random < 0.05f || base.GetEntity(i).chairman.happinessNormalized < 0.1f) && !base.GetEntity(i).isCreatedByPlayer && num == i)
+				{
+					base.GetEntity(i).name = teamData[random2].GetStringValue("Name");
+					base.GetEntity(i).locationID = teamData[random2].GetStringValue("Location ID");
+					base.GetEntity(i).colorID = teamData[random2].GetIntValue("Color");
+					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[random2].GetStringValue("Location"));
+					base.GetEntity(i).teamID = random2;
+					base.GetEntity(i).aggression = teamData[random2].GetFloatValue("Aggression");
+					base.GetEntity(i).fanBase = teamData[random2].GetFloatValue("Fan Base");
+					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[random2].GetStringValue("Political Attributes"));
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(0), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(1), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(2), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 1f)
+					{
+						base.GetEntity(i).financeController.finance.currentBudget -= (long)(teamData[random2].GetFloatValue("Budget") * 100000f);
+					}
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).headquarters.ResetHeadquarters();
+					}
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).sponsorController.ClearAllSponsors();
+						base.GetEntity(i).sponsorController.ClearAllSponsorOffers();
+					}
+					if (RandomUtility.GetRandom01() < 0.8f)
+					{
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason1(0.7f, 1.3f);
+					}
+					StringVariableParser.promotedTeam = base.GetEntity(i + 61);
+					StringVariableParser.rumourTeam = base.GetEntity(i);
+					Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+					{
+						new DialogCriteria("Who", "MediaPerson"),
+						new DialogCriteria("Source", "UnhappyTakeover"),
+						new DialogCriteria("Type", "Header")
+					});
+				}
+				if (random > 0.95f && !base.GetEntity(i).isCreatedByPlayer && num == i)
+				{
+					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[random2].GetStringValue("Political Attributes"));
+					base.GetEntity(i).name = teamData[random2].GetStringValue("Name");
+					base.GetEntity(i).locationID = teamData[random2].GetStringValue("Location ID");
+					base.GetEntity(i).colorID = teamData[random2].GetIntValue("Color");
+					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[random2].GetStringValue("Location"));
+					base.GetEntity(i).teamID = random2;
+					base.GetEntity(i).aggression = teamData[random2].GetFloatValue("Aggression");
+					if (RandomUtility.GetRandom01() < 0f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(0), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(1), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(2), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 0.75f)
+					{
+						base.GetEntity(i).financeController.finance.currentBudget += (long)(teamData[random2].GetFloatValue("Budget") * 100000f);
+					}
+					if (RandomUtility.GetRandom01() < 0f)
+					{
+						base.GetEntity(i).headquarters.ResetHeadquarters();
+					}
+					if (RandomUtility.GetRandom01() < 0.1f)
+					{
+						base.GetEntity(i).sponsorController.ClearAllSponsors();
+						base.GetEntity(i).sponsorController.ClearAllSponsorOffers();
+					}
+					if (RandomUtility.GetRandom01() < 1f)
+					{
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason1(1f, 1.3f);
+					}
+					StringVariableParser.promotedTeam = base.GetEntity(i + 61);
+					StringVariableParser.rumourTeam = base.GetEntity(i);
+					Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+					{
+						new DialogCriteria("Who", "MediaPerson"),
+						new DialogCriteria("Source", "HappyTakeover"),
+						new DialogCriteria("Type", "Header")
+					});
+				}
+			}
+		}
+	}
+}

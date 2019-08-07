@@ -1,0 +1,11 @@
+	public void SetToTyreBlanketTemperature()
+	{
+		if (global::Game.instance.sessionManager.sessionType == global::SessionDetails.SessionType.Race && this.mVehicle.pathState.stateType == global::PathStateManager.StateType.Grid)
+		{
+			this.SetTemperature(0.25f);
+		}
+		else
+		{
+			this.SetTemperature(global::RandomUtility.GetRandom(0.1f, 0.5f));
+		}
+	}

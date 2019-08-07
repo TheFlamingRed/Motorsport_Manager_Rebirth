@@ -1,0 +1,56 @@
+public override void PrepareForSession()
+	{
+		base.PrepareForSession();
+		SessionManager sessionManager = Game.instance.sessionManager;
+		float num = sessionManager.circuit.GetTrackPath().data.length * (float)sessionManager.lapCount;
+		DesignData designData = DesignDataManager.instance.GetDesignData();
+		if (designData.carPerformance.carCondition.carConditionTicksPerSession >= 2f)
+		{
+			this.mSegmentDistance = num / designData.carPerformance.carCondition.carConditionTicksPerSession - 2 + RandomUtility.GetRandomInc(0,4);
+		}
+		this.mNextUpdateDistance = this.mSegmentDistance;
+		this.mSessionType = sessionManager.sessionType;
+		CarPart.PartType[] partType = CarPart.GetPartType(this.mCar.carManager.team.championship.series, false);
+		for (int i = 0; i < partType.Length; i++)
+		{
+			float num2 = 0f;
+			switch (partType[i])
+			{
+			case CarPart.PartType.Brakes:
+			case CarPart.PartType.BrakesGT:
+			case CarPart.PartType.BrakesGET:
+				num2 = this.mCarPerformance.carCondition.brakeFailureTimeCost;
+				break;
+			case CarPart.PartType.Engine:
+			case CarPart.PartType.EngineGT:
+			case CarPart.PartType.EngineGET:
+				num2 = this.mCarPerformance.carCondition.engineFailureTimeCost;
+				break;
+			case CarPart.PartType.FrontWing:
+			case CarPart.PartType.FrontWingGET:
+				num2 = this.mCarPerformance.carCondition.frontWingFailureTimeCost;
+				break;
+			case CarPart.PartType.Gearbox:
+			case CarPart.PartType.GearboxGT:
+			case CarPart.PartType.GearboxGET:
+				num2 = this.mCarPerformance.carCondition.gearboxFailureTimeCost;
+				break;
+			case CarPart.PartType.RearWing:
+			case CarPart.PartType.RearWingGT:
+			case CarPart.PartType.RearWingGET:
+				num2 = this.mCarPerformance.carCondition.rearWingFailureTimeCost;
+				break;
+			case CarPart.PartType.Suspension:
+			case CarPart.PartType.SuspensionGT:
+			case CarPart.PartType.SuspensionGET:
+				num2 = this.mCarPerformance.carCondition.suspensionFailureTimeCost;
+				break;
+			}
+			this.mPartTimeCost[i] = num2;
+		}
+		for (int j = 0; j < this.mCar.seriesCurrentParts.Length; j++)
+		{
+			CarPartCondition partCondition = this.mCar.seriesCurrentParts[j].partCondition;
+			partCondition.SetCondition(partCondition.condition);
+		}
+	}

@@ -1,0 +1,53 @@
+public void SetOpinion(SessionSetup.SetupOpinion inSetupOpinion)
+{
+	switch (inSetupOpinion)
+	{
+	case SessionSetup.SetupOpinion.None:
+		this.mFeedbackString = Localisation.LocaliseID("PSG_10009318", null);
+		this.mOpinionColor = UIConstants.colorSetupOpinionNone;
+		this.mSprite = App.instance.atlasManager.GetSprite(AtlasManager.Atlas.Shared1, "Smileys-ThinkingSmileyLarge");
+		break;
+	case SessionSetup.SetupOpinion.VeryPoor:
+		this.mFeedbackString = Localisation.LocaliseID("PSG_10009318", null);
+		this.mOpinionColor = UIConstants.colorSetupOpinionVeryPoor;
+		this.mSprite = App.instance.atlasManager.GetSprite(AtlasManager.Atlas.Shared1, "Smileys-ThinkingSmileyLarge");
+		break;
+	case SessionSetup.SetupOpinion.Poor:
+		this.mFeedbackString = Localisation.LocaliseID("PSG_10009318", null);
+		this.mOpinionColor = UIConstants.colorSetupOpinionPoor;
+		this.mSprite = App.instance.atlasManager.GetSprite(AtlasManager.Atlas.Shared1, "Smileys-ThinkingSmileyLarge");
+		break;
+	case SessionSetup.SetupOpinion.OK:
+		this.mFeedbackString = Localisation.LocaliseID("PSG_10009318", null);
+		this.mOpinionColor = UIConstants.colorSetupOpinionOK;
+		this.mSprite = App.instance.atlasManager.GetSprite(AtlasManager.Atlas.Shared1, "Smileys-ThinkingSmileyLarge");
+		break;
+	case SessionSetup.SetupOpinion.Good:
+		this.mFeedbackString = Localisation.LocaliseID("PSG_10009318", null);
+		this.mOpinionColor = UIConstants.colorSetupOpinionGood;
+		this.mSprite = App.instance.atlasManager.GetSprite(AtlasManager.Atlas.Shared1, "Smileys-ThinkingSmileyLarge");
+		break;
+	case SessionSetup.SetupOpinion.Great:
+		this.mFeedbackString = Localisation.LocaliseID("PSG_10009318", null);
+		this.mOpinionColor = UIConstants.colorSetupOpinionGreat;
+		this.mSprite = App.instance.atlasManager.GetSprite(AtlasManager.Atlas.Shared1, "Smileys-ThinkingSmileyLarge");
+		break;
+	case SessionSetup.SetupOpinion.Excellent:
+		this.mFeedbackString = Localisation.LocaliseID("PSG_10010210", null);
+		this.mOpinionColor = UIConstants.sectorSessionFastestColor;
+		this.mSprite = App.instance.atlasManager.GetSprite(AtlasManager.Atlas.Shared1, "Smileys-HappySmileyLarge3");
+		break;
+	}
+	if (this.feedbackLabel != null && this.mFeedbackString != string.Empty)
+	{
+		this.feedbackLabel.text = this.mFeedbackString;
+	}
+	if (this.backgroundImage != null && this.mOpinionColor != UIConstants.whiteColor)
+	{
+		this.backgroundImage.color = this.mOpinionColor;
+	}
+	if (this.smiley != null && this.mSprite != null)
+	{
+		this.smiley.sprite = this.mSprite;
+	}
+}

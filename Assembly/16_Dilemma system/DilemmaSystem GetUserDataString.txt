@@ -1,0 +1,114 @@
+private string GetUserDataString(DialogCriteria inUserData)
+{
+	string result = null;
+	string mType = inUserData.mType;
+	switch (mType)
+	{
+	case "VotingPower":
+		StringVariableParser.stringValue1 = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10012308", null);
+		break;
+	case "Transaction":
+	{
+		float num3;
+		if (inUserData.mCriteriaInfo == "Fine")
+		{
+			long num2 = (long)this.GetFineMechanicTransactionValue();
+			StringVariableParser.dilemmaTransaction = (int)num2;
+			result = Localisation.LocaliseID("PSG_10010153", null);
+		}
+		else if (this.GetTransactionNumber(inUserData.mCriteriaInfo, out num3))
+		{
+			StringVariableParser.dilemmaTransaction = (int)num3;
+			result = Localisation.LocaliseID("PSG_10010153", null);
+		}
+		break;
+	}
+	case "FuelEfficiency":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010154", null);
+		break;
+	case "Improveability":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010155", null);
+		break;
+	case "TyreWear":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010156", null);
+		break;
+	case "TyreHeating":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010157", null);
+		break;
+	case "NewPartPerformance":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010158", null);
+		break;
+	case "NewPartReliability":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010159", null);
+		break;
+	case "BothMechanicRelationships":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010203", null);
+		break;
+	case "SubjectMechanicRelationship":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010160", null);
+		break;
+	case "RandomTeam:Marketability":
+		StringVariableParser.dilemmaTeam = StringVariableParser.randomTeam;
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10012142", null);
+		break;
+	case "TeamMarketability":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010161", null);
+		break;
+	case "PartLevelledUp":
+		result = Localisation.LocaliseID("PSG_10010162", null);
+		break;
+	case "PartRiskLevel":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010225", null);
+		break;
+	case "PitStopStat":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010163", null);
+		break;
+	case "RandomDriverMorale":
+	case "SubjectMorale":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010164", null);
+		break;
+	case "ChairmanMorale":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010165", null);
+		break;
+	case "SenderMorale":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10012569", null);
+		break;
+	case "StaffMorale":
+		StringVariableParser.dilemmaBonus = inUserData.mCriteriaInfo;
+		result = Localisation.LocaliseID("PSG_10010166", null);
+		break;
+	case "FireSubject":
+		result = Localisation.LocaliseID("PSG_10010167", null);
+		break;
+	case "StolenPart":
+		result = Localisation.LocaliseID("PSG_10010168", null);
+		break;
+	case "BribedFor":
+		result = Localisation.LocaliseID("PSG_10010169", null);
+		break;
+	case "BribedAgainst":
+		result = Localisation.LocaliseID("PSG_10010170", null);
+		break;
+	case "AddPersonalityTrait":
+		StringVariableParser.personalityTraitName = this.GetPersonalityTraitName(inUserData.mCriteriaInfo);
+		result = Localisation.LocaliseID("PSG_10010171", null);
+		break;
+	}
+	return result;
+}

@@ -1,0 +1,29 @@
+	public bool CanCutCorner(RacingVehicle inVehicle, PathController.Path inPath)
+	{
+		SessionManager sessionManager = Game.instance.sessionManager;
+		if (sessionManager.eventDetails.currentSession.sessionType != SessionDetails.SessionType.Race)
+		{
+			return false;
+		}
+		if (RandomUtility.GetRandom01() < (float)this.mPathUseCount[inPath.pathID] / 3f)
+		{
+			return false;
+		}
+		if (!this.mTeamsToCutCorner.Contains(inVehicle.driver.contract.GetTeam()))
+		{
+			return false;
+		}
+		if (this.mActiveChunk.cutCornerCount <= 0 || this.mCooldown >= 0f)
+		{
+			return false;
+		}
+		float t = inVehicle.driver.GetDriverStats().focus / 20f;
+		float num = Mathf.Lerp(1.5f, 2f, t);
+		SessionWeatherDetails currentSessionWeather = Game.instance.sessionManager.currentSessionWeather;
+		bool flag = Game.instance.sessionManager.flag == SessionManager.Flag.Green;
+		bool flag2 = currentSessionWeather.GetNormalizedTrackWater() > 0.5f && currentSessionWeather.GetNormalizedRain() > 0.2f;
+		bool flag3 = inVehicle.timer.gapToAhead > 0.1f && inVehicle.timer.gapToAhead < num;
+		bool flag4 = inVehicle.timer.gapToBehind > 0.1f && inVehicle.timer.gapToBehind < num;
+		bool flag5 = flag4  || flag3;
+		return flag && (flag5 || flag2);
+	}

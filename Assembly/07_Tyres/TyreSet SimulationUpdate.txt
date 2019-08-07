@@ -1,0 +1,54 @@
+// TyreSet
+// Token: 0x06001DB0 RID: 7600
+public void SimulationUpdate()
+{
+	float num = this.mTemperature;
+	this.UpdateTyreDrivingStyleTemperature();
+	this.UpdateWeatherImpactOnTyreTemperature();
+	if (Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race && this.mVehicle.isPlayerDriver)
+	{
+		if (num < 1f && this.mTemperature >= 1f)
+		{
+			Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.TyresOverheating, this.mVehicle);
+		}
+		if (num > 0f && this.mTemperature <= 0f)
+		{
+			Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.TyresUnderheating, this.mVehicle);
+		}
+	}
+	if (this.GetCondition() < this.GetCliffCondition())
+	{
+		this.mPunctureTimer += GameTimer.simulationDeltaTime;
+		if (this.mPunctureTimer - 100f * this.GetTemperature() + 100f > this.mPunctureDuration)
+		{
+			if (!this.mIsPunctured)
+			{
+				this.mVehicle.timer.currentLap.AddEvent(LapDetailsData.LapEvents.Puncture);
+			}
+			this.mIsPunctured = true;
+		}
+	}
+	if (this.mHasLooseWheel && !this.mWheelLost)
+	{
+		this.mCurrentLooseWheelDetachedTimer += GameTimer.simulationDeltaTime;
+		if (this.mCurrentLooseWheelDetachedTimer >= this.mLooseWheelDetachedTimer && !this.mWheelLost)
+		{
+			this.mWheelLost = true;
+			this.mVehicle.pathController.GetPath(PathController.PathType.RunWideLane).GetClosestPath();
+			this.mVehicle.steeringManager.GetBehaviour<TargetPointSteeringBehaviour>().ClearTarget();
+			this.mVehicle.steeringManager.GetBehaviour<TargetPointSteeringBehaviour>().SetTargetPath(PathController.PathType.RunWideLane, false);
+		}
+	}
+	if (this.mWheelLost && !this.mHasRanWide && this.mVehicle.behaviourManager.currentBehaviour.behaviourType == AIBehaviourStateManager.Behaviour.RuningWide)
+	{
+		this.mHasRanWide = true;
+		this.mVehicle.unityVehicle.ActivateDamagedTyre(this.mTargetLooseTyreSlot);
+		this.mLapWhenLostWheel = this.mVehicle.timer.lap;
+		Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.CatastrophicLooseWheel, this.mVehicle);
+	}
+	if (this.mVehicle.isPlayerDriver && this.mLapWhenLostWheel != -1 && this.mVehicle.timer.lap == this.mLapWhenLostWheel + 1 && !this.mSendLooseWheelReminder)
+	{
+		this.mSendLooseWheelReminder = true;
+		this.mVehicle.teamRadio.GetMessage<RadioMessageRunWide>().SendLooseWheelReminder();
+	}
+}

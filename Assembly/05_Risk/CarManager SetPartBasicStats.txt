@@ -1,0 +1,12 @@
+	private void SetPartBasicStats(CarPart inPart)
+	{
+		inPart.stats.level = 0;
+		float inValue = 0.4f + RandomUtility.GetRandom(0f, 0.1f);
+		inPart.stats.SetStat(CarPartStats.CarPartStat.Reliability, inValue);
+		inPart.stats.SetStat(CarPartStats.CarPartStat.Performance, 0f);
+		inPart.stats.maxPerformance = (float)RandomUtility.GetRandom(0, 10) * 5f;
+		inPart.stats.maxReliability = GameStatsConstants.initialMaxReliabilityValue;
+		inPart.partCondition.redZone = GameStatsConstants.initialRedZone;
+		inPart.components = new List<CarPartComponent>();
+		inPart.buildDate = Game.instance.time.now;
+	}

@@ -1,0 +1,19 @@
+public Mechanic()
+{
+	this.stats = new MechanicStats();
+	this.lastAccumulatedStats = new MechanicStats();
+	this.improvementRate = RandomUtility.GetRandom(0.1f, 1f);
+	this.mDictDriversRelationships = new Dictionary<string, Mechanic.DriverRelationship>();
+	this.mDictRelationshipModificationHistory = new Dictionary<string, StatModificationHistory>();
+	this.weeklyRelationshipIncreaseRate = 0.5f;
+	this.weeklyRelationshipDecreaseRate = 1f;
+	this.endRaceRelationshipIncreaseRate = 0.5f;
+	this.endRaceRelationshipDecreaseRate = 0.5f;
+	this.positionRange = 5f;
+	this.negativeImprovementHQScalar = 0.9f;
+	this.negativeImprovementHQOverallScalar = 0.03f;
+	this.negativeMaxImprovementHQ = 0.75f;
+	this.maxMechanicRelationshipDecayPercent = 0.05f;
+	this.mechanicRelationshipInvalidDecay = -1f;
+	this.mRelationshipDriversCache = new List<Driver>();
+}

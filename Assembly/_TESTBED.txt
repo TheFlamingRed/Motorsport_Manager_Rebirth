@@ -1,0 +1,73 @@
+	private void OnGUI()
+	{
+		StreamReader streamReader = new StreamReader("custom_team_maintext.txt");
+		string team_name = streamReader.ReadToEnd();
+		streamReader.Close();
+		string team_append = new StreamReader("custom_team_subtext.txt").ReadToEnd();
+		streamReader.Close();
+		this.toggleStyle = GUI.skin.toggle;
+		this.InitializeToggle();
+		if (GUI.Toggle(this.firstRect, this.boxOne, Game.instance.teamManager.GetEntity(0).name.ToString(), this.toggleStyle) != this.boxOne)
+		{
+			this.boxOne = !this.boxOne;
+			if (this.boxOne)
+			{
+				Game.instance.PlayerSwitchToEndurance(Game.instance.teamManager.GetEntity(0));
+				return;
+			}
+		}
+		if (GUI.Toggle(this.secondRect, this.boxTwo, Game.instance.teamManager.GetEntity(60).name.ToString(), this.toggleStyle) != this.boxTwo)
+		{
+			this.boxTwo = !this.boxTwo;
+			if (this.boxTwo)
+			{
+				Game.instance.PlayerSwitchToEndurance(Game.instance.teamManager.GetEntity(60));
+				return;
+			}
+			ConsoleCommands.useAIForDrivers = false;
+		}
+		
+		
+		//logo
+		if (GUI.Toggle(this.thirdRect, this.boxThree, Game.instance.player.team.customLogo.styleID.ToString(), this.toggleStyle) != this.boxThree)
+		{
+			this.boxThree = !this.boxThree;
+			if (this.boxThree)
+			{
+				if (Game.instance.player.team.customLogo.styleID < 15)
+				{
+					Game.instance.player.team.customLogo.styleID = Game.instance.player.team.customLogo.styleID + 1;
+				}
+				else
+				{
+					Game.instance.player.team.customLogo.styleID = 0;
+				}
+			}
+		}
+		
+		
+		// Own tean!
+		if (GUI.Toggle(this.forthRect, this.boxFour, Game.instance.player.team.GetTeamColor().customLogoColor.primary.ToString(), this.toggleStyle) != this.boxFour)
+		{
+			this.boxFour = !this.boxFour;
+			Game.instance.player.team.customLogo.teamFirstName = team_name;
+			Game.instance.player.team.customLogo.teamLasttName = team_append;
+			Game.instance.player.team.name = team_name + " " + team_append;
+			Game.instance.player.team.GetTeamColor().customLogoColor.primary = Game.instance.player.team.GetTeamColor().livery.primary;
+			Game.instance.player.team.GetTeamColor().customLogoColor.secondary = Game.instance.player.team.GetTeamColor().livery.secondary;
+			Game.instance.player.hasCreatedTeam = true;
+			Game.instance.player.createdTeamID = Game.instance.player.team.teamID;
+			Game.instance.player.team.isCreatedByPlayer = true;
+			Game.instance.PlayerSwitchToEndurance(Game.instance.teamManager.GetEntity(0));
+			Game.instance.player.team.chairman.Retire();
+			Game.instance.player.team.contractManager.HireReplacementChairman();
+			Game.instance.player.team.chairman.SetMorale(100f);
+		}
+		
+		
+		//REBRAND INSTANT
+		if (GUI.Toggle(this.fifthRect, Game.instance.player.optionSettingOne, Game.instance.player.team.GetTeamColor().customLogoColor.secondary.ToString(), this.toggleStyle) != this.boxFive)
+		{
+			Game.instance.teamManager.TeamRebrand();
+		}
+	}

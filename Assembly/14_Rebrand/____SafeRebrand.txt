@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using FullSerializer;
 using UnityEngine;
 
-// Token: 0x020002AB RID: 683
+// Token: 0x020002B5 RID: 693
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public partial class TeamManager : GenericManager<Team>
 {
-	// Token: 0x06001403 RID: 5123
+	// Token: 0x06001439 RID: 5177
 	public void TeamRebrand()
 	{
 		float num = 0f;
@@ -23,7 +23,7 @@ public partial class TeamManager : GenericManager<Team>
 			num3 = (float)Mathf.RoundToInt(Mathf.Lerp(61f, 50f, t3));
 		}
 		List<Team> teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
-		EntityManager arg_1CC_0 = Game.instance.entityManager;
+		EntityManager entityManager = Game.instance.entityManager;
 		List<DatabaseEntry> teamData = App.instance.database.teamData;
 		int num4 = 0;
 		if (teamData.Count > 72)
@@ -34,7 +34,7 @@ public partial class TeamManager : GenericManager<Team>
 		{
 			for (int i = 0; i < teamData.Count + num4; i++)
 			{
-				if (base.count <= 200)
+				if (base.count <= 80)
 				{
 					base.AddEntity(base.GetEntity(teamData.Count + num4 - 1));
 				}
@@ -127,7 +127,6 @@ public partial class TeamManager : GenericManager<Team>
 					base.GetEntity(i).locationID = teamData[random2].GetStringValue("Location ID");
 					base.GetEntity(i).colorID = teamData[random2].GetIntValue("Color");
 					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[random2].GetStringValue("Location"));
-					base.GetEntity(i).teamID = random2;
 					base.GetEntity(i).aggression = teamData[random2].GetFloatValue("Aggression");
 					base.GetEntity(i).fanBase = teamData[random2].GetFloatValue("Fan Base");
 					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[random2].GetStringValue("Political Attributes"));
@@ -155,7 +154,7 @@ public partial class TeamManager : GenericManager<Team>
 					}
 					if (RandomUtility.GetRandom01() < 1f)
 					{
-						base.GetEntity(i).carManager.AdaptPartsForNewSeason1(0.7f, 1f);
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(0.7f, 1f);
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i + teamData.Count + num4);
 					StringVariableParser.rumourTeam = base.GetEntity(i);
@@ -174,7 +173,6 @@ public partial class TeamManager : GenericManager<Team>
 					base.GetEntity(i).locationID = teamData[random2].GetStringValue("Location ID");
 					base.GetEntity(i).colorID = teamData[random2].GetIntValue("Color");
 					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[random2].GetStringValue("Location"));
-					base.GetEntity(i).teamID = random2;
 					base.GetEntity(i).aggression = teamData[random2].GetFloatValue("Aggression");
 					base.GetEntity(i).fanBase = teamData[random2].GetFloatValue("Fan Base");
 					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[random2].GetStringValue("Political Attributes"));
@@ -208,7 +206,7 @@ public partial class TeamManager : GenericManager<Team>
 					}
 					if (RandomUtility.GetRandom01() < 0.8f)
 					{
-						base.GetEntity(i).carManager.AdaptPartsForNewSeason1(0.7f, 1.3f);
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(0.7f, 1.3f);
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i + teamData.Count + num4);
 					StringVariableParser.rumourTeam = base.GetEntity(i);
@@ -228,7 +226,6 @@ public partial class TeamManager : GenericManager<Team>
 					base.GetEntity(i).locationID = teamData[random2].GetStringValue("Location ID");
 					base.GetEntity(i).colorID = teamData[random2].GetIntValue("Color");
 					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[random2].GetStringValue("Location"));
-					base.GetEntity(i).teamID = random2;
 					base.GetEntity(i).aggression = teamData[random2].GetFloatValue("Aggression");
 					if (RandomUtility.GetRandom01() < 0f)
 					{
@@ -254,7 +251,7 @@ public partial class TeamManager : GenericManager<Team>
 					}
 					if (RandomUtility.GetRandom01() < 1f)
 					{
-						base.GetEntity(i).carManager.AdaptPartsForNewSeason1(1f, 1.3f);
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(1f, 1.3f);
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i + teamData.Count + num4);
 					StringVariableParser.rumourTeam = base.GetEntity(i);

@@ -1,0 +1,41 @@
+using System;
+using UnityEngine;
+
+// Token: 0x02000642 RID: 1602
+public partial class PlayerScreen : UIScreen
+{
+	// Token: 0x06004C2A RID: 19498
+	public void OnGUI()
+	{
+		if (Game.instance.player.rebirthDebug)
+		{
+			GUI.Button(new Rect((float)Screen.width * 0.05f, (float)Screen.height * 0.1f, 200f, 900f), string.Concat(new string[]
+			{
+				"Debug Menu : ",
+				Game.instance.player.rebirthDebug.ToString(),
+				"\n",
+				Game.instance.player.managementBuyoutmanagementBuyoutOn,
+				"\n",
+				Game.instance.player.managementBuyoutMainText,
+				"\n",
+				Game.instance.player.managementBuyoutSubtext,
+				"\n",
+				Game.instance.player.managementBuyoutLogoStyle,
+				"\n",
+				Game.instance.player.managementBuyoutPrimaryColour,
+				"\n",
+				Game.instance.player.managementBuyoutSecondaryColour
+			}));
+			if (GUI.Button(new Rect((float)Screen.width * 0.2f, (float)Screen.height * 0.1f, 200f, 100f), "Fire Player"))
+			{
+				Game.instance.MakePlayerUnemployed();
+			}
+			if (GUI.Button(new Rect((float)Screen.width * 0.35f, (float)Screen.height * 0.1f, 200f, 100f), "Fire & Rehire Player"))
+			{
+				Team team = Game.instance.player.team;
+				Game.instance.MakePlayerUnemployed();
+				Game.instance.MakePlayerEmployed(team);
+			}
+		}
+	}
+}

@@ -1,0 +1,331 @@
+using System;
+	using System.Collections.Generic;
+	using UnityEngine;
+	using UnityEngine.Events;
+	using UnityEngine.UI;
+	
+	public class SessionHUD : UIScreen
+	{
+		public SessionHUD()
+		{
+		}
+	
+		public override void OnStart()
+		{
+			base.OnStart();
+			this.commentaryWidget.OnStart();
+			this.driverInfoHUD.OnStart();
+			this.sessionTeamRadionWidget.OnStart();
+			this.sabotageDriversButton.onClick.AddListener(new UnityAction(this.OnSabotageDriverButton));
+			this.playBackWidget.OnStart();
+		}
+	
+		private void OnSabotageDriverButton()
+		{
+			scSoundManager.Instance.PlaySound(SoundID.Button_Select, 0f);
+			this.outOfRaceDriverSelectMenu.Show();
+		}
+	
+		public override void OnUnload()
+		{
+			base.OnUnload();
+			this.driverInfoHUD.OnUnload();
+			this.simulation2D.ClearSingletonInstance();
+		}
+	
+		public override void OnEnter()
+		{
+			base.OnEnter();
+			base.showNavigationBars = true;
+			base.SetTopBarMode(UITopBar.Mode.Session);
+			base.SetBottomBarMode(UIBottomBar.Mode.Session);
+			App.instance.cameraManager.ActivateMode(CameraManager.CameraMode.FreeRoam);
+			App.instance.cameraManager.gameCamera.SetBlurActive(false);
+			App.instance.cameraManager.SetRunningMode(false);
+			Game.instance.sessionManager.SetCircuitActive(true);
+			UITutorial componentInChildren = base.GetComponentInChildren<UITutorial>();
+			if (Game.instance.vehicleManager.vehicleCount > 1)
+			{
+				RacingVehicle[] playerVehicles = Game.instance.vehicleManager.GetPlayerVehicles();
+				for (int i = 0; i < 2; i++)
+				{
+					RacingVehicle racingVehicle = playerVehicles[i];
+					this.actionButtons[i].SetVehicle(racingVehicle, componentInChildren);
+					this.standingsWidget[i].SetVehicle(racingVehicle);
+				}
+			}
+			this.gridLights.SetActive(false);
+			this.sessionTeamRadionWidget.OnEnter();
+			this.sessionFlagsWidget.OnEnter();
+			this.fastestLapWidget.OnEnter();
+			this.sprinklersWidget.OnEnter();
+			this.remainingLapsWidget.OnEnter();
+			this.sponsorStatusChangeWidget.OnEnter();
+			if (this.minimapWidget != null)
+			{
+				this.minimapWidget.Setup();
+			}
+			if (App.instance.gameStateManager.currentState is RaceGridState)
+			{
+				if (Game.instance.tutorialSystem.isTutorialActive)
+				{
+					if (componentInChildren == null || !componentInChildren.IsTutorialOnRaceGrid())
+					{
+						this.StartGridLightAnimation();
+						Game.instance.time.SetSpeed(GameTimer.Speed.Slow);
+					}
+				}
+				else if (Game.instance.sessionManager.championship.rules.raceStart == ChampionshipRules.RaceStart.StandingStart || !Game.instance.sessionManager.isRollingOut)
+				{
+					this.StartGridLightAnimation();
+				}
+			}
+			this.mSimulationTutorialIDS = new List<string>(new string[]
+			{
+				"PSG_10003404",
+				"PSG_10003404",
+				"PSG_10003397",
+				"PSG_10003389",
+				"PSG_10003402"
+			});
+			this.SetupNavigationBarsCanvases();
+			this.RegisterPracticeKnowledgeEvents();
+			if (!Game.instance.tutorialSystem.isTutorialActive)
+			{
+				scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionScreen, 0f);
+				scMusicController.Race();
+			}
+			else if (!Game.instance.tutorialSystem.isTutorialFirstRaceActive)
+			{
+				scMusicController.Stop();
+			}
+			bool flag = !App.instance.preferencesManager.videoPreferences.isSimulationRunning2DMode;
+			if (flag)
+			{
+				this.simulation2D.Hide();
+			}
+			else
+			{
+				this.simulation2D.Show();
+			}
+			this.outOfRaceDriverSelectMenu.UpdateLabelsRemaining();
+			ChampionshipRules.RaceStart raceStart = Game.instance.sessionManager.championship.rules.raceStart;
+			if (raceStart == ChampionshipRules.RaceStart.RollingStart)
+			{
+				this.gridLightsAnimator.SetTrigger("RollingStart");
+			}
+			this.sessionHudStandingsWidget.OnModeChanged(UISessionStandingsModeWidget.StandingsModes.StandingsMini);
+			this.playBackWidget.OnEnter();
+			GameUtility.SetActive(this.sessionHudStandingsWidget, true);
+		}
+	
+		public void SetupNavigationBarsCanvases()
+		{
+			if (UIManager.instance.navigationBars.topBar.canvas.worldCamera != this.sessionHUDCamera)
+			{
+				UIManager.instance.navigationBars.topBar.canvas.worldCamera = this.sessionHUDCamera;
+				UIManager.instance.navigationBars.tutorialCanvas.worldCamera = this.sessionHUDCamera;
+				UIManager.instance.dialogBoxManager.canvas.worldCamera = this.sessionHUDCamera;
+			}
+		}
+	
+		public void StartGridLightAnimation()
+		{
+			this.mSoundContainer = scSoundManager.Instance.PlaySound(SoundID.Sfx_RaceStartLights, 0f);
+			this.gridLights.SetActive(true);
+		}
+	
+		public override void OnExit()
+		{
+			base.OnExit();
+			this.ExitWidgets();
+			UIManager.instance.SetupCanvasCamera(UIManager.instance.navigationBars.topBar.canvas);
+			UIManager.instance.SetupCanvasCamera(UIManager.instance.navigationBars.tutorialCanvas);
+			UIManager.instance.SetupCanvasCamera(UIManager.instance.dialogBoxManager.canvas);
+			App.instance.cameraManager.SetRunningMode(true);
+			this.simulation2D.Hide();
+		}
+	
+		public void ExitWidgets()
+		{
+			this.sessionTeamRadionWidget.OnExit();
+			this.fastestLapWidget.OnExit();
+			this.remainingLapsWidget.OnExit();
+			this.sponsorStatusChangeWidget.OnExit();
+			this.sessionWaitLeaderWidget.OnExit();
+			for (int i = 0; i < 2; i++)
+			{
+				this.actionButtons[i].OnExit();
+			}
+		}
+	
+		public override void OnFocus()
+		{
+			base.OnFocus();
+			this.SetupNavigationBarsCanvases();
+		}
+	
+		private void Update()
+		{
+			if (Input.GetKeyDown(KeyCode.C))
+			{
+				ConsoleCommands.isChaseCameraOn = !ConsoleCommands.isChaseCameraOn;
+				this.HideDriverInfoTimer = 0f;
+			}
+			if (this.HideDriverInfoTimer > 0.75f)
+			{
+				if (ConsoleCommands.isChaseCameraOn)
+				{
+					GameUtility.SetActive(this.driverInfoHUD, false);
+				}
+				else if (!ConsoleCommands.isChaseCameraOn)
+				{
+					GameUtility.SetActive(this.driverInfoHUD, true);
+				}
+			}
+			this.HideDriverInfoTimer += GameTimer.deltaTime;
+			if (Input.GetKeyDown(KeyCode.H))
+			{
+				this.sessionHUDCamera.gameObject.SetActive(!this.HideHUDState);
+				this.HideHUDState = !this.HideHUDState;
+			}
+			this.SetupNavigationBarsCanvases();
+			GameUtility.SetActive(this.rollingStartWidget, Game.instance.sessionManager.isRollingOut);
+			this.sessionWaitLeaderWidget.CheckDisplay();
+			if (this.mSimulationTutorialIDS.Count > 0)
+			{
+				this.mTimer -= GameTimer.deltaTime;
+				if (this.mTimer <= 0f)
+				{
+					DialogRule ruleByID = App.instance.dialogRulesManager.GetRuleByID(this.mSimulationTutorialIDS[0]);
+					App.instance.tutorialSimulation.AddTutorial(ruleByID);
+					this.mSimulationTutorialIDS.RemoveAt(0);
+					this.mTimer = UnityEngine.Random.Range(20f, 30f);
+				}
+			}
+			if (!this.gridLights.activeSelf)
+			{
+				this.sponsorStatusChangeWidget.CheckForStatusChange();
+			}
+			if (Game.instance.sessionManager.flag == SessionManager.Flag.None)
+			{
+				if (Game.instance.time.isPaused)
+				{
+					if (this.mSoundContainer != null)
+					{
+						this.mSoundContainer.Pause();
+					}
+					this.gridLightsAnimator.speed = 0f;
+				}
+				else
+				{
+					if (this.mSoundContainer != null)
+					{
+						this.mSoundContainer.UnPause();
+					}
+					this.gridLightsAnimator.speed = 1f;
+				}
+			}
+			GameUtility.SetActive(this.sabotageDriverContainer, Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race && Game.instance.challengeManager.challengeGameData.isSabotageDriverOptionActive && Game.instance.challengeManager.challengeGameData.sabotageDriverCount > 0);
+			this.sprinklersWidget.UpdateForActivation();
+			SessionSimSpeedDirector.State state = Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.state;
+			bool activeSelf = this.miniCameraViewContainer.activeSelf;
+			bool flag = !App.instance.preferencesManager.videoPreferences.isRunning2DMode && SceneManager.instance.hasLoaded3DGeometry;
+			GameUtility.SetActive(this.miniCameraViewContainer, flag && Simulation2D.instance.isActive && state != SessionSimSpeedDirector.State.Inactive && state != SessionSimSpeedDirector.State.Active);
+			if (activeSelf != this.miniCameraViewContainer.activeSelf)
+			{
+				this.miniCameraViewWidget.SetupText();
+			}
+		}
+	
+		private void RegisterPracticeKnowledgeEvents()
+		{
+			SessionDetails.SessionType sessionType = Game.instance.sessionManager.sessionType;
+			PracticeReportSessionData playerPracticeReportData = Game.instance.persistentEventData.GetPlayerPracticeReportData();
+			PracticeReportKnowledgeData[] knowledgeData = playerPracticeReportData.GetKnowledgeData();
+			if (sessionType == SessionDetails.SessionType.Practice)
+			{
+				for (int i = 0; i < knowledgeData.Length; i++)
+				{
+					knowledgeData[i].onLevelUnlocked.RemoveAllListeners();
+					knowledgeData[i].onLevelUnlocked.AddListener(new UnityAction<PracticeReportKnowledgeData>(this.OnKnowledgeLevelUnlocked));
+				}
+			}
+			else
+			{
+				for (int j = 0; j < knowledgeData.Length; j++)
+				{
+					knowledgeData[j].onLevelUnlocked.RemoveAllListeners();
+				}
+				GameUtility.SetActive(this.mPracticeKnowledgeUnlocked.gameObject, false);
+			}
+		}
+	
+		private void OnKnowledgeLevelUnlocked(PracticeReportKnowledgeData inPracticeKnowledge)
+		{
+			this.mPracticeKnowledgeUnlocked.Show(inPracticeKnowledge);
+		}
+	
+		public Camera sessionHUDCamera;
+	
+		public SprinklersWidget sprinklersWidget;
+	
+		public DriverActionButtons[] actionButtons;
+	
+		public StandingsWidget[] standingsWidget;
+	
+		public FastestLapWidget fastestLapWidget;
+	
+		public UISessionCommentaryWidget commentaryWidget;
+	
+		public MinimapWidget minimapWidget;
+	
+		public UIDriverInfoHUD driverInfoHUD;
+	
+		public UISessionTeamRadioWidget sessionTeamRadionWidget;
+	
+		public SessionFlagsWidget sessionFlagsWidget;
+	
+		public GameObject gridLights;
+	
+		public Animator gridLightsAnimator;
+	
+		public RemainingLapsWidget remainingLapsWidget;
+	
+		public SponsorStatusChangeWidget sponsorStatusChangeWidget;
+	
+		public OutOfRaceDriverSelectionMenu outOfRaceDriverSelectMenu;
+	
+		public Button sabotageDriversButton;
+	
+		public GameObject sabotageDriverContainer;
+	
+		public SessionHudStandingsWidget sessionHudStandingsWidget;
+	
+		public PlaybackWidget playBackWidget;
+	
+		public RollingStartWidget rollingStartWidget;
+	
+		public SessionWaitLeaderWidget sessionWaitLeaderWidget;
+	
+		public DriverSessionFormRollover driverSessionFormRollover;
+	
+		public GameObject miniCameraViewContainer;
+	
+		public SuperSpeedSlowDownWidget miniCameraViewWidget;
+	
+		public Simulation2D simulation2D;
+	
+		[SerializeField]
+		private UISessionPracticeKnowledgeUnlockedWidget mPracticeKnowledgeUnlocked;
+	
+		private scSoundContainer mSoundContainer;
+	
+		private float mTimer;
+	
+		private List<string> mSimulationTutorialIDS = new List<string>();
+	
+		private bool HideHUDState = true;
+	
+		private float HideDriverInfoTimer;
+	}

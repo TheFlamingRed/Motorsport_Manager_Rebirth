@@ -1,0 +1,905 @@
+using System;
+using UnityEngine;
+
+// Token: 0x0200036B RID: 875
+public class FreeRoamCamera : MonoBehaviour
+{
+	// Token: 0x06001908 RID: 6408
+	public FreeRoamCamera()
+	{
+	}
+
+	// Token: 0x06001909 RID: 6409
+	public void SetGameCamera(GameCamera inGameCamera)
+	{
+		this.mGameCamera = inGameCamera;
+		this.defaultMinZoom = this.minZoom;
+		this.defaultExpandedMinZoom = this.expandedMinZoom;
+		this.defaultMaxZoom = this.maxZoom;
+		this.defaultExpandedMaxZoom = this.expandedMaxZoom;
+		this.defaultMinRotationX = this.minRotationX;
+		this.defaultMaxRotationX = this.maxRotationX;
+		this.defaultExpandedMinRotationX = this.expandedMinRotationX;
+		this.defaultExpandedMaxRotationX = this.expandedMaxRotationX;
+		this.defaultZoomSpeedModifier = this.zoomSpeedModifier;
+		try
+		{
+			this.defaultNearClipPlane = this.mGameCamera.mainCamera.nearClipPlane;
+		}
+		catch (NullReferenceException)
+		{
+			this.defaultNearClipPlane = 10f;
+		}
+	}
+
+	// Token: 0x0600190A RID: 6410
+	public void SetExpandedCamera(bool inValue)
+	{
+		this.mIsExpandedCamera = inValue;
+	}
+
+	// Token: 0x0600190B RID: 6411
+	public void ClearReferences()
+	{
+		SafeAction.NullAnAction<GameObject>(ref this.OnTargetChange);
+		SafeAction.NullAnAction(ref this.OnLateUpdate);
+		this.mTarget = null;
+		this.mVehicleTarget = null;
+		this.mTargetVehicle = null;
+	}
+
+	// Token: 0x0600190C RID: 6412
+	private void OnEnable()
+	{
+		IT_Gesture.onDraggingE += this.OnDragging;
+		IT_Gesture.onPinchE += this.OnPinch;
+		this.mOrbitSpeedX = 0f;
+		this.mOrbitSpeedY = 0f;
+		this.mDragDelayTimer = 0f;
+		if (base.transform.parent != null)
+		{
+			base.transform.parent.position = Vector3.zero;
+		}
+		if (this.mVehicleTarget != null && App.instance.gameStateManager.currentState.IsSimulation())
+		{
+			if (Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race)
+			{
+				if (!Game.instance.sessionManager.isSessionActive)
+				{
+					base.transform.parent.rotation = Quaternion.Euler(45f, this.mVehicleTarget.transform.rotation.eulerAngles.y - 120f, 0f);
+				}
+				else
+				{
+					base.transform.parent.rotation = Quaternion.Euler(this.mPreviousHUDRotation);
+				}
+			}
+			else if (MathsUtility.ApproximatelyZero(Game.instance.sessionManager.GetNormalizedSessionTime()))
+			{
+				base.transform.parent.rotation = Quaternion.Euler(50f, this.mVehicleTarget.transform.rotation.eulerAngles.y + 160f, 0f);
+			}
+			else
+			{
+				base.transform.parent.rotation = Quaternion.Euler(this.mPreviousHUDRotation);
+			}
+		}
+		else
+		{
+			base.transform.parent.rotation = Quaternion.Euler(38f, 74f, 0f);
+		}
+		if (this.mZoom == 0f)
+		{
+			if (App.instance.gameStateManager != null && App.instance.gameStateManager.currentState != null && App.instance.gameStateManager.currentState.IsSimulation())
+			{
+				this.mZoom = this.cameraMinZoom;
+			}
+			else
+			{
+				this.mZoom = Mathf.Lerp(this.cameraMinZoom, this.cameraMaxZoom, 0.5f);
+			}
+		}
+		if (this.mGameCamera != null)
+		{
+			this.mGameCamera.SetBlurActive(false);
+			this.mGameCamera.SetTiltShiftActive(true);
+			this.mGameCamera.GetCamera().fieldOfView = 40f;
+		}
+		if (this.startRotateOnEnable)
+		{
+			this.SetState(FreeRoamCamera.State.AutoRotating);
+		}
+	}
+
+	// Token: 0x0600190D RID: 6413
+	private void OnDisable()
+	{
+		IT_Gesture.onDraggingE -= this.OnDragging;
+		IT_Gesture.onPinchE -= this.OnPinch;
+		this.CheckRotationReset();
+		this.mPreviousHUDRotation = base.transform.parent.rotation.eulerAngles;
+		this.mCameraRightVectorOffset = 0f;
+	}
+
+	// Token: 0x0600190E RID: 6414
+	public void SetTarget(GameObject inTarget, CameraManager.Transition inTransition, float inCameraRightVectorOffset = 0f, Vehicle inVehicle = null)
+	{
+		this.mCameraRightVectorOffset = inCameraRightVectorOffset;
+		this.mTargetVehicle = inVehicle;
+		if (this.mTarget != inTarget)
+		{
+			this.mTarget = inTarget;
+			if (this.mTarget != null)
+			{
+				this.mVehicleTarget = this.mTarget.GetComponent<UnityVehicle>();
+			}
+			this.OnTargetSet(inTransition);
+			if (this.OnTargetChange != null)
+			{
+				this.OnTargetChange(inTarget);
+			}
+		}
+	}
+
+	// Token: 0x0600190F RID: 6415
+	public void SetDisablePanControls(bool inValue)
+	{
+		this.mDisablePanControls = inValue;
+	}
+
+	// Token: 0x06001910 RID: 6416
+	private void SetState(FreeRoamCamera.State inState)
+	{
+		if (!this.waitingForChaseCamToggle)
+		{
+			this.mState = inState;
+			this.mStateTimer = 0f;
+			this.mPreviousRotation = base.transform.parent.rotation.eulerAngles;
+			if (this.mState == FreeRoamCamera.State.TransitionToTarget || this.mState == FreeRoamCamera.State.ChaseCamTransition)
+			{
+				this.transitionToTargetPreRotaion = base.transform.parent.rotation.eulerAngles;
+				this.mPreviousPosition = base.transform.parent.position;
+				this.mPreviousZoom = this.mZoom;
+				this.mTargetZoom = this.mZoom;
+				this.mPreviousRotationLimit = new Vector4(this.minRotationX, this.maxRotationX, this.expandedMinRotationX, this.expandedMaxRotationX);
+				float magnitude = (this.mPreviousPosition - this.target.gameObject.transform.position).magnitude;
+				if (magnitude > this.minTransitionDistanceForZoom)
+				{
+					this.mTransitionZoom = Mathf.Lerp(this.mZoom, this.cameraMaxZoom, Mathf.Clamp01(magnitude / (this.maxTransitionDistanceForZoom - this.minTransitionDistanceForZoom)));
+					return;
+				}
+				this.mTransitionZoom = this.mZoom;
+			}
+		}
+	}
+
+	// Token: 0x06001911 RID: 6417
+	public void LateUpdate()
+	{
+		if (this.target == null && (this.mState == FreeRoamCamera.State.FollowingTarget || this.mState == FreeRoamCamera.State.TransitionToTarget))
+		{
+			this.SetTarget(null, CameraManager.Transition.Instant, 0f, null);
+		}
+		this.mIdleTimer += GameTimer.deltaTime;
+		this.mStateTimer += GameTimer.deltaTime;
+		this.mDragDelayTimer += GameTimer.deltaTime;
+		if (this.previousChaseCamState != ConsoleCommands.isChaseCameraOn)
+		{
+			this.SetState(FreeRoamCamera.State.ChaseCamTransition);
+			this.previousChaseCamState = ConsoleCommands.isChaseCameraOn;
+		}
+		this.ApplyRotation();
+		switch (this.mState)
+		{
+		case FreeRoamCamera.State.FreeRoam:
+			this.UpdateFreeRoam();
+			break;
+		case FreeRoamCamera.State.FollowingTarget:
+			this.UpdateFollowingTarget();
+			break;
+		case FreeRoamCamera.State.AutoRotating:
+			this.UpdateAutoRotate();
+			this.UpdateFollowingTarget();
+			break;
+		case FreeRoamCamera.State.TransitionAutoRotating:
+			this.UpdateTransitionAutoRotate();
+			this.UpdateFollowingTarget();
+			break;
+		case FreeRoamCamera.State.TransitionToTarget:
+			this.UpdateTransitionToTarget();
+			break;
+		case FreeRoamCamera.State.ChaseCamTransition:
+			this.UpdateChaseCamTransition();
+			break;
+		}
+		if (this.mState != FreeRoamCamera.State.TransitionToTarget)
+		{
+			this.mZoom += this.mZoomSpeed;
+		}
+		this.mZoom = Mathf.Clamp(this.mZoom, this.cameraMinZoom - 75f, this.cameraMaxZoom);
+		base.transform.localPosition = new Vector3(0f, 0f, -this.mZoom);
+		this.mOrbitSpeedX *= 1f - GameTimer.deltaTime * 12f;
+		this.mOrbitSpeedY *= 1f - GameTimer.deltaTime * 3f;
+		this.mZoomSpeed *= 1f - GameTimer.deltaTime * 4f;
+		if (!this.mDisablePanControls && this.mState != FreeRoamCamera.State.TransitionToTarget && (!Game.IsActive() || (Game.IsActive() && !Game.instance.time.IsPauseTypeActive(GameTimer.PauseType.App))))
+		{
+			if (App.instance.preferencesManager.GetSettingBool(Preference.pName.Game_Gamepad, false))
+			{
+				this.mZoomSpeed += (GamePad.GetLeftTrigger(PlayerIndex.One) - GamePad.GetRightTrigger(PlayerIndex.One)) * this.gamepadZoomSpeedModifier * GameTimer.deltaTime;
+			}
+			else
+			{
+				this.mZoomSpeedButtons = ((!InputManager.instance.GetKeyAny(KeyBinding.Name.ZoomIn)) ? 0f : 0.1f);
+				this.mZoomSpeedButtons += ((!InputManager.instance.GetKeyAny(KeyBinding.Name.ZoomOut)) ? 0f : -0.1f);
+				this.mZoomSpeed += (Input.GetAxis("Mouse ScrollWheel") + this.mZoomSpeedButtons) * this.zoomSpeedModifier * GameTimer.deltaTime;
+			}
+		}
+		if (this.autoRotateAroundTarget && this.mState == FreeRoamCamera.State.FollowingTarget)
+		{
+			this.mAutoRotateTimer += GameTimer.deltaTime;
+			if (this.mAutoRotateTimer >= this.autoRotateAfterSeconds)
+			{
+				this.mAutoRotateTimer = 0f;
+				this.SetState(FreeRoamCamera.State.TransitionAutoRotating);
+			}
+		}
+		if (this.OnLateUpdate != null)
+		{
+			this.OnLateUpdate();
+		}
+	}
+
+	// Token: 0x06001912 RID: 6418
+	private void ApplyRotation()
+	{
+		float num = base.transform.parent.rotation.eulerAngles.x;
+		float y = base.transform.parent.rotation.eulerAngles.y;
+		if (num > 180f)
+		{
+			num -= 360f;
+		}
+		if (!this.mDisablePanControls && InputManager.instance.GetKey(KeyBinding.Name.RotateLeft))
+		{
+			this.mOrbitSpeedY += this.keyRotationSpeed * this.rotationYSpeedModifier * GameTimer.deltaTime;
+			this.CheckRotationReset();
+		}
+		if (!this.mDisablePanControls && InputManager.instance.GetKey(KeyBinding.Name.RotateRight))
+		{
+			this.mOrbitSpeedY -= this.keyRotationSpeed * this.rotationYSpeedModifier * GameTimer.deltaTime;
+			this.CheckRotationReset();
+		}
+		this.mOrbitSpeedX = Mathf.Clamp(this.mOrbitSpeedX, -this.maxRotationSpeed, this.maxRotationSpeed);
+		this.mOrbitSpeedY = Mathf.Clamp(this.mOrbitSpeedY, -this.maxRotationSpeed, this.maxRotationSpeed);
+		Quaternion lhs = Quaternion.Euler(0f, y, 0f);
+		Quaternion rhs = Quaternion.Euler(num, 0f, 0f);
+		switch (this.mRotationAxis)
+		{
+		case FreeRoamCamera.RotationAxis.All:
+			rhs = Quaternion.Euler(Mathf.Clamp(num + this.mOrbitSpeedX, this.cameraMinRotationX - 1f, this.cameraMaxRotationX + 4f), 0f, 0f);
+			lhs = Quaternion.Euler(0f, y + this.mOrbitSpeedY, 0f);
+			break;
+		case FreeRoamCamera.RotationAxis.X:
+			rhs = Quaternion.Euler(Mathf.Clamp(num + this.mOrbitSpeedX, this.cameraMinRotationX - 1f, this.cameraMaxRotationX + 4f), 0f, 0f);
+			break;
+		case FreeRoamCamera.RotationAxis.Y:
+			lhs = Quaternion.Euler(0f, y + this.mOrbitSpeedY, 0f);
+			break;
+		}
+		base.transform.parent.rotation = lhs * rhs;
+		this.mPreviousRotation = base.transform.parent.rotation.eulerAngles;
+	}
+
+	// Token: 0x06001913 RID: 6419
+	private void CheckRotationReset()
+	{
+		if (this.autoRotateAroundTarget && (this.mState == FreeRoamCamera.State.TransitionAutoRotating || this.mState == FreeRoamCamera.State.AutoRotating))
+		{
+			this.mAutoRotateTimer = 0f;
+			this.SetState(FreeRoamCamera.State.FollowingTarget);
+			return;
+		}
+		this.mIdleTimer = 0f;
+		this.mStateTimer = -this.revertChaseCamDelay;
+	}
+
+	// Token: 0x06001914 RID: 6420
+	private void UpdateFreeRoam()
+	{
+	}
+
+	// Token: 0x06001915 RID: 6421
+	public void UpdateFollowingTarget()
+	{
+		if (this.target != null)
+		{
+			base.transform.parent.position = this.target.transform.position + base.transform.parent.right * this.mCameraRightVectorOffset;
+			if (this.isUsingChaseCam && this.mIdleTimer > this.revertChaseCamDelay)
+			{
+				this.UpdateRotationForChaseCam(this.chaseCamTransitionDuration, this.mPreviousRotation);
+			}
+		}
+	}
+
+	// Token: 0x06001916 RID: 6422
+	private void UpdateTransitionToTarget()
+	{
+		if (this.isUsingChaseCam)
+		{
+			this.UpdateRotationForChaseCam(this.transitionDuration, this.transitionToTargetPreRotaion);
+		}
+		float num = this.transitionDuration - this.zoomBlendDuration;
+		if (this.mStateTimer < this.zoomBlendDuration)
+		{
+			this.mZoom = EasingUtility.EaseByType(this.zoomCurve, this.mPreviousZoom, this.mTransitionZoom, Mathf.Clamp01(this.mStateTimer / this.zoomBlendDuration));
+		}
+		else if (this.mStateTimer > num)
+		{
+			this.mZoom = EasingUtility.EaseByType(this.zoomCurve, this.mTransitionZoom, this.mTargetZoom, Mathf.Clamp01((this.mStateTimer - num) / this.zoomBlendDuration));
+		}
+		if (this.target != null)
+		{
+			base.transform.parent.position = EasingUtility.EaseByType(this.zoomCurve, this.mPreviousPosition, this.target.gameObject.transform.position, Mathf.Clamp01(this.mStateTimer / this.transitionDuration));
+		}
+		if (this.mStateTimer > this.transitionDuration)
+		{
+			this.SetState(FreeRoamCamera.State.FollowingTarget);
+		}
+	}
+
+	// Token: 0x06001917 RID: 6423
+	private void UpdateTransitionAutoRotate()
+	{
+		float x = base.transform.parent.rotation.eulerAngles.x;
+		float y = base.transform.parent.rotation.eulerAngles.y;
+		this.mOrbitSpeedY = EasingUtility.EaseByType(this.autoRotateCurve, 0f, this.autoRotateAroundSpeedSecond * this.GetAutoRotateDirection() * GameTimer.deltaTime, Mathf.Clamp01(this.mStateTimer / this.transitionDuration));
+		Quaternion rhs = Quaternion.Euler(x, 0f, 0f);
+		Quaternion lhs = Quaternion.Euler(0f, y + this.mOrbitSpeedY, 0f);
+		base.transform.parent.rotation = lhs * rhs;
+		if (this.mStateTimer >= this.transitionDuration)
+		{
+			this.SetState(FreeRoamCamera.State.AutoRotating);
+		}
+	}
+
+	// Token: 0x06001918 RID: 6424
+	private void UpdateAutoRotate()
+	{
+		float x = base.transform.parent.rotation.eulerAngles.x;
+		float y = base.transform.parent.rotation.eulerAngles.y;
+		float num = this.autoRotateAroundSpeedSecond * GameTimer.deltaTime;
+		this.mOrbitSpeedY += this.autoRotateAroundSpeedSecond * this.GetAutoRotateDirection() * GameTimer.deltaTime;
+		this.mOrbitSpeedY = Mathf.Clamp(this.mOrbitSpeedY, -num, num);
+		Quaternion rhs = Quaternion.Euler(x, 0f, 0f);
+		Quaternion lhs = Quaternion.Euler(0f, y + this.mOrbitSpeedY, 0f);
+		base.transform.parent.rotation = lhs * rhs;
+	}
+
+	// Token: 0x06001919 RID: 6425
+	private void OnDragging(DragInfo dragInfo)
+	{
+		if (Input.GetMouseButton(0) && this.mDragDelayTimer >= this.dragInitialDelay && !this.IsCursorOverUI())
+		{
+			this.mOrbitSpeedX = -(dragInfo.delta.y * this.rotationXSpeedModifier * GameTimer.deltaTime * (float)Screen.height) * this.dragModifier;
+			this.mOrbitSpeedY = dragInfo.delta.x * this.rotationYSpeedModifier * GameTimer.deltaTime * (float)Screen.width * this.dragModifier;
+			this.CheckRotationReset();
+		}
+	}
+
+	// Token: 0x0600191A RID: 6426
+	private void OnPinch(PinchInfo pinfo)
+	{
+		if (!this.IsCursorOverUI() && this.mState != FreeRoamCamera.State.TransitionToTarget)
+		{
+			this.mZoomSpeed -= pinfo.magnitude * this.zoomSpeedModifier * GameTimer.deltaTime;
+		}
+	}
+
+	// Token: 0x0600191B RID: 6427
+	private void OnTargetSet(CameraManager.Transition inTransition)
+	{
+		if (!(this.target != null))
+		{
+			this.SetState(FreeRoamCamera.State.FreeRoam);
+			return;
+		}
+		if (inTransition == CameraManager.Transition.Smooth)
+		{
+			this.SetState(FreeRoamCamera.State.TransitionToTarget);
+			return;
+		}
+		this.SetState(FreeRoamCamera.State.FollowingTarget);
+	}
+
+	// Token: 0x0600191C RID: 6428
+	private float GetAutoRotateDirection()
+	{
+		if (this.autoRotationDirection == FreeRoamCamera.RotationDirection.Left)
+		{
+			return 1f;
+		}
+		return -1f;
+	}
+
+	// Token: 0x0600191D RID: 6429
+	private bool IsCursorOverUI()
+	{
+		return UIManager.instance.UIObjectsAtMousePosition.Count > 0;
+	}
+
+	// Token: 0x1700034A RID: 842
+	// (get) Token: 0x0600191E RID: 6430
+	public float cameraMinZoom
+	{
+		get
+		{
+			if (this.mIsExpandedCamera)
+			{
+				return this.expandedMinZoom;
+			}
+			return this.minZoom;
+		}
+	}
+
+	// Token: 0x1700034B RID: 843
+	// (get) Token: 0x0600191F RID: 6431
+	public float cameraMaxZoom
+	{
+		get
+		{
+			if (this.mIsExpandedCamera)
+			{
+				return this.expandedMaxZoom;
+			}
+			return this.maxZoom;
+		}
+	}
+
+	// Token: 0x1700034C RID: 844
+	// (get) Token: 0x06001920 RID: 6432
+	public float cameraMinRotationX
+	{
+		get
+		{
+			if (this.mIsExpandedCamera)
+			{
+				return this.expandedMinRotationX;
+			}
+			return this.minRotationX;
+		}
+	}
+
+	// Token: 0x1700034D RID: 845
+	// (get) Token: 0x06001921 RID: 6433
+	public float cameraMaxRotationX
+	{
+		get
+		{
+			if (this.mIsExpandedCamera)
+			{
+				return this.expandedMaxRotationX;
+			}
+			return this.maxRotationX;
+		}
+	}
+
+	// Token: 0x1700034E RID: 846
+	// (get) Token: 0x06001922 RID: 6434
+	public GameObject target
+	{
+		get
+		{
+			return this.mTarget;
+		}
+	}
+
+	// Token: 0x1700034F RID: 847
+	// (set) Token: 0x06001923 RID: 6435
+	public float zoom
+	{
+		set
+		{
+			this.mZoom = Mathf.Lerp(this.cameraMinZoom, this.cameraMaxZoom, Mathf.Clamp01(value));
+		}
+	}
+
+	// Token: 0x17000350 RID: 848
+	// (get) Token: 0x06001924 RID: 6436
+	public float zoomNormalized
+	{
+		get
+		{
+			return Mathf.Clamp01(1f - Mathf.InverseLerp(10f, 250f, this.mZoom));
+		}
+	}
+
+	// Token: 0x17000351 RID: 849
+	// (get) Token: 0x06001925 RID: 6437
+	public Vehicle targetVehicle
+	{
+		get
+		{
+			return this.mTargetVehicle;
+		}
+	}
+
+	// Token: 0x170007BF RID: 1983
+	// (get) Token: 0x06004BA2 RID: 19362
+	private bool isUsingChaseCam
+	{
+		get
+		{
+			return ConsoleCommands.isChaseCameraOn && (this.mState == FreeRoamCamera.State.FollowingTarget || this.mState == FreeRoamCamera.State.TransitionToTarget || this.mState == FreeRoamCamera.State.ChaseCamTransition) && Game.instance.sessionManager.isCircuitActive;
+		}
+	}
+
+	// Token: 0x06004BA3 RID: 19363
+	private void UpdateChaseCamTransition()
+	{
+		this.waitingForChaseCamToggle = true;
+		float num = Mathf.Clamp01(this.mStateTimer / this.chaseCamTransitionDuration);
+		if (this.isUsingChaseCam)
+		{
+			if (num > 0.5f)
+			{
+				this.mGameCamera.mainCamera.nearClipPlane = 0.1f;
+			}
+			this.minZoom = 7f;
+			this.expandedMinZoom = 3f;
+			this.mZoom = EasingUtility.EaseByType(this.zoomCurve, this.mPreviousZoom, this.initialChaseCamZoom, num);
+			this.UpdateRotationForChaseCam(this.chaseCamTransitionDuration, this.mPreviousRotation);
+		}
+		else
+		{
+			if (num > 0.5f)
+			{
+				this.mGameCamera.mainCamera.nearClipPlane = this.defaultNearClipPlane;
+			}
+			base.transform.parent.rotation = Quaternion.Euler(base.transform.parent.rotation.eulerAngles + new Vector3(EasingUtility.EaseByType(EasingUtility.Easing.Linear, 0f, (this.mIsExpandedCamera ? this.defaultExpandedMinRotationX : this.defaultMinRotationX) - this.mPreviousRotation.x, num), 0f, 0f));
+			this.maxZoom = this.defaultMaxZoom;
+			this.expandedMaxZoom = this.defaultExpandedMaxZoom;
+			this.mZoom = EasingUtility.EaseByType(this.zoomCurve, this.mPreviousZoom, this.mIsExpandedCamera ? this.defaultExpandedMaxZoom : this.defaultMaxZoom, num);
+		}
+		base.transform.parent.position = this.target.transform.position + base.transform.parent.right * this.mCameraRightVectorOffset;
+		if (this.mStateTimer > this.chaseCamTransitionDuration)
+		{
+			if (this.isUsingChaseCam)
+			{
+				this.maxZoom = 13f;
+				this.expandedMaxZoom = 20f;
+				this.minRotationX = 8f;
+				this.maxRotationX = 20f;
+				this.expandedMinRotationX = 5f;
+				this.expandedMaxRotationX = 15f;
+				this.zoomSpeedModifier = 3f;
+			}
+			else
+			{
+				this.minZoom = this.defaultMinZoom;
+				this.expandedMinZoom = this.defaultExpandedMinZoom;
+				this.minRotationX = this.defaultMinRotationX;
+				this.expandedMinRotationX = this.defaultExpandedMinRotationX;
+				this.maxRotationX = this.defaultMaxRotationX;
+				this.expandedMaxRotationX = this.defaultExpandedMaxRotationX;
+				this.zoomSpeedModifier = this.defaultZoomSpeedModifier;
+			}
+			this.waitingForChaseCamToggle = false;
+			this.SetState(FreeRoamCamera.State.FollowingTarget);
+		}
+	}
+
+	// Token: 0x06004BA4 RID: 19364
+	private void UpdateRotationForChaseCam(float Duration, Vector3 vector)
+	{
+		Vector3 eulerAngles = Quaternion.Euler(this.target.transform.rotation.eulerAngles.x + 10f, this.target.transform.rotation.eulerAngles.y, this.target.transform.rotation.eulerAngles.z).eulerAngles;
+		float num = Mathf.Abs(Mathf.Max(eulerAngles.y, vector.y) - 360f - Mathf.Min(eulerAngles.y, vector.y));
+		float num2 = 360f;
+		if (num < Mathf.Abs(eulerAngles.y - vector.y))
+		{
+			if (vector.y > eulerAngles.y)
+			{
+				vector.y = eulerAngles.y - num;
+			}
+			else if (vector.y < eulerAngles.y)
+			{
+				vector.y = eulerAngles.y + num;
+				num2 *= -1f;
+			}
+		}
+		Vector3 euler = EasingUtility.EaseByType(EasingUtility.Easing.Linear, vector, eulerAngles, Mathf.Clamp01(this.mStateTimer / Duration));
+		euler.y += num2;
+		base.transform.parent.rotation = Quaternion.Euler(euler);
+	}
+
+	// Token: 0x0400163C RID: 5692
+	public Action<GameObject> OnTargetChange;
+
+	// Token: 0x0400163D RID: 5693
+	public Action OnLateUpdate;
+
+	// Token: 0x0400163E RID: 5694
+	private GameCamera mGameCamera;
+
+	// Token: 0x0400163F RID: 5695
+	private GameObject mTarget;
+
+	// Token: 0x04001640 RID: 5696
+	private UnityVehicle mVehicleTarget;
+
+	// Token: 0x04001641 RID: 5697
+	[SerializeField]
+	private bool autoRotateAroundTarget;
+
+	// Token: 0x04001642 RID: 5698
+	[SerializeField]
+	private bool startRotateOnEnable;
+
+	// Token: 0x04001643 RID: 5699
+	[SerializeField]
+	private float rotationXSpeedModifier = 0.01f;
+
+	// Token: 0x04001644 RID: 5700
+	[SerializeField]
+	private float rotationYSpeedModifier = 0.01f;
+
+	// Token: 0x04001645 RID: 5701
+	[SerializeField]
+	private float minRotationX = 25f;
+
+	// Token: 0x04001646 RID: 5702
+	[SerializeField]
+	private float maxRotationX = 80f;
+
+	// Token: 0x04001647 RID: 5703
+	[SerializeField]
+	private float expandedMinRotationX = 25f;
+
+	// Token: 0x04001648 RID: 5704
+	[SerializeField]
+	private float expandedMaxRotationX = 80f;
+
+	// Token: 0x04001649 RID: 5705
+	[SerializeField]
+	private float keyRotationSpeed = 750f;
+
+	// Token: 0x0400164A RID: 5706
+	[SerializeField]
+	private float maxRotationSpeed = 7.5f;
+
+	// Token: 0x0400164B RID: 5707
+	[SerializeField]
+	private float dragInitialDelay;
+
+	// Token: 0x0400164C RID: 5708
+	[SerializeField]
+	private float dragModifier = 1f;
+
+	// Token: 0x0400164D RID: 5709
+	private float mOrbitSpeedX;
+
+	// Token: 0x0400164E RID: 5710
+	private float mOrbitSpeedY;
+
+	// Token: 0x0400164F RID: 5711
+	[SerializeField]
+	private float autoRotateAfterSeconds = 3f;
+
+	// Token: 0x04001650 RID: 5712
+	[SerializeField]
+	private EasingUtility.Easing autoRotateCurve;
+
+	// Token: 0x04001651 RID: 5713
+	[SerializeField]
+	private float autoRotateAroundSpeedSecond = 10f;
+
+	// Token: 0x04001652 RID: 5714
+	[SerializeField]
+	private FreeRoamCamera.RotationDirection autoRotationDirection = FreeRoamCamera.RotationDirection.Right;
+
+	// Token: 0x04001653 RID: 5715
+	[SerializeField]
+	private float minZoom = 100f;
+
+	// Token: 0x04001654 RID: 5716
+	[SerializeField]
+	private float maxZoom = 220f;
+
+	// Token: 0x04001655 RID: 5717
+	[SerializeField]
+	private float expandedMinZoom = 100f;
+
+	// Token: 0x04001656 RID: 5718
+	[SerializeField]
+	private float expandedMaxZoom = 220f;
+
+	// Token: 0x04001657 RID: 5719
+	[SerializeField]
+	private float zoomSpeedModifier = 10f;
+
+	// Token: 0x04001658 RID: 5720
+	private float gamepadZoomSpeedModifier = 8f;
+
+	// Token: 0x04001659 RID: 5721
+	private float mZoomSpeed;
+
+	// Token: 0x0400165A RID: 5722
+	private float mZoomSpeedButtons;
+
+	// Token: 0x0400165B RID: 5723
+	private float mZoom;
+
+	// Token: 0x0400165C RID: 5724
+	[SerializeField]
+	private EasingUtility.Easing zoomCurve;
+
+	// Token: 0x0400165D RID: 5725
+	[SerializeField]
+	private float transitionDuration = 1f;
+
+	// Token: 0x0400165E RID: 5726
+	[SerializeField]
+	private float zoomBlendDuration = 0.25f;
+
+	// Token: 0x0400165F RID: 5727
+	[SerializeField]
+	private float minTransitionDistanceForZoom;
+
+	// Token: 0x04001660 RID: 5728
+	[SerializeField]
+	private float maxTransitionDistanceForZoom;
+
+	// Token: 0x04001661 RID: 5729
+	private Vector3 mPreviousPosition = Vector3.zero;
+
+	// Token: 0x04001662 RID: 5730
+	private float mPreviousZoom;
+
+	// Token: 0x04001663 RID: 5731
+	private float mTargetZoom;
+
+	// Token: 0x04001664 RID: 5732
+	private float mTransitionZoom;
+
+	// Token: 0x04001665 RID: 5733
+	private float mCameraRightVectorOffset;
+
+	// Token: 0x04001666 RID: 5734
+	private FreeRoamCamera.State mState;
+
+	// Token: 0x04001667 RID: 5735
+	private float mStateTimer;
+
+	// Token: 0x04001668 RID: 5736
+	private float mAutoRotateTimer;
+
+	// Token: 0x04001669 RID: 5737
+	private float mDragDelayTimer;
+
+	// Token: 0x0400166A RID: 5738
+	private bool mDisablePanControls;
+
+	// Token: 0x0400166B RID: 5739
+	private bool mIsExpandedCamera;
+
+	// Token: 0x0400166C RID: 5740
+	private FreeRoamCamera.RotationAxis mRotationAxis;
+
+	// Token: 0x0400166D RID: 5741
+	private Vector3 mPreviousHUDRotation = Vector3.zero;
+
+	// Token: 0x0400166E RID: 5742
+	private Vehicle mTargetVehicle;
+
+	// Token: 0x04004E7D RID: 20093
+	private float defaultMinZoom;
+
+	// Token: 0x04004E7E RID: 20094
+	private float defaultMaxZoom;
+
+	// Token: 0x04004E7F RID: 20095
+	private float defaultExpandedMinZoom;
+
+	// Token: 0x04004E80 RID: 20096
+	private float defaultExpandedMaxZoom;
+
+	// Token: 0x04004E81 RID: 20097
+	private float mIdleTimer;
+
+	// Token: 0x04004E82 RID: 20098
+	private bool previousChaseCamState;
+
+	// Token: 0x04004E83 RID: 20099
+	private float defaultMinRotationX;
+
+	// Token: 0x04004E84 RID: 20100
+	private float defaultMaxRotationX;
+
+	// Token: 0x04004E85 RID: 20101
+	private float defaultExpandedMinRotationX;
+
+	// Token: 0x04004E86 RID: 20102
+	private float defaultExpandedMaxRotationX;
+
+	// Token: 0x04004E87 RID: 20103
+	private float defaultZoomSpeedModifier;
+
+	// Token: 0x04004E88 RID: 20104
+	private float chaseCamTransitionDuration = 0.75f;
+
+	// Token: 0x04004E89 RID: 20105
+	private Vector3 mPreviousRotation = Vector3.zero;
+
+	// Token: 0x04004E8A RID: 20106
+	private float revertChaseCamDelay = 3f;
+
+	// Token: 0x04004E8B RID: 20107
+	private float initialChaseCamZoom = 10f;
+
+	// Token: 0x04004E8C RID: 20108
+	private bool waitingForChaseCamToggle;
+
+	// Token: 0x04004E8D RID: 20109
+	private Vector3 transitionToTargetPreRotaion = Vector3.zero;
+
+	// Token: 0x04004E8E RID: 20110
+	private float defaultNearClipPlane;
+
+	// Token: 0x04004E8F RID: 20111
+	private Vector4 mPreviousRotationLimit = Vector4.zero;
+
+	// Token: 0x0200036C RID: 876
+	private enum AccelerationAxis
+	{
+		// Token: 0x04001670 RID: 5744
+		All,
+		// Token: 0x04001671 RID: 5745
+		X,
+		// Token: 0x04001672 RID: 5746
+		Y,
+		// Token: 0x04001673 RID: 5747
+		None
+	}
+
+	// Token: 0x0200036D RID: 877
+	private enum RotationAxis
+	{
+		// Token: 0x04001675 RID: 5749
+		All,
+		// Token: 0x04001676 RID: 5750
+		X,
+		// Token: 0x04001677 RID: 5751
+		Y,
+		// Token: 0x04001678 RID: 5752
+		None
+	}
+
+	// Token: 0x0200036E RID: 878
+	private enum RotationDirection
+	{
+		// Token: 0x0400167A RID: 5754
+		Left,
+		// Token: 0x0400167B RID: 5755
+		Right
+	}
+
+	// Token: 0x0200036F RID: 879
+	private enum State
+	{
+		// Token: 0x0400167D RID: 5757
+		FreeRoam,
+		// Token: 0x0400167E RID: 5758
+		FollowingTarget,
+		// Token: 0x0400167F RID: 5759
+		AutoRotating,
+		// Token: 0x04001680 RID: 5760
+		TransitionAutoRotating,
+		// Token: 0x04001681 RID: 5761
+		TransitionToTarget,
+		// Token: 0x04004EA3 RID: 20131
+		ChaseCamTransition
+	}
+
+	// Token: 0x02000370 RID: 880
+	public enum Mode
+	{
+		// Token: 0x04001683 RID: 5763
+		Normal
+	}
+}

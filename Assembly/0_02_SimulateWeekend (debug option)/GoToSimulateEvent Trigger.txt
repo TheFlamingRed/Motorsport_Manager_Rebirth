@@ -1,0 +1,33 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000030 RID: 48
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class GoToSimulateEventEffect : RaceEventEffect
+{
+	// Token: 0x060000CE RID: 206
+	public override void Trigger()
+	{
+		base.Trigger();
+		Championship[] championshipsRacingToday = Game.instance.championshipManager.GetChampionshipsRacingToday(true, Championship.Series.Count);
+		bool flag = false;
+		if (championshipsRacingToday.Length != 0 && (flag || Game.instance.player.IsUnemployed() || Game.instance.player.skipraceweekends || !this.isPlayerRacingToday(championshipsRacingToday)))
+		{
+			Championship.Series championshipSeries = Game.instance.player.GetChampionshipSeries();
+			bool flag2 = Game.instance.championshipManager.GetChampionshipsRacingToday(true, championshipSeries).Length != 0;
+			if (!flag && (!flag2 || Game.instance.tutorialSystem.isTutorialOnScreen || ConsoleCommands.testSeasons))
+			{
+				for (int i = 0; i < championshipsRacingToday.Length; i++)
+				{
+					SessionSimulation.SimulateEvent(championshipsRacingToday[i]);
+					Debug.Log("Event Simulated -> " + championshipsRacingToday[i].GetAcronym(false, string.Empty) + " - " + Localisation.LocaliseID(championshipsRacingToday[i].GetPreviousEventDetails().circuit.locationNameID, null), null);
+				}
+				Game.instance.LoadDesignDataForPlayerTeam();
+				return;
+			}
+			Game.instance.stateInfo.SetStateToGoToAfterPlayerConfirms(GameState.Type.SimulateEventState);
+			Game.instance.stateInfo.SetIsReadyToSimulateRace(true);
+			Game.instance.time.Pause(GameTimer.PauseType.Game);
+		}
+	}
+}

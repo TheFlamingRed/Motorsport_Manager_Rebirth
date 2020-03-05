@@ -1,0 +1,18 @@
+using System;
+using FullSerializer;
+
+// Token: 0x0200002F RID: 47
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class GoToEventStateEffect : RaceEventEffect
+{
+	// Token: 0x060000CC RID: 204
+	public override void Trigger()
+	{
+		base.Trigger();
+		if (!Game.instance.player.IsUnemployed() && !Game.instance.player.skipraceweekends && this.championship.isPlayerChampionship)
+		{
+			Game.instance.stateInfo.SetStateToGoToAfterPlayerConfirms(GameState.Type.PracticePreSession);
+			Game.instance.time.Pause(GameTimer.PauseType.Game);
+		}
+	}
+}

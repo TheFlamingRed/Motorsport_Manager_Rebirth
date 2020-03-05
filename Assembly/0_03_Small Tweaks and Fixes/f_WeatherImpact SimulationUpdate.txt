@@ -1,0 +1,39 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000486 RID: 1158
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class WeatherImpact : PerformanceImpact
+{
+	// Token: 0x060021A6 RID: 8614 RVA: 0x000E9F18 File Offset: 0x000E8118
+	public override void SimulationUpdate(float inDeltaTime)
+	{
+		base.SimulationUpdate(inDeltaTime);
+		this.ClearTimeCost();
+		float normalizedTrackWater = this.mWeatherDetails.GetNormalizedTrackWater();
+		float num = EasingUtility.EaseByType(EasingUtility.Easing.InOutQuad, 0f, 1f, normalizedTrackWater);
+		num = Mathf.Lerp(1f, 0.5f, num);
+		float num2 = 1f - num;
+		float normalizedTrackRubber = this.mWeatherDetails.GetNormalizedTrackRubber();
+		float num3 = 1f - normalizedTrackRubber;
+		float num4 = 0f;
+		if (this.mVehicle.championship.series == Championship.Series.SingleSeaterSeries)
+		{
+			if (this.mSetupOutput == null)
+			{
+				this.mSetupOutput = this.mVehicle.setup.GetSetupOutput();
+			}
+			float num5 = this.mSetupOutput.aerodynamics;
+			if (normalizedTrackWater > 0f && num5 < 0f)
+			{
+				num5 = Mathf.Abs(num5);
+				num4 = 1f - Mathf.Clamp01(Mathf.Sin(num5 / normalizedTrackWater * 3.14159274f / 2f));
+			}
+		}
+		float num6 = this.mCarPerformance.trackWater.maxWetTrackTimeCost * num2;
+		float num7 = this.mCarPerformance.trackWater.noRubberOnTrackTimeCost * num3;
+		float num8 = num4 * this.mCarPerformance.trackWater.maxWetSetupPerformanceTimeCost * normalizedTrackWater;
+		base.IncreaseTimeCost(num6 + num7 + num8);
+	}
+}

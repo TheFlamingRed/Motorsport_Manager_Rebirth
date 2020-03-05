@@ -1,0 +1,13 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000435 RID: 1077
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class AIBehaviour : InstanceCounter
+{
+	// Token: 0x06001E84 RID: 7812 RVA: 0x00012571 File Offset: 0x00010771
+		public virtual float GetComfortDistanceToCarAhead()
+	{
+		return VehicleConstants.vehicleLength / 2f + RandomUtility.GetRandom01();
+	}
+}

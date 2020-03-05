@@ -1,0 +1,47 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000434 RID: 1076
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class AIBlueFlagBehaviour : AIBehaviour
+{
+	// Token: 0x06001E91 RID: 7825 RVA: 0x000DC728 File Offset: 0x000DA928
+		public static bool IsInBlueFlagZoneOf(Vehicle inVehicleBehind, Vehicle inVehicleAhead)
+	{
+		if (inVehicleBehind.pathController.IsOnComparablePath(inVehicleAhead))
+		{
+			float pathDistanceToVehicle = inVehicleBehind.pathController.GetPathDistanceToVehicle(inVehicleAhead);
+			SessionManager sessionManager = Game.instance.sessionManager;
+			if (pathDistanceToVehicle > 1.401298E-45f && !sessionManager.hasSessionEnded)
+			{
+				if (sessionManager.sessionType == SessionDetails.SessionType.Race)
+				{
+					GateInfo gateTimer = sessionManager.GetGateTimer(inVehicleBehind.pathController.GetPreviousGate().id);
+					float timeGapBetweenVehicles = gateTimer.GetTimeGapBetweenVehicles(inVehicleAhead, inVehicleBehind);
+					if (timeGapBetweenVehicles < 0.5f || inVehicleAhead.performance.IsExperiencingCriticalIssue())
+					{
+						return true;
+					}
+				}
+				else
+				{
+					if (inVehicleAhead.pathController.IsOnStraight() && inVehicleAhead.speed < inVehicleBehind.speed)
+					{
+						float num = inVehicleBehind.speed - inVehicleAhead.speed;
+						float num2 = (pathDistanceToVehicle - VehicleConstants.vehicleLength) / num;
+						if (num2 < 4f)
+						{
+							return true;
+						}
+					}
+					bool flag = pathDistanceToVehicle - VehicleConstants.vehicleLength * 6f < 0f;
+					if (flag)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+}

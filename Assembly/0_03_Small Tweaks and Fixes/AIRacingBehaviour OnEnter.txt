@@ -1,0 +1,25 @@
+using System;
+using FullSerializer;
+
+// Token: 0x0200043F RID: 1087
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class AIRacingBehaviour : AIBehaviour
+{
+	// Token: 0x06001F23 RID: 7971 RVA: 0x000DDC00 File Offset: 0x000DBE00
+	public override void OnEnter()
+	{
+			base.OnEnter();
+	if (Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race)
+	{
+		this.mConfortDistanceToVehicleAhead = VehicleConstants.vehicleLength * RandomUtility.GetRandom(0.2f, 0.85f);
+	}
+	else
+	{
+		this.mConfortDistanceToVehicleAhead = VehicleConstants.vehicleLength * 2f;
+	}
+	if (this.mRacingVehicle != null && (Game.instance.sessionManager.flag == SessionManager.Flag.SafetyCar || Game.instance.sessionManager.flag == SessionManager.Flag.VirtualSafetyCar))
+	{
+		this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.SafetyFlag);
+	}
+	}
+}

@@ -1,0 +1,13 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000442 RID: 1090
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class AIRollingStartBehaviour : AIBehaviour
+{
+	// Token: 0x06001F52 RID: 8018
+	public override float GetComfortDistanceToCarAhead()
+	{
+		return VehicleConstants.vehicleLength / 2f + RandomUtility.GetRandom01();
+	}
+}

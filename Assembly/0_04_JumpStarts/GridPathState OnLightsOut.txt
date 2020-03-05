@@ -1,0 +1,39 @@
+using System;
+using FullSerializer;
+
+// Token: 0x0200045F RID: 1119
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class GridPathState : PathState
+{
+	// Token: 0x06002058 RID: 8280
+	public void OnLightsOut()
+	{
+		this.mLightAreOut = true;
+		float random = RandomUtility.GetRandom01();
+
+		if (random < Game.instance.player.jumpStartPercentage / 100f)
+
+			{
+				base.racingVehicle.performance.SetRaceStartType(SessionPerformance.RaceStartType.Jump);
+		this.mRaceStartReactionTimer = RandomUtility.GetRandom(0f, 0.1f);
+			}
+
+		if (random < 0.2f)
+		{
+			base.racingVehicle.performance.SetRaceStartType(SessionPerformance.RaceStartType.Great);
+			this.mRaceStartReactionTimer = RandomUtility.GetRandom(0.15f, 0.25f);
+			return;
+		}
+		if (random < 0.4f)
+		{
+			base.racingVehicle.performance.SetRaceStartType(SessionPerformance.RaceStartType.Poor);
+			this.mRaceStartReactionTimer = RandomUtility.GetRandom(0.75f, 1f);
+			return;
+		}
+		
+			base.racingVehicle.performance.SetRaceStartType(SessionPerformance.RaceStartType.Average);
+			this.mRaceStartReactionTimer = RandomUtility.GetRandom(0.25f, 0.75f);
+			return;
+		
+	}
+}

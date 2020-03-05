@@ -1,0 +1,717 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x0200048B RID: 1163
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+[Serializable]
+public class SessionPerformance : InstanceCounter
+{
+	// Token: 0x060021D2 RID: 8658 RVA: 0x000EA790 File Offset: 0x000E8990
+	public SessionPerformance()
+	{
+	}
+
+	// Token: 0x060021D3 RID: 8659 RVA: 0x00013F27 File Offset: 0x00012127
+	static SessionPerformance()
+	{
+	}
+
+	// Token: 0x060021D4 RID: 8660 RVA: 0x000EA88C File Offset: 0x000E8A8C
+	public void Start(Vehicle inVehicle)
+	{
+		this.mVehicle = inVehicle;
+		this.SetPerformanceState(SessionPerformance.PerformanceState.Racing);
+		DesignData designData = DesignDataManager.instance.GetDesignData();
+		CarPerformanceDesignData carPerformance = designData.carPerformance;
+		if (inVehicle is RacingVehicle)
+		{
+			this.mRacingVehicle = (inVehicle as RacingVehicle);
+			this.mRacingVehicle.driver.GetTraitRefreshTypes(out this.mUpdateDriverStatsOnEnterGate, out this.mUpdateDriverStatsOnNewSetup, out this.mUpdateDriverStatsOnNewLap);
+			this.CalculateCarStats();
+			this.StartImpact(SessionPerformance.Impacts.DriverForm, this.mDriverForm, carPerformance.driverForm.isActive);
+			this.StartImpact(SessionPerformance.Impacts.CriticalParts, this.mCriticalCarPartPerformance, carPerformance.criticalCarPart.isActive);
+			this.StartImpact(SessionPerformance.Impacts.DriverPerformance, this.mDriverPerformance, carPerformance.driverPerformance.isActive);
+			this.StartImpact(SessionPerformance.Impacts.DrivingStyle, this.mDrivingStyle, carPerformance.drivingStyle.isActive);
+			this.StartImpact(SessionPerformance.Impacts.Fuel, this.mFuel, carPerformance.fuel.isActive);
+			this.StartImpact(SessionPerformance.Impacts.Setup, this.mSetupPerformance, carPerformance.setup.isActive);
+			this.StartImpact(SessionPerformance.Impacts.TemperatureOptimisation, this.mTemperatureOptimisation, carPerformance.temperatureOptimisation.isActive);
+			this.StartImpact(SessionPerformance.Impacts.Tyres, this.mTyrePerformance, DesignDataManager.instance.tyreData.isActive);
+			this.StartImpact(SessionPerformance.Impacts.TrackExpert, this.mTrackExpertPerformance, carPerformance.trackExpert.isActive);
+			this.StartImpact(SessionPerformance.Impacts.CarCondition, this.mCarConditionPerformance, carPerformance.carCondition.isActive);
+			this.StartImpact(SessionPerformance.Impacts.Bonuses, this.mSessionBonuses, carPerformance.bonuses.isActive);
+			this.StartImpact(SessionPerformance.Impacts.Weather, this.mWeatherImpact, carPerformance.trackWater.isActive);
+			this.StartImpact(SessionPerformance.Impacts.ERS, this.mERSPerformance, this.mRacingVehicle.ERSController.isActive);
+			this.StartImpact(SessionPerformance.Impacts.DriverStamina, this.mDriverStaminaPerformance, carPerformance.driverPerformance.isActive);
+		}
+		if (inVehicle is SafetyVehicle)
+		{
+			this.mSafetyVehicle = (inVehicle as SafetyVehicle);
+		}
+	}
+
+	// Token: 0x060021D5 RID: 8661 RVA: 0x000EAA70 File Offset: 0x000E8C70
+	public void OnLoad(Vehicle inVehicle)
+	{
+		this.mRefreshCarStats = true;
+		this.mVehicle = inVehicle;
+		if (this.mVehicle is RacingVehicle)
+		{
+			this.mRacingVehicle = (this.mVehicle as RacingVehicle);
+		}
+		if (this.mVehicle is SafetyVehicle)
+		{
+			this.mSafetyVehicle = (this.mVehicle as SafetyVehicle);
+		}
+	}
+
+	// Token: 0x060021D6 RID: 8662 RVA: 0x000EAAD0 File Offset: 0x000E8CD0
+	public void PrepareForSession()
+	{
+		if (this.mSafetyVehicle == null)
+		{
+			for (int i = 0; i < this.mPerformanceImpacts.Length; i++)
+			{
+				if (this.mPerformanceImpacts[i].isActive)
+				{
+					this.mPerformanceImpacts[i].PrepareForSession();
+				}
+			}
+			this.UpdateRacingPerformance();
+		}
+		this.mNeutralPerformance.Copy(Game.instance.sessionManager.raceDirector.averageCarStats);
+	}
+
+	// Token: 0x060021D7 RID: 8663 RVA: 0x000EAB48 File Offset: 0x000E8D48
+	public void OnSessionStart()
+	{
+		for (int i = 0; i < this.mPerformanceImpacts.Length; i++)
+		{
+			if (this.mPerformanceImpacts[i].isActive)
+			{
+				this.mPerformanceImpacts[i].OnSessionStart();
+			}
+		}
+	}
+
+	// Token: 0x060021D8 RID: 8664 RVA: 0x000EAB90 File Offset: 0x000E8D90
+	public void CalculateCarStats()
+	{
+		int championshipID = this.mVehicle.championship.championshipID;
+		CarStatsDesignData carStatsData = DesignDataManager.instance.carStatsData;
+		SessionPerformance.mMaxChampionshipCarStats.topSpeed = GameUtility.MilesPerHourToMetersPerSecond(carStatsData.topSpeedMph);
+		SessionPerformance.mMaxChampionshipCarStats.acceleration = carStatsData.acceleration;
+		SessionPerformance.mMaxChampionshipCarStats.braking = carStatsData.braking;
+		SessionPerformance.mMaxChampionshipCarStats.highSpeedCorners = carStatsData.highSpeedCorners;
+		SessionPerformance.mMaxChampionshipCarStats.mediumSpeedCorners = carStatsData.mediumSpeedCorners;
+		SessionPerformance.mMaxChampionshipCarStats.lowSpeedCorners = carStatsData.lowSpeedCorners;
+		float num = (float)SimulationLapTimeModel.EstimateLapTime(SessionPerformance.mMaxChampionshipCarStats, Game.instance.sessionManager.circuit).TotalSeconds;
+		List<Championship> championshipsByOrder = Game.instance.championshipManager.GetChampionshipsByOrder(this.mVehicle.championship.series);
+		for (int i = 0; i < championshipsByOrder.Count; i++)
+		{
+			if (this.mVehicle.championship == championshipsByOrder[i])
+			{
+				if (i == 1)
+				{
+					this.mChampionshipTierTimeCost = carStatsData.tier2TimeCost;
+				}
+				if (i == 2)
+				{
+					this.mChampionshipTierTimeCost = carStatsData.tier3TimeCost;
+				}
+			}
+		}
+		float inValue = 1f - Mathf.Clamp01(num / (num + carStatsData.minPerformanceTimeCost));
+		SessionPerformance.mMinChampionshipCarStats.Copy(SessionPerformance.mMaxChampionshipCarStats);
+		this.mImpactPerformance.Copy(SessionPerformance.mMaxChampionshipCarStats);
+		this.mImpactPerformance.Scale(inValue);
+		for (CarStats.StatType statType = CarStats.StatType.TopSpeed; statType < CarStats.StatType.Count; statType++)
+		{
+			float num2 = this.mImpactPerformance.GetStat(statType);
+			switch (statType)
+			{
+			case CarStats.StatType.TopSpeed:
+				num2 *= carStatsData.topSpeedPerformanceScalar;
+				break;
+			case CarStats.StatType.Acceleration:
+				num2 *= carStatsData.accelerationPerformanceScalar;
+				break;
+			case CarStats.StatType.Braking:
+				num2 *= carStatsData.brakingPerformanceScalar;
+				break;
+			case CarStats.StatType.LowSpeedCorners:
+			case CarStats.StatType.MediumSpeedCorners:
+			case CarStats.StatType.HighSpeedCorners:
+				num2 *= carStatsData.corneringPerformanceScalar;
+				break;
+			}
+			SessionPerformance.mMinChampionshipCarStats.SetStat(statType, SessionPerformance.mMinChampionshipCarStats.GetStat(statType) - num2);
+		}
+		if (carStatsData.isActive)
+		{
+			Car car = this.mRacingVehicle.car;
+			foreach (CarPart.PartType partType2 in CarPart.GetPartType(car.carManager.team.championship.series, false))
+			{
+				PartTypeSlotSettings partTypeSlotSettings = Game.instance.partSettingsManager.championshipPartSettings[championshipID][partType2];
+				float statWithPerformance = car.GetPart(partType2).stats.statWithPerformance;
+				float num3 = Mathf.Clamp01((statWithPerformance - (float)partTypeSlotSettings.championshipMinStat) / (float)partTypeSlotSettings.championshipMaxStat);
+				CarStats.StatType statForPartType = CarPart.GetStatForPartType(partType2);
+				float num4 = num3;
+				if (statForPartType == CarStats.StatType.TopSpeed || statForPartType == CarStats.StatType.Acceleration || statForPartType == CarStats.StatType.Braking)
+				{
+					num4 = Mathf.Lerp(SessionPerformance.mMinChampionshipCarStats.GetStat(statForPartType), SessionPerformance.mMaxChampionshipCarStats.GetStat(statForPartType), num4);
+				}
+				this.mCarStats.SetStat(statForPartType, num4);
+			}
+		}
+		else
+		{
+			this.mCarStats.Copy(SessionPerformance.mMaxChampionshipCarStats);
+		}
+		this.mEstimatedBestLapTime = (float)SimulationLapTimeModel.EstimateLapTime(this.mCarStats, Game.instance.sessionManager.circuit).TotalSeconds;
+		Game.instance.sessionManager.raceDirector.RegisterCarPerformanceStats(this.mCarStats);
+	}
+
+	// Token: 0x060021D9 RID: 8665 RVA: 0x000EAF00 File Offset: 0x000E9100
+	public void SetRaceStartType(SessionPerformance.RaceStartType inRaceStartType)
+{
+	this.mRaceStartType = inRaceStartType;
+	float num = 0f;
+	bool flag = this.mVehicle.championship.series == Championship.Series.SingleSeaterSeries;
+	float num2 = (float)this.mRacingPerformance.statsTotal / (float)this.mNeutralPerformance.statsTotal;
+	if (num2 < 0.8f)
+	{
+		num -= 0.05f;
+	
+	}
+	else if (num2 > 1.2f)
+	{
+		num += 0.05f;
+		
+	}
+	switch (this.mRaceStartType)
+	{
+	case SessionPerformance.RaceStartType.Average:
+		num += 1f;
+		break;
+	case SessionPerformance.RaceStartType.Great:
+		num += ((!flag) ? 1.01f : 1.05f);
+		break;
+	case SessionPerformance.RaceStartType.Poor:
+		num += ((!flag) ? 0.99f : 0.95f);
+		break;
+	case SessionPerformance.RaceStartType.Jump:
+		num = ((!flag) ? 1.06f : 1.1f);
+
+			Game.instance.sessionManager.raceDirector.penaltyDirector.ApplyPenaltyIfViable(this.mRacingVehicle, Penalty.PenaltyCause.JumpStart);
+		
+		break;
+	}
+	this.mRaceStartPerformance.Copy(this.mNeutralPerformance);
+	this.mRaceStartPerformance.Scale(num);
+}
+
+	// Token: 0x060021DA RID: 8666 RVA: 0x000EB008 File Offset: 0x000E9208
+	public void SetPerformanceState(SessionPerformance.PerformanceState inState)
+	{
+		this.mPerformanceState = inState;
+		this.UpdateCurrentPerformance();
+		TrackLayoutSpeedController controller = this.mVehicle.speedManager.GetController<TrackLayoutSpeedController>();
+		if (controller != null)
+		{
+			controller.CalculateNextCornerTargetSpeed();
+		}
+	}
+
+	// Token: 0x060021DB RID: 8667 RVA: 0x000EB040 File Offset: 0x000E9240
+	private void UpdateCurrentPerformance()
+	{
+		if ((this.mRacingVehicle != null && !this.mRacingVehicle.timer.hasSeenChequeredFlag) || this.mSafetyVehicle != null)
+		{
+			switch (this.mPerformanceState)
+			{
+			case SessionPerformance.PerformanceState.Racing:
+				this.mCurrentPerformance.Copy(this.mRacingPerformance);
+				break;
+			case SessionPerformance.PerformanceState.RaceStart:
+				this.mCurrentPerformance.Copy(this.mRaceStartPerformance);
+				break;
+			case SessionPerformance.PerformanceState.Neutral:
+				this.mCurrentPerformance.Copy(this.mNeutralPerformance);
+				break;
+			}
+		}
+	}
+
+	// Token: 0x060021DC RID: 8668 RVA: 0x00013F3D File Offset: 0x0001213D
+	private void StartImpact(SessionPerformance.Impacts inImpacts, PerformanceImpact inPerformanceImpact, bool inIsActive)
+	{
+		this.mPerformanceImpacts[(int)inImpacts] = inPerformanceImpact;
+		inPerformanceImpact.Start(this.mRacingVehicle);
+		inPerformanceImpact.SetActive(inIsActive);
+	}
+
+	// Token: 0x060021DD RID: 8669 RVA: 0x00013F5B File Offset: 0x0001215B
+	public void OnEnterGate()
+	{
+		if (this.mUpdateDriverStatsOnEnterGate)
+		{
+			this.RefreshDriverStatsContributions();
+		}
+		this.UpdateRacingPerformance();
+	}
+
+	// Token: 0x060021DE RID: 8670 RVA: 0x00013F74 File Offset: 0x00012174
+	public void OnNewLap()
+	{
+		if (this.mUpdateDriverStatsOnNewLap)
+		{
+			this.RefreshDriverStatsContributions();
+		}
+	}
+
+	// Token: 0x060021DF RID: 8671 RVA: 0x00013F87 File Offset: 0x00012187
+	public void OnNewSetup()
+	{
+		this.mSessionBonuses.RefreshCarPartBonuses();
+		if (this.mUpdateDriverStatsOnNewSetup)
+		{
+			this.RefreshDriverStatsContributions();
+		}
+	}
+
+	// Token: 0x060021E0 RID: 8672 RVA: 0x000EB0DC File Offset: 0x000E92DC
+	public void RefreshDriverStatsContributions()
+	{
+		for (int i = 0; i < this.mPerformanceImpacts.Length; i++)
+		{
+			this.mPerformanceImpacts[i].RefreshDriverStatsContribution();
+		}
+		this.mRacingVehicle.driver.driverStamina.UpdateBaseStats();
+	}
+
+	// Token: 0x060021E1 RID: 8673 RVA: 0x000EB124 File Offset: 0x000E9324
+	public void UpdateRacingPerformance()
+	{
+		if ((this.mRacingVehicle != null && !this.mRacingVehicle.timer.hasSeenChequeredFlag) || this.mSafetyVehicle != null)
+		{
+			this.mRacingPerformance.Copy(this.mCarStats);
+			this.mIsExperiencingCriticalIssue = false;
+			float num = 0f;
+			num += this.mChampionshipTierTimeCost;
+			for (int i = 0; i < this.mPerformanceImpacts.Length; i++)
+			{
+				if (this.mPerformanceImpacts[i].isActive)
+				{
+					this.mPerformanceImpacts[i].SimulationUpdate(this.mTimeSinceLastUpdate);
+					num += this.mPerformanceImpacts[i].timeCost;
+					if (this.mPerformanceImpacts[i].isExperiencingCriticalIssue)
+					{
+						this.mIsExperiencingCriticalIssue = true;
+					}
+				}
+			}
+			this.mTimeCost = Mathf.Lerp(num, this.mTimeCost, 0f);
+			float num2 = 1f - Mathf.Clamp01(this.mEstimatedBestLapTime / (this.mEstimatedBestLapTime + num));
+			num2 = Mathf.Min(num2, 0.8f);
+			this.mImpactPerformance.Copy(this.mCarStats);
+			this.mImpactPerformance.Scale(num2);
+			this.mRacingPerformance.Subtract(this.mImpactPerformance);
+			this.mTimeSinceLastUpdate = 0f;
+		}
+	}
+
+	// Token: 0x060021E2 RID: 8674 RVA: 0x000EB268 File Offset: 0x000E9468
+	public void SimulationUpdate()
+	{
+		if (this.mRacingVehicle != null && this.mRacingVehicle.championship.series == Championship.Series.EnduranceSeries && Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race && !this.mRacingVehicle.behaviourManager.isOutOfRace)
+		{
+			for (int i = 0; i < this.mRacingVehicle.driversForCar.Length; i++)
+			{
+				this.mRacingVehicle.driversForCar[i].driverStamina.SimulationUpdate(this.mRacingVehicle);
+			}
+		}
+		if (this.mRefreshCarStats && this.mSafetyVehicle == null)
+		{
+			this.mRefreshCarStats = false;
+			this.CalculateCarStats();
+		}
+		this.mTimeSinceLastUpdate += GameTimer.simulationDeltaTime;
+		this.mTemperatureOptimisation.SimulationUpdate(GameTimer.simulationDeltaTime);
+		this.UpdateCurrentPerformance();
+	}
+
+	// Token: 0x060021E3 RID: 8675 RVA: 0x00013FA5 File Offset: 0x000121A5
+	public float GetTopSpeed()
+	{
+		return this.mCurrentPerformance.topSpeed;
+	}
+
+	// Token: 0x060021E4 RID: 8676 RVA: 0x00013FB2 File Offset: 0x000121B2
+	public float GetAcceleration()
+	{
+		return this.mCurrentPerformance.acceleration;
+	}
+
+	// Token: 0x060021E5 RID: 8677 RVA: 0x00013FBF File Offset: 0x000121BF
+	public float GetBraking()
+	{
+		return this.mCurrentPerformance.braking;
+	}
+
+	// Token: 0x060021E6 RID: 8678
+	public static float GetSpeedForCorner(CarStats inPerformanceStats, PathData.Corner inCorner)
+	{
+		float num = 0f;
+		switch (inCorner.type)
+		{
+		case PathData.Corner.Type.LowSpeed:
+		{
+			float num2 = Mathf.Lerp(SessionPerformance.mMinChampionshipCarStats.lowSpeedCorners, SessionPerformance.mMaxChampionshipCarStats.lowSpeedCorners, inPerformanceStats.lowSpeedCorners);
+			float t = inCorner.speed * num2;
+			num = Mathf.Lerp(0.24f, 0.4f, t);
+			num *= (SessionPerformance.mMaxChampionshipCarStats.topSpeed * 0.5f + inPerformanceStats.topSpeed * 0.5f) * 0.9f;
+			break;
+		}
+		case PathData.Corner.Type.MediumSpeed:
+		{
+			float num3 = Mathf.Lerp(SessionPerformance.mMinChampionshipCarStats.mediumSpeedCorners, SessionPerformance.mMaxChampionshipCarStats.mediumSpeedCorners, inPerformanceStats.mediumSpeedCorners);
+			float t2 = inCorner.speed * num3;
+			num = Mathf.Lerp(0.44f, 0.6f, t2);
+			num *= (SessionPerformance.mMaxChampionshipCarStats.topSpeed * 0.5f + inPerformanceStats.topSpeed * 0.5f) * 0.9f;
+			break;
+		}
+		case PathData.Corner.Type.HighSpeed:
+		{
+			float num4 = Mathf.Lerp(SessionPerformance.mMinChampionshipCarStats.highSpeedCorners, SessionPerformance.mMaxChampionshipCarStats.highSpeedCorners, inPerformanceStats.highSpeedCorners);
+			float t3 = inCorner.speed * num4;
+			num = Mathf.Lerp(0.68f, 0.76f, t3);
+			num *= inPerformanceStats.topSpeed * 0.9f;
+			break;
+		}
+		}
+		return num;
+	}
+
+	// Token: 0x060021E7 RID: 8679 RVA: 0x00013FCC File Offset: 0x000121CC
+	public bool IsExperiencingCriticalIssue()
+	{
+		return this.mIsExperiencingCriticalIssue;
+	}
+
+	// Token: 0x060021E8 RID: 8680 RVA: 0x00013FD4 File Offset: 0x000121D4
+	public CarStats GetRacingPerformance()
+	{
+		this.UpdateRacingPerformance();
+		return this.mRacingPerformance;
+	}
+
+	// Token: 0x060021E9 RID: 8681 RVA: 0x00013FE2 File Offset: 0x000121E2
+	public CarStats GetCarStats()
+	{
+		return this.mCarStats;
+	}
+
+	// Token: 0x170004D3 RID: 1235
+	// (get) Token: 0x060021EA RID: 8682 RVA: 0x00013FEA File Offset: 0x000121EA
+	public DrivingStyle drivingStyle
+	{
+		get
+		{
+			return this.mDrivingStyle;
+		}
+	}
+
+	// Token: 0x170004D4 RID: 1236
+	// (get) Token: 0x060021EB RID: 8683 RVA: 0x00013FF2 File Offset: 0x000121F2
+	public DrivingStyle.Mode drivingStyleMode
+	{
+		get
+		{
+			return this.mDrivingStyle.mode;
+		}
+	}
+
+	// Token: 0x170004D5 RID: 1237
+	// (get) Token: 0x060021EC RID: 8684 RVA: 0x00013FFF File Offset: 0x000121FF
+	public Fuel fuel
+	{
+		get
+		{
+			return this.mFuel;
+		}
+	}
+
+	// Token: 0x170004D6 RID: 1238
+	// (get) Token: 0x060021ED RID: 8685 RVA: 0x00014007 File Offset: 0x00012207
+	public SessionBonuses bonuses
+	{
+		get
+		{
+			return this.mSessionBonuses;
+		}
+	}
+
+	// Token: 0x170004D7 RID: 1239
+	// (get) Token: 0x060021EE RID: 8686 RVA: 0x0001400F File Offset: 0x0001220F
+	public DriverSessionForm driverForm
+	{
+		get
+		{
+			return this.mDriverForm;
+		}
+	}
+
+	// Token: 0x170004D8 RID: 1240
+	// (get) Token: 0x060021EF RID: 8687 RVA: 0x00014017 File Offset: 0x00012217
+	public SetupPerformance setupPerformance
+	{
+		get
+		{
+			return this.mSetupPerformance;
+		}
+	}
+
+	// Token: 0x170004D9 RID: 1241
+	// (get) Token: 0x060021F0 RID: 8688 RVA: 0x0001401F File Offset: 0x0001221F
+	public TemperatureOptimisation temperatureOptimisation
+	{
+		get
+		{
+			return this.mTemperatureOptimisation;
+		}
+	}
+
+	// Token: 0x170004DA RID: 1242
+	// (get) Token: 0x060021F1 RID: 8689 RVA: 0x00014027 File Offset: 0x00012227
+	public CarStats currentPerformance
+	{
+		get
+		{
+			return this.mCurrentPerformance;
+		}
+	}
+
+	// Token: 0x170004DB RID: 1243
+	// (get) Token: 0x060021F2 RID: 8690 RVA: 0x0001402F File Offset: 0x0001222F
+	public SessionPerformance.RaceStartType raceStartType
+	{
+		get
+		{
+			return this.mRaceStartType;
+		}
+	}
+
+	// Token: 0x170004DC RID: 1244
+	// (get) Token: 0x060021F3 RID: 8691 RVA: 0x00014037 File Offset: 0x00012237
+	public SafetyVehicle safetyVehicle
+	{
+		get
+		{
+			return this.mSafetyVehicle;
+		}
+	}
+
+	// Token: 0x170004DD RID: 1245
+	// (get) Token: 0x060021F4 RID: 8692 RVA: 0x0001403F File Offset: 0x0001223F
+	public TyrePerformance tyrePerformance
+	{
+		get
+		{
+			return this.mTyrePerformance;
+		}
+	}
+
+	// Token: 0x170004DE RID: 1246
+	// (get) Token: 0x060021F5 RID: 8693 RVA: 0x00014047 File Offset: 0x00012247
+	public CarConditionPerformance carConditionPerformance
+	{
+		get
+		{
+			return this.mCarConditionPerformance;
+		}
+	}
+
+	// Token: 0x170004DF RID: 1247
+	// (get) Token: 0x060021F6 RID: 8694 RVA: 0x0001404F File Offset: 0x0001224F
+	public float estimatedBestLapTime
+	{
+		get
+		{
+			return this.mEstimatedBestLapTime;
+		}
+	}
+
+	// Token: 0x04001D55 RID: 7509
+	private const float timeCostLerp = 0f;
+
+	// Token: 0x04001D56 RID: 7510
+	private static CarStats mMaxChampionshipCarStats = new CarStats();
+
+	// Token: 0x04001D57 RID: 7511
+	private static CarStats mMinChampionshipCarStats = new CarStats();
+
+	// Token: 0x04001D58 RID: 7512
+	private ERSPerformance mERSPerformance = new ERSPerformance();
+
+	// Token: 0x04001D59 RID: 7513
+	private CarConditionPerformance mCarConditionPerformance = new CarConditionPerformance();
+
+	// Token: 0x04001D5A RID: 7514
+	private CriticalCarPartPerformance mCriticalCarPartPerformance = new CriticalCarPartPerformance();
+
+	// Token: 0x04001D5B RID: 7515
+	private DriverSessionForm mDriverForm = new DriverSessionForm();
+
+	// Token: 0x04001D5C RID: 7516
+	private DriverPerformance mDriverPerformance = new DriverPerformance();
+
+	// Token: 0x04001D5D RID: 7517
+	private DrivingStyle mDrivingStyle = new DrivingStyle();
+
+	// Token: 0x04001D5E RID: 7518
+	private Fuel mFuel = new Fuel();
+
+	// Token: 0x04001D5F RID: 7519
+	private TemperatureOptimisation mTemperatureOptimisation = new TemperatureOptimisation();
+
+	// Token: 0x04001D60 RID: 7520
+	private SessionBonuses mSessionBonuses = new SessionBonuses();
+
+	// Token: 0x04001D61 RID: 7521
+	private SetupPerformance mSetupPerformance = new SetupPerformance();
+
+	// Token: 0x04001D62 RID: 7522
+	private WeatherImpact mWeatherImpact = new WeatherImpact();
+
+	// Token: 0x04001D63 RID: 7523
+	private TyrePerformance mTyrePerformance = new TyrePerformance();
+
+	// Token: 0x04001D64 RID: 7524
+	private TrackExpertPerformance mTrackExpertPerformance = new TrackExpertPerformance();
+
+	// Token: 0x04001D65 RID: 7525
+	private DriverStaminaPerformance mDriverStaminaPerformance = new DriverStaminaPerformance();
+
+	// Token: 0x04001D66 RID: 7526
+	private PerformanceImpact[] mPerformanceImpacts = new PerformanceImpact[14];
+
+	// Token: 0x04001D67 RID: 7527
+	private Vehicle mVehicle;
+
+	// Token: 0x04001D68 RID: 7528
+	private RacingVehicle mRacingVehicle;
+
+	// Token: 0x04001D69 RID: 7529
+	private SafetyVehicle mSafetyVehicle;
+
+	// Token: 0x04001D6A RID: 7530
+	private CarStats mCarStats = new CarStats();
+
+	// Token: 0x04001D6B RID: 7531
+	private CarStats mRacingPerformance = new CarStats();
+
+	// Token: 0x04001D6C RID: 7532
+	private CarStats mRaceStartPerformance = new CarStats();
+
+	// Token: 0x04001D6D RID: 7533
+	private CarStats mNeutralPerformance = new CarStats();
+
+	// Token: 0x04001D6E RID: 7534
+	private CarStats mCurrentPerformance = new CarStats();
+
+	// Token: 0x04001D6F RID: 7535
+	private CarStats mImpactPerformance = new CarStats();
+
+	// Token: 0x04001D70 RID: 7536
+	private SessionPerformance.PerformanceState mPerformanceState;
+
+	// Token: 0x04001D71 RID: 7537
+	private SessionPerformance.RaceStartType mRaceStartType;
+
+	// Token: 0x04001D72 RID: 7538
+	private float mEstimatedBestLapTime;
+
+	// Token: 0x04001D73 RID: 7539
+	private float mTimeSinceLastUpdate;
+
+	// Token: 0x04001D74 RID: 7540
+	private bool mUpdateDriverStatsOnEnterGate;
+
+	// Token: 0x04001D75 RID: 7541
+	private bool mUpdateDriverStatsOnNewLap;
+
+	// Token: 0x04001D76 RID: 7542
+	private bool mUpdateDriverStatsOnNewSetup;
+
+	// Token: 0x04001D77 RID: 7543
+	private bool mIsExperiencingCriticalIssue;
+
+	// Token: 0x04001D78 RID: 7544
+	private bool mRefreshCarStats;
+
+	// Token: 0x04001D79 RID: 7545
+	private float mTimeCost;
+
+	// Token: 0x04001D7A RID: 7546
+	private float mChampionshipTierTimeCost;
+
+	// Token: 0x0200048C RID: 1164
+	public enum PerformanceState
+	{
+		// Token: 0x04001D7C RID: 7548
+		Racing,
+		// Token: 0x04001D7D RID: 7549
+		RaceStart,
+		// Token: 0x04001D7E RID: 7550
+		Neutral
+	}
+
+	// Token: 0x0200048D RID: 1165
+	public enum RaceStartType
+	{
+		// Token: 0x04001D80 RID: 7552
+		Average,
+		// Token: 0x04001D81 RID: 7553
+		Great,
+		// Token: 0x04001D82 RID: 7554
+		Poor,
+		Jump
+	}
+
+	// Token: 0x0200048E RID: 1166
+	public enum Impacts
+	{
+		// Token: 0x04001D84 RID: 7556
+		CarCondition,
+		// Token: 0x04001D85 RID: 7557
+		CriticalParts,
+		// Token: 0x04001D86 RID: 7558
+		DriverForm,
+		// Token: 0x04001D87 RID: 7559
+		DriverPerformance,
+		// Token: 0x04001D88 RID: 7560
+		DrivingStyle,
+		// Token: 0x04001D89 RID: 7561
+		Fuel,
+		// Token: 0x04001D8A RID: 7562
+		Bonuses,
+		// Token: 0x04001D8B RID: 7563
+		Setup,
+		// Token: 0x04001D8C RID: 7564
+		TemperatureOptimisation,
+		// Token: 0x04001D8D RID: 7565
+		Tyres,
+		// Token: 0x04001D8E RID: 7566
+		Weather,
+		// Token: 0x04001D8F RID: 7567
+		TrackExpert,
+		// Token: 0x04001D90 RID: 7568
+		ERS,
+		// Token: 0x04001D91 RID: 7569
+		DriverStamina,
+		// Token: 0x04001D92 RID: 7570
+		Count
+	}
+}

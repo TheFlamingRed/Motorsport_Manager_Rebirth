@@ -1,9 +1,0 @@
-	public static void Open(RectTransform inRect, Color inCurrentColor, Color[] inDefaultColors = null, bool inRestrictedMode = false)
-	{
-		ColorPickerDialogBox dialog = UIManager.instance.dialogBoxManager.GetDialog<ColorPickerDialogBox>();
-		if (dialog.gameObject.activeSelf)
-		{
-			dialog.Hide();
-		}
-		dialog.Show(inRect, inCurrentColor, inDefaultColors, false);
-	}

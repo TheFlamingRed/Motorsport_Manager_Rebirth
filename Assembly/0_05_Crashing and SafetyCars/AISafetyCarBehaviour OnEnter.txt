@@ -1,0 +1,24 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000448 RID: 1096
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class AISafetyCarBehaviour : AIBehaviour
+{
+	// Token: 0x06001F99 RID: 8089
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		this.mLaps = 0;
+		this.mOnActiveLap = false;
+		this.mHeadingToGarage = false;
+		this.mLapsLength = RandomUtility.GetRandomInc(1, 4);
+		this.SetCarState(AISafetyCarBehaviour.SafetyCarState.ExitingGarage);
+		this.mVehicle.speedManager.GetController<SafetyCarSpeedController>().topSpeed = GameUtility.MilesPerHourToMetersPerSecond(120f);
+		Vehicle mVehicle = this.mVehicle;
+		mVehicle.OnLapEnd = (Action)Delegate.Remove(mVehicle.OnLapEnd, new Action(this.IncreaseLapCount));
+		Vehicle mVehicle2 = this.mVehicle;
+		mVehicle2.OnLapEnd = (Action)Delegate.Combine(mVehicle2.OnLapEnd, new Action(this.IncreaseLapCount));
+		this.mVehicle.performance.SetPerformanceState(SessionPerformance.PerformanceState.Neutral);
+	}
+}

@@ -1,0 +1,300 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020003C4 RID: 964
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class CrashDirector
+{
+	// Token: 0x06001B1E RID: 6942
+	public CrashDirector()
+	{
+	}
+
+	// Token: 0x06001B1F RID: 6943
+		public void OnSessionStarting()
+	{
+		Game.instance.sessionManager.championship.GetCurrentEventDetails();
+		switch (DesignDataManager.GetGameLength(false))
+		{
+		case PrefGameRaceLength.Type.Short:
+			this.mRealSafetyCarCount = 1;
+			break;
+		case PrefGameRaceLength.Type.Medium:
+			this.mRealSafetyCarCount = 2;
+			break;
+		case PrefGameRaceLength.Type.Long:
+			this.mRealSafetyCarCount = 2147483647;
+			break;
+		}
+		this.mSessionManager = Game.instance.sessionManager;
+		this.mSafetyCar = Game.instance.vehicleManager.safetyVehicle;
+		float random = RandomUtility.GetRandom01();
+		int i;
+		if (random > 0.95f)
+		{
+			i = 5;
+		}
+		else if (random > 0.9f)
+		{
+			i = 4;
+		}
+		else if (random > 0.8f)
+		{
+			i = 3;
+		}
+		else if (random > 0.5f)
+		{
+			i = 2;
+		}
+		else if (random > 0.25f)
+		{
+			i = 1;
+		}
+		else
+		{
+			i = 0;
+		}
+		bool flag = this.mSessionManager.currentSessionWeather.GetAverageWeather().rainType >= Weather.RainType.Heavy;
+		if (flag && i < 4)
+		{
+			i += RandomUtility.GetRandom(0, 1);
+		}
+		this.mCrashChunks = new CrashDirector.CrashRaceChunk[10];
+		for (int j = 0; j < this.mCrashChunks.Length; j++)
+		{
+			this.mCrashChunks[j] = new CrashDirector.CrashRaceChunk();
+			this.mCrashChunks[j].normalizedChunkStart = (float)j / ((float)this.mCrashChunks.Length - 1f);
+			this.mCrashChunks[j].normalizedChunkSize = 1f / ((float)this.mCrashChunks.Length - 1f);
+		}
+		Debug.LogFormat("Crashes for this race: {0} ", new object[]
+		{
+			i
+		});
+		while (i > 0)
+		{
+			i--;
+			this.mCrashChunks[RandomUtility.GetRandom(0, this.mCrashChunks.Length)].crashCount++;
+		}
+		this.mVehiclesCantCrash.Clear();
+	}
+
+	// Token: 0x06001B20 RID: 6944
+	public void OnLoad()
+	{
+		if (this.mCrashChunks.Length == 0)
+		{
+			this.OnSessionStarting();
+		}
+		if (this.mVehiclesCantCrash == null)
+		{
+			this.mVehiclesCantCrash = new List<RacingVehicle>();
+		}
+	}
+
+	// Token: 0x06001B21 RID: 6945
+	public void OnSessionEnd()
+	{
+		this.mSafetyCar = null;
+		this.mVehiclesCantCrash.Clear();
+	}
+
+	// Token: 0x06001B22 RID: 6946
+	public void OnCrashIncident(RacingVehicle inVehicle)
+	{
+		if (Game.instance.sessionManager.flag != SessionManager.Flag.Green)
+		{
+			return;
+		}
+		Circuit circuit = this.mSessionManager.eventDetails.circuit;
+		float safetyCarFlagProbability = circuit.safetyCarFlagProbability;
+		float random = RandomUtility.GetRandom01();
+		if (random >= safetyCarFlagProbability)
+		{
+			Game.instance.sessionManager.raceDirector.SetYellowFlag(inVehicle.timer.sectorVehicleIsIn);
+			return;
+		}
+		float virtualSafetyCarProbability = circuit.virtualSafetyCarProbability;
+		random = RandomUtility.GetRandom01();
+		int num = this.mSessionManager.lapCount - this.mSessionManager.lap;
+		bool flag = this.mSessionManager.championship.rules.safetyCarUsage > ChampionshipRules.SafetyCarUsage.RealSafetyCar;
+		bool flag2 = Game.instance.vehicleManager.safetyVehicle.IsReadyToGoOut() && this.mSessionManager.championship.rules.safetyCarUsage != ChampionshipRules.SafetyCarUsage.VirtualSafetyCar && num > 3;
+		if (!flag2 || (flag && random < virtualSafetyCarProbability))
+		{
+			this.SetVirtualSafetyCarFlag();
+			return;
+		}
+		if (flag2 && this.mRealSafetyCarCount > 0)
+		{
+			this.mRealSafetyCarCount--;
+			this.SetSafetyCarFlag();
+			return;
+		}
+		Game.instance.sessionManager.raceDirector.SetYellowFlag(inVehicle.timer.sectorVehicleIsIn);
+	}
+
+	// Token: 0x06001B23 RID: 6947
+	public void SetVirtualSafetyCarFlag()
+	{
+		this.mSessionManager.SetDesiredFlag(SessionManager.Flag.VirtualSafetyCar);
+		this.mVirtualSafetyFlagDuration = (float)(Mathf.RoundToInt((float)RandomUtility.GetRandomInc(0, 5)) * 15 + 50);
+	}
+
+	// Token: 0x06001B24 RID: 6948
+	public void SetSafetyCarFlag()
+	{
+		this.mSessionManager.SetDesiredFlag(SessionManager.Flag.SafetyCar);
+		this.mSafetyCar.SendOut();
+	}
+
+	// Token: 0x06001B25 RID: 6949
+	public void SimulationUpdate()
+	{
+		for (int i = 0; i < this.mCrashChunks.Length; i++)
+		{
+			if (this.mCrashChunks[i].IsActiveChunk(Game.instance.sessionManager.GetNormalizedSessionTime()))
+			{
+				this.mActiveChunk = this.mCrashChunks[i];
+				break;
+			}
+		}
+		if (this.mSessionManager.flag == SessionManager.Flag.VirtualSafetyCar)
+		{
+			this.mVirtualSafetyFlagDuration -= GameTimer.simulationDeltaTime;
+			if (this.mVirtualSafetyFlagDuration <= 0f)
+			{
+				this.mSessionManager.raceDirector.ResumeGreenFlag();
+			}
+		}
+	}
+
+	// Token: 0x06001B26 RID: 6950
+	public bool CalculateCrashChance(RacingVehicle inVehicle, bool reduceCrashCount)
+	{
+		if (this.IsSessionCrashingViable(inVehicle))
+		{
+			if (reduceCrashCount)
+			{
+				this.mActiveChunk.crashCount--;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	// Token: 0x06001B27 RID: 6951
+	public static bool HasTeamMateRetired(RacingVehicle inVehicle)
+	{
+		return Game.instance.vehicleManager.GetVehicleTeamMate(inVehicle).behaviourManager.isOutOfRace;
+	}
+
+	// Token: 0x06001B28 RID: 6952
+	private bool IsSessionCrashingViable(RacingVehicle inVehicle)
+	{
+		SessionManager sessionManager = Game.instance.sessionManager;
+		bool flag = Game.instance.vehicleManager.safetyVehicle.IsReadyToGoOut() || sessionManager.championship.rules.safetyCarUsage > ChampionshipRules.SafetyCarUsage.RealSafetyCar;
+		bool isTutorialActiveInCurrentGameState = Game.instance.tutorialSystem.isTutorialActiveInCurrentGameState;
+		bool flag2 = sessionManager.sessionType == SessionDetails.SessionType.Race;
+		bool flag3 = sessionManager.lap > 1 && sessionManager.lapCount - sessionManager.lap >= 3;
+		bool flag4 = this.mActiveChunk.crashCount > 0;
+		return Game.instance.sessionManager.flag == SessionManager.Flag.Green && !isTutorialActiveInCurrentGameState && flag && flag2 && flag4 && flag3 && !inVehicle.behaviourManager.isOutOfRace && (this.mVehiclesCantCrash == null || !this.mVehiclesCantCrash.Contains(inVehicle)) && inVehicle.sessionEvents.IsReadyTo(SessionEvents.EventType.Crash);
+	}
+
+	// Token: 0x06001B29 RID: 6953
+	public static RacingVehicle GetTeamMate(RacingVehicle inVehicle)
+	{
+		return Game.instance.vehicleManager.GetVehicleTeamMate(inVehicle);
+	}
+
+	// Token: 0x06001B2A RID: 6954
+	public void AddCrash()
+	{
+		this.mActiveChunk.crashCount++;
+	}
+
+	// Token: 0x06001B2B RID: 6955
+	public void AddVehicleCantCrash(RacingVehicle inVehicle)
+	{
+		if (!this.mVehiclesCantCrash.Contains(inVehicle))
+		{
+			this.mVehiclesCantCrash.Add(inVehicle);
+		}
+	}
+
+	// Token: 0x06001B2C RID: 6956
+	public void RemoveVehicleCantCrash(RacingVehicle inVehicle)
+	{
+		this.mVehiclesCantCrash.Remove(inVehicle);
+	}
+
+	// Token: 0x170003AA RID: 938
+	// (get) Token: 0x06001B2D RID: 6957
+	public float virtualSafetyCarTimer
+	{
+		get
+		{
+			return this.mVirtualSafetyFlagDuration;
+		}
+	}
+
+	// Token: 0x170003AB RID: 939
+	// (get) Token: 0x06001B2E RID: 6958
+	public int lapsLenghtSafetyCar
+	{
+		get
+		{
+			if (this.mSafetyCar != null)
+			{
+				return this.mSafetyCar.behaviourManager.GetBehaviour<AISafetyCarBehaviour>().lapsLength;
+			}
+			return 0;
+		}
+	}
+
+	// Token: 0x04001927 RID: 6439
+	private List<RacingVehicle> mVehiclesCantCrash = new List<RacingVehicle>();
+
+	// Token: 0x04001928 RID: 6440
+	private int mRealSafetyCarCount = 1;
+
+	// Token: 0x04001929 RID: 6441
+	private float mVirtualSafetyFlagDuration;
+
+	// Token: 0x0400192A RID: 6442
+	private CrashDirector.CrashRaceChunk[] mCrashChunks = new CrashDirector.CrashRaceChunk[0];
+
+	// Token: 0x0400192B RID: 6443
+	private CrashDirector.CrashRaceChunk mActiveChunk;
+
+	// Token: 0x0400192C RID: 6444
+	private SafetyVehicle mSafetyCar;
+
+	// Token: 0x0400192D RID: 6445
+	private SessionManager mSessionManager;
+
+	// Token: 0x020003C5 RID: 965
+	[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+	private class CrashRaceChunk
+	{
+		// Token: 0x06001B2F RID: 6959
+		public CrashRaceChunk()
+		{
+		}
+
+		// Token: 0x06001B30 RID: 6960
+		public bool IsActiveChunk(float inNormalizedRaceTime)
+		{
+			return inNormalizedRaceTime >= this.normalizedChunkStart && inNormalizedRaceTime < this.normalizedChunkStart + this.normalizedChunkSize;
+		}
+
+		// Token: 0x0400192E RID: 6446
+		public float normalizedChunkSize;
+
+		// Token: 0x0400192F RID: 6447
+		public float normalizedChunkStart;
+
+		// Token: 0x04001930 RID: 6448
+		public int crashCount;
+	}
+}

@@ -1,0 +1,14 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020003D6 RID: 982
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class RaceDirector : InstanceCounter
+{
+	// Token: 0x06001B74 RID: 7028 RVA: 0x00010DEF File Offset: 0x0000EFEF
+public void SetYellowFlag(int inSector)
+	{
+		this.SetYellowFlag(inSector, (float)RandomUtility.GetRandom(10, 120));
+	}
+}

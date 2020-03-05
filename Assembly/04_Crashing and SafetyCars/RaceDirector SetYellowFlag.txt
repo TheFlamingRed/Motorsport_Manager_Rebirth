@@ -1,4 +1,0 @@
-public void SetYellowFlag(int inSector)
-	{
-		this.SetYellowFlag(inSector, (float)RandomUtility.GetRandom(10, 120));
-	}

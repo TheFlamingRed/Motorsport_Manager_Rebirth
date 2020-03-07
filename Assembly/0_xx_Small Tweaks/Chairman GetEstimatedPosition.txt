@@ -1,0 +1,16 @@
+	public int GetEstimatedPosition(Chairman.EstimatedPosition inPosition, Team inTeam)
+	{
+		int startOfSeasonExpectedChampionshipResult = inTeam.startOfSeasonExpectedChampionshipResult;
+		int teamEntryCount = inTeam.championship.standings.teamEntryCount;
+		switch (inPosition)
+		{
+		case Chairman.EstimatedPosition.Low:
+			return Mathf.Clamp(startOfSeasonExpectedChampionshipResult, 2, teamEntryCount - 1);
+		case Chairman.EstimatedPosition.Medium:
+			return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 1, 1, teamEntryCount - 1);
+		case Chairman.EstimatedPosition.High:
+			return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 2, 1, teamEntryCount - 2);
+		default:
+			return 0;
+		}
+	}

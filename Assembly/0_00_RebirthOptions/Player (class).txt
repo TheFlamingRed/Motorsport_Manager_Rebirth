@@ -461,9 +461,13 @@ public class Player : TeamPrincipal
 		this.managementBuyoutMainText = array[8];
 		this.managementBuyoutSubtext = array[11];
 		this.managementBuyoutFullname = array[14];
-		this.managementBuyoutLogoStyle = array[17];
+		this.managementBuyoutLogoStyle = int.Parse(array[17]);
 		this.managementBuyoutPrimaryColour = array[20];
 		this.managementBuyoutSecondaryColour = array[23];
+		this.jumpStartPercentage = float.Parse(array[33]);
+		this.lockupSensitivity = float.Parse(array[36]);
+		this.crashSensitivity = float.Parse(array[37]);
+		this.spinOutSensitivity = float.Parse(array[38]);
 	}
 
 	// Token: 0x04000E88 RID: 3720
@@ -539,26 +543,41 @@ public class Player : TeamPrincipal
 	public string managementBuyoutSubtext;
 
 	// Token: 0x04000EA0 RID: 3744
-	public string managementBuyoutLogoStyle;
-
-	// Token: 0x04000EA1 RID: 3745
 	public string managementBuyoutPrimaryColour;
 
-	// Token: 0x04000EA2 RID: 3746
+	// Token: 0x04000EA1 RID: 3745
 	public string managementBuyoutSecondaryColour;
 
-	// Token: 0x04000EA3 RID: 3747
+	// Token: 0x04000EA2 RID: 3746
 	public string managementBuyoutFullname;
 
-	// Token: 0x04000EA4 RID: 3748
+	// Token: 0x04000EA3 RID: 3747
 	public bool skipraceweekends;
+
+	// Token: 0x04000EA4 RID: 3748
+	public int managementBuyoutLogoStyle;
+
+	// Token: 0x04000EA5 RID: 3749
+	public float jumpStartPercentage;
+
+	// Token: 0x04004F26 RID: 20262
+	public int debugValue;
+
+	// Token: 0x040054F9 RID: 21753
+	public float lockupSensitivity;
+
+	// Token: 0x04005545 RID: 21829
+	public float crashSensitivity;
+
+	// Token: 0x04005546 RID: 21830
+	public float spinOutSensitivity;
 
 	// Token: 0x0200023B RID: 571
 	public enum LoyaltyChange
 	{
-		// Token: 0x04000EA6 RID: 3750
-		FiringTeamMember,
 		// Token: 0x04000EA7 RID: 3751
+		FiringTeamMember,
+		// Token: 0x04000EA8 RID: 3752
 		ApplyingOtherTeam
 	}
 }

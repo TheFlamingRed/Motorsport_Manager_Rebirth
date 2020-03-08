@@ -1,0 +1,39 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000305 RID: 773
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class GameTimer : InstanceCounter
+{
+	// Token: 0x06001653 RID: 5715
+	private void TriggerActions(DateTime inTime)
+	{
+		DateTime dateTime = inTime;
+		if (dateTime.Year != this.mNow.Year && this.OnYearEnd != null)
+		{
+			this.OnYearEnd();
+		}
+		if (dateTime.Month != this.mNow.Month && this.OnMonthEnd != null)
+		{
+			this.OnMonthEnd();
+		}
+		if (dateTime.Hour != this.mNow.Hour && this.OnHourEnd != null)
+		{
+			this.OnHourEnd();
+		}
+		if (dateTime.Day != this.mNow.Day && this.OnDayEnd != null)
+		{
+			this.OnDayEnd();
+			Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+			{
+				new DialogCriteria("Who", "Engineer"),
+				new DialogCriteria("Source", "PreSeasonTestingSoon"),
+				new DialogCriteria("Type", "Header")
+			});
+		}
+		if (dateTime.DayOfWeek == DayOfWeek.Sunday && this.mNow.DayOfWeek == DayOfWeek.Monday && this.OnWeekEnd != null)
+		{
+			this.OnWeekEnd();
+		}
+	}
+}

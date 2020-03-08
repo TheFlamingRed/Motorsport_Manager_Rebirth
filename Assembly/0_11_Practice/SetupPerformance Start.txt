@@ -1,3 +1,12 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x0200047D RID: 1149
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class SetupPerformance : PerformanceImpact
+{
+	// Token: 0x0600216D RID: 8557
 	public override void Start(RacingVehicle inVehicle)
 	{
 		base.Start(inVehicle);
@@ -5,25 +14,16 @@
 		Circuit circuit = Game.instance.sessionManager.eventDetails.circuit;
 		if (Game.instance.persistentEventData.hasStoredOptimalSetups)
 		{
-			this.mOptimalSetup.setupOutput.aerodynamics = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id).setupOutput.aerodynamics;
-			this.mOptimalSetup.setupOutput.speedBalance = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id).setupOutput.speedBalance;
-			this.mOptimalSetup.setupOutput.handling = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id).setupOutput.handling;
-			for (int i = 0; i < this.mOptimalSetup.visualRangeOffsetMultiplier.Length; i++)
-			{
-				this.mOptimalSetup.visualRangeOffsetMultiplier[i] = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id).visualRangeOffsetMultiplier[i];
-			}
-			this.mOptimalSetup.setupOutput.aerodynamics += RandomUtility.GetRandom(-0.02f, 0.02f);
-			this.mOptimalSetup.setupOutput.speedBalance += RandomUtility.GetRandom(-0.02f, 0.02f);
-			this.mOptimalSetup.setupOutput.handling += RandomUtility.GetRandom(-0.02f, 0.02f);
+			this.mOptimalSetup = Game.instance.persistentEventData.GetOptimalSetup(inVehicle.id);
 			return;
 		}
 		this.mRelevantPartCount = 0;
 		this.mOptimalSetup.setupOutput.aerodynamics = 0f;
 		this.mOptimalSetup.setupOutput.speedBalance = 0f;
 		this.mOptimalSetup.setupOutput.handling = 0f;
-		for (int j = 0; j < 6; j++)
+		for (int i = 0; i < 6; i++)
 		{
-			CarStats.StatType inStat = (CarStats.StatType)j;
+			CarStats.StatType inStat = (CarStats.StatType)i;
 			CarStats.RelevantToCircuit relevancy = CarStats.GetRelevancy(Mathf.RoundToInt(circuit.trackStatsCharacteristics.GetStat(inStat)));
 			switch (inStat)
 			{
@@ -54,16 +54,40 @@
 		this.mOptimalSetup.setupOutput.aerodynamics /= (float)this.mRelevantPartCount;
 		this.mOptimalSetup.setupOutput.speedBalance /= (float)this.mRelevantPartCount;
 		this.mOptimalSetup.setupOutput.handling /= (float)this.mRelevantPartCount;
-		this.mOptimalSetup.setupOutput.aerodynamics = (1f + this.mOptimalSetup.setupOutput.aerodynamics) * 0.8f + this.mOptimalSetup.setupOutput.aerodynamics;
-		this.mOptimalSetup.setupOutput.aerodynamics += RandomUtility.GetRandom(-0.1f, 0.1f);
-		this.mOptimalSetup.setupOutput.speedBalance += RandomUtility.GetRandom(-0.1f, 0.1f);
-		this.mOptimalSetup.setupOutput.handling += RandomUtility.GetRandom(-0.1f, 0.1f);
-		this.mOptimalSetup.setupOutput.handling += driverStats.balance * RandomUtility.GetRandom(0.05f, 0.2f);
+		CarStatsDesignData carStatsData = DesignDataManager.instance.carStatsData;
+		this.mOptimalSetup.setupOutput.speedBalance -= this.mVehicle.car.ChassisStats.fuelEfficiency / 200f;
+		this.mOptimalSetup.setupOutput.aerodynamics -= 0.1f;
+		this.mOptimalSetup.setupOutput.aerodynamics += this.mVehicle.performance.GetCarStats().highSpeedCorners / carStatsData.highSpeedCorners * 0.05f;
+		this.mOptimalSetup.setupOutput.aerodynamics += this.mVehicle.performance.GetCarStats().lowSpeedCorners / carStatsData.lowSpeedCorners * 0.05f;
+		this.mOptimalSetup.setupOutput.handling += this.mVehicle.performance.GetCarStats().highSpeedCorners / carStatsData.highSpeedCorners * 0.25f;
+		this.mOptimalSetup.setupOutput.handling -= this.mVehicle.performance.GetCarStats().lowSpeedCorners / carStatsData.lowSpeedCorners * 0.25f;
+		this.mOptimalSetup.setupOutput.handling += this.mVehicle.performance.GetCarStats().braking / carStatsData.braking * 0.125f;
+		this.mOptimalSetup.setupOutput.handling -= this.mVehicle.performance.GetCarStats().mediumSpeedCorners / carStatsData.mediumSpeedCorners * 0.25f;
+		this.mOptimalSetup.setupOutput.speedBalance += this.mVehicle.performance.GetCarStats().acceleration / carStatsData.acceleration * 0.5f;
+		this.mOptimalSetup.setupOutput.speedBalance -= this.mVehicle.performance.GetCarStats().topSpeed / carStatsData.topSpeedMph * 0.5f;
+		float num2;
+		if (Game.instance.isCareer)
+		{
+			int num = 11 - Game.instance.time.monthsLeftInThisYear;
+			num2 = ((float)circuit.climate.maximumTemperatures[num] + (float)circuit.climate.minimumTemperatures[num]) / 2f - 20f;
+		}
+		else
+		{
+			num2 = ((float)circuit.climate.maximumTemperatures[6] + (float)circuit.climate.minimumTemperatures[6]) / 2f - 20f;
+		}
+		this.mOptimalSetup.setupOutput.aerodynamics += num2 / 100f;
+		this.mOptimalSetup.setupOutput.handling += num2 / 50f;
+		this.mOptimalSetup.setupOutput.speedBalance -= num2 / 200f;
+		this.mOptimalSetup.setupOutput.aerodynamics += RandomUtility.GetRandom(-0.01f, 0.01f);
+		this.mOptimalSetup.setupOutput.speedBalance += RandomUtility.GetRandom(-0.01f, 0.01f);
+		this.mOptimalSetup.setupOutput.handling += RandomUtility.GetRandom(-0.01f, 0.01f);
+		this.mOptimalSetup.setupOutput.handling += driverStats.balance * RandomUtility.GetRandom(0.45f, 0.55f) - 0.35f;
 		this.mOptimalSetup.setupOutput.aerodynamics = Mathf.Clamp(this.mOptimalSetup.setupOutput.aerodynamics, -1f, 1f);
 		this.mOptimalSetup.setupOutput.speedBalance = Mathf.Clamp(this.mOptimalSetup.setupOutput.speedBalance, -1f, 1f);
 		this.mOptimalSetup.setupOutput.handling = Mathf.Clamp(this.mOptimalSetup.setupOutput.handling, -1f, 1f);
-		for (int k = 0; k < this.mOptimalSetup.visualRangeOffsetMultiplier.Length; k++)
+		for (int j = 0; j < this.mOptimalSetup.visualRangeOffsetMultiplier.Length; j++)
 		{
-			this.mOptimalSetup.visualRangeOffsetMultiplier[k] = RandomUtility.GetRandom01();
+			this.mOptimalSetup.visualRangeOffsetMultiplier[j] = RandomUtility.GetRandom01();
 		}
 	}
+}

@@ -1,0 +1,32 @@
+using System;
+
+// Token: 0x020004C8 RID: 1224
+public partial class SetupStintData
+{
+	// Token: 0x0600245E RID: 9310 RVA: 0x000F9F34 File Offset: 0x000F8134
+	public void StartStint(RacingVehicle inVehicle, SetupInput_v1 inSetupInput, float inRollingSetupKnowledge)
+	{
+		float feedback = inVehicle.driver.GetDriverStats().feedback;
+		this.mSetupInput.CopySetupInput(inSetupInput);
+		this.mTyreCompound = inVehicle.setup.tyreSet.GetCompound();
+		this.mTyreCondition = inVehicle.setup.tyreSet.GetCondition();
+		this.mLapCount = 0;
+		this.mTotalTime = 0f;
+		this.mAverageLapTime = 0f;
+		this.mAccumulativeTrackRubber = 0f;
+		this.mAverageTrackRubber = 0f;
+		this.mTrackWater = Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackWater();
+		inVehicle.setup.GetSetupOutput(ref this.mSetupOutput);
+		SessionSetup.SetupOutput setupOutput = inVehicle.performance.setupPerformance.GetOptimalSetup().setupOutput;
+		this.mDeltaAerodynamics = setupOutput.aerodynamics - this.mSetupOutput.aerodynamics;
+		this.mDeltaSpeedBalance = setupOutput.speedBalance - this.mSetupOutput.speedBalance;
+		this.mDeltaHandling = setupOutput.handling - this.mSetupOutput.handling;
+		this.mRollingSetupKnowledge = inRollingSetupKnowledge;
+		this.mAerodynamicsOpinion = this.GetSetupOpinion(this.mDeltaAerodynamics * (10f / (30f - feedback)));
+		this.mSpeedBalanceOpinion = this.GetSetupOpinion(this.mDeltaSpeedBalance* (10f / (30f - feedback)));
+		this.mHandlingOpinion = this.GetSetupOpinion(this.mDeltaHandling* (10f / (30f - feedback)));
+		this.mSetupKnowledgeLevel = inVehicle.practiceKnowledge.GetSetupKnowledgeLevel();
+		this.mSetupKnowledgeNormalised = inVehicle.practiceKnowledge.GetSetupKnowledgeNormalised();
+		this.mSessionType = Game.instance.sessionManager.eventDetails.currentSession.sessionType;
+	}
+}

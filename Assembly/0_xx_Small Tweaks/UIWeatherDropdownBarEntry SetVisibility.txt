@@ -1,33 +1,45 @@
-	public void SetVisibility(global::SessionInformationDropdown.DataType inDataType, float inTime, bool inHighlight, float inNormalizedSessionTime)
+using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+// Token: 0x02000ACE RID: 2766
+public partial class UIWeatherDropdownBarEntry : MonoBehaviour
+{
+	// Token: 0x06004755 RID: 18261 RVA: 0x001BB8B8 File Offset: 0x001B9AB8
+	public void SetVisibility(SessionInformationDropdown.DataType inDataType, float inTime, bool inHighlight, float inNormalizedSessionTime, float inTotalBarsCount)
 	{
-		this.weatherIcon.gameObject.SetActive(inDataType == global::SessionInformationDropdown.DataType.Clouds);
-		this.label.gameObject.SetActive(inDataType == global::SessionInformationDropdown.DataType.Clouds);
+		this.weatherIcon.gameObject.SetActive(inDataType == SessionInformationDropdown.DataType.Clouds);
+		this.label.gameObject.SetActive(inDataType == SessionInformationDropdown.DataType.Clouds);
 		for (int i = 0; i < this.highLightContainer.Length; i++)
 		{
-			global::GameUtility.SetActive(this.highLightContainer[i], inHighlight);
+			GameUtility.SetActive(this.highLightContainer[i], inHighlight);
 		}
-		global::HQsBuilding_v1 building = global::Game.instance.player.team.headquarters.GetBuilding(global::HQsBuildingInfo.Type.LogisticsCentre);
-		int num = 1;
+		HQsBuilding_v1 building = Game.instance.player.team.headquarters.GetBuilding(HQsBuildingInfo.Type.LogisticsCentre);
+		int num = 5;
+		if (Game.instance.player.weatherReportMod == 1)
+			{
+			num = 1;
+			}
 		if (building.isBuilt)
 		{
 			num += (building.currentLevel + 1) * 5;
 		}
-		float num2 = 0.05f * (float)num;
+		float num2 = 1f / inTotalBarsCount * (float)num;
 		if (inTime < inNormalizedSessionTime || inHighlight)
 		{
-			base.gameObject.SetActive(true);
 			this.canvasGroup.alpha = 1f;
 		}
 		else if (inTime < inNormalizedSessionTime + num2)
 		{
-			base.gameObject.SetActive(true);
 			this.label.text = "-";
 			float num3 = inTime - inNormalizedSessionTime;
-			float num4 = 0.05f * (float)num;
+			float num4 = 1f / inTotalBarsCount * (float)num;
 			this.canvasGroup.alpha = 1f - Mathf.Clamp01(num3 / num4);
 		}
 		else
 		{
-			base.gameObject.SetActive(false);
+			this.canvasGroup.alpha = 0f;
 		}
 	}
+}

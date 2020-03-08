@@ -1,16 +1,44 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001CF RID: 463
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Chairman : Person
+{
+	// Token: 0x06000C1C RID: 3100
 	public int GetEstimatedPosition(Chairman.EstimatedPosition inPosition, Team inTeam)
 	{
 		int startOfSeasonExpectedChampionshipResult = inTeam.startOfSeasonExpectedChampionshipResult;
 		int teamEntryCount = inTeam.championship.standings.teamEntryCount;
-		switch (inPosition)
+		if (Game.instance.player.harderChairmanObjectives == 1)
 		{
-		case Chairman.EstimatedPosition.Low:
-			return Mathf.Clamp(startOfSeasonExpectedChampionshipResult, 2, teamEntryCount - 1);
-		case Chairman.EstimatedPosition.Medium:
-			return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 1, 1, teamEntryCount - 1);
-		case Chairman.EstimatedPosition.High:
-			return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 2, 1, teamEntryCount - 2);
-		default:
-			return 0;
+			switch (inPosition)
+			{
+			case Chairman.EstimatedPosition.Low:
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult + 2, 1, teamEntryCount);
+			case Chairman.EstimatedPosition.Medium:
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult, 1, teamEntryCount);
+			case Chairman.EstimatedPosition.High:
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 2, 1, teamEntryCount);
+			default:
+				return 0;
+			}
+		}
+		else
+		{
+			switch (inPosition)
+			{
+			case Chairman.EstimatedPosition.Low:
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult, 2, teamEntryCount - 1);
+			case Chairman.EstimatedPosition.Medium:
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 1, 1, teamEntryCount - 1);
+			case Chairman.EstimatedPosition.High:
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 2, 1, teamEntryCount - 2);
+			default:
+				return 0;
+			}
 		}
 	}
+}

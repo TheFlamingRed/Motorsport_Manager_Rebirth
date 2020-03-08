@@ -1,9 +1,0 @@
-	public ScoutingManager()
-	{
-		this.mBaseScoutingSlotsCount = 1;
-		this.mMaxScoutingLevelFacility = 3;
-		this.mCurrentScoutingEntries = new List<global::ScoutingManager.ScoutingEntry>();
-		this.mQueuedScoutingEntries = new List<global::ScoutingManager.ScoutingEntry>();
-		this.mScoutingAssignmentsComplete = new List<global::ScoutingManager.CompletedScoutEntry>();
-	
-	}

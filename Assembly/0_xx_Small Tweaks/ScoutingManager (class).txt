@@ -1,0 +1,489 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using MM2;
+using UnityEngine;
+
+// Token: 0x02000296 RID: 662
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class ScoutingManager : InstanceCounter
+{
+	// Token: 0x06001288 RID: 4744
+	public ScoutingManager()
+	{
+	}
+
+	// Token: 0x06001289 RID: 4745
+	public void OnStartingGame()
+	{
+		this.SetupManager();
+	}
+
+	// Token: 0x0600128A RID: 4746
+	public void OnLoad()
+	{
+		this.SetupManager();
+	}
+
+	// Token: 0x0600128B RID: 4747
+	public void OnUnload()
+	{
+		GameTimer time = Game.instance.time;
+		time.OnDayEnd = (Action)Delegate.Remove(time.OnDayEnd, new Action(this.UpdatedCompletedScoutsList));
+		HQsBuilding_v1.OnBuildingNotification = (Action<HQsBuilding_v1.NotificationState, HQsBuilding_v1>)Delegate.Remove(HQsBuilding_v1.OnBuildingNotification, new Action<HQsBuilding_v1.NotificationState, HQsBuilding_v1>(this.OnScoutingFacilityBuilt));
+	}
+
+	// Token: 0x0600128C RID: 4748
+	private void SetupManager()
+	{
+		GameTimer time = Game.instance.time;
+		time.OnDayEnd = (Action)Delegate.Combine(time.OnDayEnd, new Action(this.UpdatedCompletedScoutsList));
+		HQsBuilding_v1.OnBuildingNotification = (Action<HQsBuilding_v1.NotificationState, HQsBuilding_v1>)Delegate.Combine(HQsBuilding_v1.OnBuildingNotification, new Action<HQsBuilding_v1.NotificationState, HQsBuilding_v1>(this.OnScoutingFacilityBuilt));
+	}
+
+	// Token: 0x0600128D RID: 4749
+	public void UpdateUnlockedScoutingSlots()
+	{
+		HQsBuilding_v1 building = Game.instance.player.team.headquarters.GetBuilding(HQsBuildingInfo.Type.ScoutingFacility);
+		if (building == null)
+		{
+			this.mUnlockedScoutingSlots = 0;
+			return;
+		}
+		this.mMaxScoutingLevelFacility = building.info.maxLevel + 1;
+		if (building.state != HQsBuilding_v1.BuildingState.NotBuilt)
+		{
+			this.mUnlockedScoutingSlots = building.currentLevel + 1;
+			return;
+		}
+		this.mUnlockedScoutingSlots = 0;
+	}
+
+	// Token: 0x0600128E RID: 4750
+	private bool CanStartNewAssignment()
+	{
+		return this.mQueuedScoutingEntries.Count > 0 && this.mCurrentScoutingEntries.Count < this.mBaseScoutingSlotsCount + this.mUnlockedScoutingSlots;
+	}
+
+	// Token: 0x0600128F RID: 4751
+	private int GetScoutingTime(Driver inDriver)
+	{
+		if (!inDriver.IsFreeAgent() && inDriver.IsMainDriver())
+		{
+			return inDriver.daysToScoutShort;
+		}
+		return inDriver.daysToScoutLong;
+	}
+
+	// Token: 0x06001290 RID: 4752
+	public void AddScoutingAssignment(Driver inDriverToScout)
+	{
+		ScoutingManager.ScoutingEntry scoutingEntry = new ScoutingManager.ScoutingEntry();
+		scoutingEntry.driver = inDriverToScout;
+		scoutingEntry.scoutingDays = this.GetScoutingTime(inDriverToScout);
+		this.mQueuedScoutingEntries.Add(scoutingEntry);
+		if (this.CanStartNewAssignment())
+		{
+			this.StartScoutingNextDriver();
+		}
+		FeedbackPopup.Open(Localisation.LocaliseID("PSG_10007497", null), Localisation.LocaliseID("PSG_10007496", null));
+	}
+
+	// Token: 0x06001291 RID: 4753
+	private void StartScoutingNextDriver()
+	{
+		ScoutingManager.ScoutingEntry scoutingEntry = this.mQueuedScoutingEntries[0];
+		this.mQueuedScoutingEntries.RemoveAt(0);
+		StringVariableParser.selectedDriver = scoutingEntry.driver;
+		CalendarEvent_v1 calendarEvent_v = new CalendarEvent_v1
+		{
+			category = CalendarEventCategory.Scouting,
+			showOnCalendar = true,
+			triggerDate = Game.instance.time.now.AddDays((double)scoutingEntry.scoutingDays),
+			triggerState = GameState.Type.FrontendState,
+			OnEventTrigger = MMAction.CreateFromAction(new Action(new FinishScoutingDriverCommand(this, scoutingEntry).Execute)),
+			displayEffect = new ScoutingDisplayEffect
+			{
+				changeDisplay = true,
+				changeInterrupt = true,
+				team = Game.instance.player.team
+			}
+		};
+		calendarEvent_v.SetDynamicDescription("PSG_10009156");
+		scoutingEntry.calendarEvent = calendarEvent_v;
+		this.mCurrentScoutingEntries.Add(scoutingEntry);
+		Game.instance.calendar.AddEvent(calendarEvent_v);
+		StringVariableParser.selectedDriver = null;
+	}
+
+	// Token: 0x06001292 RID: 4754
+	public void StopAllScoutingJobs()
+	{
+		this.mQueuedScoutingEntries.Clear();
+		for (int i = 0; i < this.mCurrentScoutingEntries.Count; i++)
+		{
+			if (this.mCurrentScoutingEntries[i].calendarEvent != null)
+			{
+				Game.instance.calendar.RemoveEvent(this.mCurrentScoutingEntries[i].calendarEvent);
+			}
+		}
+		this.mCurrentScoutingEntries.Clear();
+	}
+
+	// Token: 0x06001293 RID: 4755
+	public void RemoveDriverFromScoutingJobs(Driver inDriver)
+	{
+		ScoutingManager.ScoutingEntry scoutingEntryForDriver = this.GetScoutingEntryForDriver(inDriver, this.mQueuedScoutingEntries);
+		if (scoutingEntryForDriver != null)
+		{
+			this.mQueuedScoutingEntries.Remove(scoutingEntryForDriver);
+			return;
+		}
+		scoutingEntryForDriver = this.GetScoutingEntryForDriver(inDriver, this.mCurrentScoutingEntries);
+		Game.instance.calendar.RemoveEvent(scoutingEntryForDriver.calendarEvent);
+		this.mCurrentScoutingEntries.Remove(scoutingEntryForDriver);
+		if (this.CanStartNewAssignment())
+		{
+			this.StartScoutingNextDriver();
+		}
+	}
+
+	// Token: 0x06001294 RID: 4756
+	public void FinishScoutingDriver(ScoutingManager.ScoutingEntry inEntry)
+	{
+		this.MessageEndOfScouting(inEntry);
+		Driver driver = inEntry.driver;
+		driver.SetBeenScouted();
+		this.mCurrentScoutingEntries.Remove(inEntry);
+		ScoutingManager.CompletedScoutEntry completedScoutEntry = new ScoutingManager.CompletedScoutEntry();
+		completedScoutEntry.timeCompleted = Game.instance.time.now;
+		completedScoutEntry.driver = driver;
+		this.mScoutingAssignmentsComplete.Add(completedScoutEntry);
+		Game.instance.notificationManager.GetNotification("ScoutingComplete").IncrementCount();
+		if (!UIManager.instance.IsScreenOpen("ScoutingScreen"))
+		{
+			Game.instance.notificationManager.GetNotification("Scouting").IncrementCount();
+		}
+		if (UIManager.instance.IsScreenOpen("DriverScreen"))
+		{
+			UIManager.instance.RefreshCurrentPage(driver);
+		}
+		else if (UIManager.instance.IsScreenOpen("ScoutingScreen"))
+		{
+			UIManager.instance.GetScreen<ScoutingScreen>().Refresh();
+		}
+		else if (UIManager.instance.IsScreenOpen("TeamScreen"))
+		{
+			UIManager.instance.GetScreen<TeamScreen>().UpdateAbility();
+		}
+		if (this.CanStartNewAssignment())
+		{
+			this.StartScoutingNextDriver();
+		}
+		this.UpdateScoutResultAchievements(completedScoutEntry.driver);
+	}
+
+	// Token: 0x06001295 RID: 4757
+	private void MessageEndOfScouting(ScoutingManager.ScoutingEntry inEntry)
+	{
+		Person personOnJob = Game.instance.player.team.contractManager.GetPersonOnJob(Contract.Job.Scout);
+		StringVariableParser.subject = inEntry.driver;
+		Game.instance.dialogSystem.OnScoutingCompleted(personOnJob);
+	}
+
+	// Token: 0x06001296 RID: 4758
+	public bool IsDriverCurrentlyScouted(Driver inDriver)
+	{
+		for (int i = 0; i < this.mCurrentScoutingEntries.Count; i++)
+		{
+			if (this.mCurrentScoutingEntries[i].driver == inDriver)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Token: 0x06001297 RID: 4759
+	public bool IsDriverInScoutQueue(Driver inDriver)
+	{
+		for (int i = 0; i < this.mQueuedScoutingEntries.Count; i++)
+		{
+			if (this.mQueuedScoutingEntries[i].driver == inDriver)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Token: 0x06001298 RID: 4760
+	public bool IsScouting()
+	{
+		return this.mCurrentScoutingEntries.Count > 0;
+	}
+
+	// Token: 0x06001299 RID: 4761
+	private void UpdatedCompletedScoutsList()
+	{
+		int num = this.mScoutingAssignmentsComplete.Count;
+		DateTime now = Game.instance.time.now;
+		Notification notification = Game.instance.notificationManager.GetNotification("ScoutingComplete");
+		for (int i = 0; i < num; i++)
+		{
+			ScoutingManager.CompletedScoutEntry completedScoutEntry = this.mScoutingAssignmentsComplete[i];
+			if ((now - completedScoutEntry.timeCompleted).TotalDays <= 30.0)
+			{
+				break;
+			}
+			this.mScoutingAssignmentsComplete.RemoveAt(i);
+			num--;
+			i--;
+			notification.DecrementCount();
+		}
+		if (UIManager.instance.IsScreenOpen("ScoutingScreen"))
+		{
+			UIManager.instance.GetScreen<ScoutingScreen>().Refresh();
+		}
+	}
+
+	// Token: 0x0600129A RID: 4762
+	private ScoutingManager.ScoutingEntry GetScoutingEntryForDriver(Driver inDriver, List<ScoutingManager.ScoutingEntry> inListToSearch)
+	{
+		for (int i = 0; i < inListToSearch.Count; i++)
+		{
+			if (inListToSearch[i].driver == inDriver)
+			{
+				return inListToSearch[i];
+			}
+		}
+		return null;
+	}
+
+	// Token: 0x0600129B RID: 4763
+	public float GetTimeLeftForScoutingDriverNormalized(Driver inDriver)
+	{
+		TimeSpan timeLeftForScoutingDriver = this.GetTimeLeftForScoutingDriver(inDriver);
+		ScoutingManager.ScoutingEntry scoutingEntryForDriver = this.GetScoutingEntryForDriver(inDriver, this.mQueuedScoutingEntries);
+		if (scoutingEntryForDriver == null)
+		{
+			scoutingEntryForDriver = this.GetScoutingEntryForDriver(inDriver, this.mCurrentScoutingEntries);
+		}
+		float num = (float)scoutingEntryForDriver.scoutingDays * 86400f;
+		return Mathf.Clamp01((num - (float)timeLeftForScoutingDriver.TotalSeconds) / num);
+	}
+
+	// Token: 0x0600129C RID: 4764
+	public TimeSpan GetTimeLeftForScoutingDriver(Driver inDriver)
+	{
+		ScoutingManager.ScoutingEntry scoutingEntryForDriver = this.GetScoutingEntryForDriver(inDriver, this.mQueuedScoutingEntries);
+		TimeSpan result = default(TimeSpan);
+		if (scoutingEntryForDriver != null)
+		{
+			result = new TimeSpan(scoutingEntryForDriver.scoutingDays, 0, 0, 0);
+		}
+		else
+		{
+			result = this.GetScoutingEntryForDriver(inDriver, this.mCurrentScoutingEntries).calendarEvent.triggerDate.Subtract(Game.instance.time.now);
+		}
+		return result;
+	}
+
+	// Token: 0x0600129D RID: 4765
+	public ScoutingManager.ScoutingEntry GetDriverInQueue(int index)
+	{
+		return this.mQueuedScoutingEntries[index];
+	}
+
+	// Token: 0x0600129E RID: 4766
+	public ScoutingManager.ScoutingEntry GetCurrentScoutingEntry(int index)
+	{
+		return this.mCurrentScoutingEntries[index];
+	}
+
+	// Token: 0x0600129F RID: 4767
+	public ScoutingManager.CompletedScoutEntry GetCompletedDriver(int index)
+	{
+		return this.mScoutingAssignmentsComplete[index];
+	}
+
+	// Token: 0x060012A0 RID: 4768
+	public int GetDriverPositionInQueue(Driver inDriver)
+	{
+		int num = -1;
+		for (int i = 0; i < this.mQueuedScoutingEntries.Count; i++)
+		{
+			if (this.mQueuedScoutingEntries[i].driver == inDriver)
+			{
+				num = i;
+			}
+		}
+		return num + 1;
+	}
+
+	// Token: 0x060012A1 RID: 4769
+	private void UpdateScoutResultAchievements(Driver inScoutedDriver)
+	{
+		if (inScoutedDriver.GetPotentialString().Equals("world class", StringComparison.OrdinalIgnoreCase) && inScoutedDriver.GetAge() < 18)
+		{
+			App.instance.steamAchievementsManager.UnlockAchievement(Achievements.AchievementEnum.Scout_Five_Star_Pot_Youngster);
+		}
+		if (inScoutedDriver.GetDriverStats().GetAbility() >= 4.5f)
+		{
+			App.instance.steamAchievementsManager.UnlockAchievement(Achievements.AchievementEnum.Scout_Five_Star_Driver);
+		}
+	}
+
+	// Token: 0x060012A2 RID: 4770
+	private void OnScoutingFacilityBuilt(HQsBuilding_v1.NotificationState inNotificationState, HQsBuilding_v1 inBuilding)
+	{
+		if (inBuilding.team != null && inBuilding.team.IsPlayersTeam() && inBuilding.info.type == HQsBuildingInfo.Type.ScoutingFacility && (inNotificationState == HQsBuilding_v1.NotificationState.BuildComplete | inNotificationState == HQsBuilding_v1.NotificationState.UpgradeComplete))
+		{
+			int currentLevel = inBuilding.currentLevel;
+			List<Driver> entityList = Game.instance.driverManager.GetEntityList();
+			int num = 0;
+			for (int i = 0; i < entityList.Count; i++)
+			{
+				if (currentLevel == entityList[i].GetDriverStats().scoutingLevelRequired - 1)
+				{
+					num++;
+				}
+			}
+			Notification notification = Game.instance.notificationManager.GetNotification("ScoutingNewEntitiesToScout");
+			for (int j = 0; j < num; j++)
+			{
+				notification.IncrementCount();
+			}
+			this.UpdateUnlockedScoutingSlots();
+			if (this.CanStartNewAssignment())
+			{
+				this.StartScoutingNextDriver();
+			}
+		}
+	}
+
+	// Token: 0x060012A3 RID: 4771
+	public bool IsSlotEmpty(int inSlotIndex)
+	{
+		return inSlotIndex >= this.mCurrentScoutingEntries.Count;
+	}
+
+	// Token: 0x060012A4 RID: 4772
+	public bool IsSlotLocked(int inSlotIndex)
+	{
+		return inSlotIndex >= this.mBaseScoutingSlotsCount + this.mUnlockedScoutingSlots;
+	}
+
+	// Token: 0x17000235 RID: 565
+	// (get) Token: 0x060012A5 RID: 4773
+	public int baseScoutingSlotsCount
+	{
+		get
+		{
+			return this.mBaseScoutingSlotsCount;
+		}
+	}
+
+	// Token: 0x17000236 RID: 566
+	// (get) Token: 0x060012A6 RID: 4774
+	public Person scoutingTarget
+	{
+		get
+		{
+			return this.mCurrentScoutingEntries[0].driver;
+		}
+	}
+
+	// Token: 0x17000237 RID: 567
+	// (get) Token: 0x060012A7 RID: 4775
+	public int scoutingAssignmentsCount
+	{
+		get
+		{
+			return this.mQueuedScoutingEntries.Count;
+		}
+	}
+
+	// Token: 0x17000238 RID: 568
+	// (get) Token: 0x060012A8 RID: 4776
+	public int currentScoutingsCount
+	{
+		get
+		{
+			return this.mCurrentScoutingEntries.Count;
+		}
+	}
+
+	// Token: 0x17000239 RID: 569
+	// (get) Token: 0x060012A9 RID: 4777
+	public int scoutingAssigmentsCompleteCount
+	{
+		get
+		{
+			return this.mScoutingAssignmentsComplete.Count;
+		}
+	}
+
+	// Token: 0x1700023A RID: 570
+	// (get) Token: 0x060012AA RID: 4778
+	public int totalScoutingSlots
+	{
+		get
+		{
+			return this.mBaseScoutingSlotsCount + this.mMaxScoutingLevelFacility;
+		}
+	}
+
+	// Token: 0x0400109D RID: 4253
+	private readonly int mBaseScoutingSlotsCount = Game.instance.player.scoutingSlots;
+
+	// Token: 0x0400109E RID: 4254
+	private int mUnlockedScoutingSlots;
+
+	// Token: 0x0400109F RID: 4255
+	private int mMaxScoutingLevelFacility = 3;
+
+	// Token: 0x040010A0 RID: 4256
+	private List<ScoutingManager.ScoutingEntry> mCurrentScoutingEntries = new List<ScoutingManager.ScoutingEntry>();
+
+	// Token: 0x040010A1 RID: 4257
+	private List<ScoutingManager.ScoutingEntry> mQueuedScoutingEntries = new List<ScoutingManager.ScoutingEntry>();
+
+	// Token: 0x040010A2 RID: 4258
+	private List<ScoutingManager.CompletedScoutEntry> mScoutingAssignmentsComplete = new List<ScoutingManager.CompletedScoutEntry>();
+
+	// Token: 0x02000297 RID: 663
+	[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+	public class CompletedScoutEntry
+	{
+		// Token: 0x060012AB RID: 4779
+		public CompletedScoutEntry()
+		{
+		}
+
+		// Token: 0x040010A3 RID: 4259
+		public DateTime timeCompleted;
+
+		// Token: 0x040010A4 RID: 4260
+		public Driver driver;
+	}
+
+	// Token: 0x02000298 RID: 664
+	[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+	public class ScoutingEntry
+	{
+		// Token: 0x060012AC RID: 4780
+		public ScoutingEntry()
+		{
+		}
+
+		// Token: 0x040010A5 RID: 4261
+		public CalendarEvent_v1 calendarEvent;
+
+		// Token: 0x040010A6 RID: 4262
+		public int scoutingDays;
+
+		// Token: 0x040010A7 RID: 4263
+		public Driver driver;
+	}
+}

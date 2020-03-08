@@ -1,6 +1,14 @@
+using System;
+using TMPro;
+using UnityEngine;
+
+// Token: 0x020005D2 RID: 1490
+public partial class UIDialogBoxMechanicBonusTooltip : UIDialogBox
+{
+	// Token: 0x06002AD0 RID: 10960
 	public void ShowTooltip(bool inUnlocked, MechanicBonus inBonus)
 	{
-		if (inBonus != null & inUnlocked)
+		if (inBonus != null && (inUnlocked || Game.instance.player.mechanicBonusHide == 0))
 		{
 			this.mBonus = inBonus;
 			GameUtility.SetTooltipTransformInsideScreen(this.rectTransform, null, default(Vector3), false, null);
@@ -13,3 +21,4 @@
 			GameUtility.SetActive(base.gameObject, true);
 		}
 	}
+}

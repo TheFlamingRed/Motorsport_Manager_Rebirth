@@ -17,40 +17,40 @@
   <RaceLength>
     
     <ShortRaceLengthInMiles>50</ShortRaceLengthInMiles>
-    <MediumRaceLengthInMiles>265</MediumRaceLengthInMiles>
-    <LongRaceLengthInMiles>400</LongRaceLengthInMiles>
+    <MediumRaceLengthInMiles>98</MediumRaceLengthInMiles>
+    <LongRaceLengthInMiles>150</LongRaceLengthInMiles>
 
     <ShortRaceLengthInMinutes>60</ShortRaceLengthInMinutes>
     <MediumRaceLengthInMinutes>180</MediumRaceLengthInMinutes>
     <LongRaceLengthInMinutes>360</LongRaceLengthInMinutes>
-    
+
     <!-- These modify the number of laps for the circuit depending on the political rules in place -->
     <ShortRaceLengthShortSessionRulesLapDelta>-7</ShortRaceLengthShortSessionRulesLapDelta>
     <ShortRaceLengthLongSessionRulesLapDelta>7</ShortRaceLengthLongSessionRulesLapDelta>
     
-    <MediumRaceLengthShortSessionRulesLapDelta>-135</MediumRaceLengthShortSessionRulesLapDelta>
-    <MediumRaceLengthLongSessionRulesLapDelta>135</MediumRaceLengthLongSessionRulesLapDelta>
+    <MediumRaceLengthShortSessionRulesLapDelta>-22</MediumRaceLengthShortSessionRulesLapDelta>
+    <MediumRaceLengthLongSessionRulesLapDelta>22</MediumRaceLengthLongSessionRulesLapDelta>
     
-    <LongRaceLengthShortSessionRulesLapDelta>-200</LongRaceLengthShortSessionRulesLapDelta>
-    <LongRaceLengthLongSessionRulesLapDelta>200</LongRaceLengthLongSessionRulesLapDelta>
+    <LongRaceLengthShortSessionRulesLapDelta>-33</LongRaceLengthShortSessionRulesLapDelta>
+    <LongRaceLengthLongSessionRulesLapDelta>33</LongRaceLengthLongSessionRulesLapDelta>
 
     <!-- How much time will be added or reduced according to the pref settings in Timed Races -->
     <ShortTimeRaceValueMinutes>-30</ShortTimeRaceValueMinutes>
     <MediumTimeRaceValueMinutes>-15</MediumTimeRaceValueMinutes>
     <LongTimeRaceValueMinutes>0</LongTimeRaceValueMinutes>
-
+    
   </RaceLength>
 
   <!-- REAL WORLD CAR STATS -->
   <CarStats isActive="true">
     
     <TopSpeedMph>230</TopSpeedMph>
-    <Acceleration>9</Acceleration>
-    <Braking>20</Braking>    
-    <LowSpeedCorners>0.6</LowSpeedCorners>
-    <MediumSpeedCorners>0.7</MediumSpeedCorners>
-    <HighSpeedCorners>0.8</HighSpeedCorners>
-
+    <Acceleration>12</Acceleration>
+    <Braking>30</Braking>
+    <LowSpeedCorners>1</LowSpeedCorners>
+    <MediumSpeedCorners>1</MediumSpeedCorners>
+    <HighSpeedCorners>1</HighSpeedCorners>
+    
     <!-- How many seconds slower per lap are the tiers below the top level -->
     <Tier2TimeCost>7</Tier2TimeCost>
     <Tier3TimeCost>12</Tier3TimeCost>
@@ -58,13 +58,13 @@
     <!-- The stats above control how fast the cars car possibly be. -->
     <!-- The time cost below controls the worst a car can be compared to that in seconds per lap. -->
     <!-- This is a larger number than you'd expect because cars keep improving through a number of seasons until they hit the limit or the rules change. -->
-    <MinPerformanceTimeCost>115</MinPerformanceTimeCost>
+    <MinPerformanceTimeCost>155</MinPerformanceTimeCost>
     
     <!-- If one section of the car is too powerful these scalars can be used to reduce the power of that section. A value of 0.5 will half the gap between the top and worst cars. -->
-    <TopSpeedPerformanceScalar>0.13</TopSpeedPerformanceScalar>
-    <AccelerationPerformanceScalar>0.35</AccelerationPerformanceScalar>
-    <BrakingPerformanceScalar>0.35</BrakingPerformanceScalar>
-    <CorneringPerformanceScalar>1.0</CorneringPerformanceScalar>
+    <TopSpeedPerformanceScalar>0.10</TopSpeedPerformanceScalar>
+    <AccelerationPerformanceScalar>0.27</AccelerationPerformanceScalar>
+    <BrakingPerformanceScalar>0.30</BrakingPerformanceScalar>
+    <CorneringPerformanceScalar>1</CorneringPerformanceScalar>
     
   </CarStats>
 
@@ -73,19 +73,19 @@
     
     <!-- These values control the point at which a tyre tread works best on a wet track. 0.0 is a dry track and 1.0 is a totally wet track. -->
     <MinSlickTreadSurfaceWaterRange>0</MinSlickTreadSurfaceWaterRange>
-    <MaxSlickTreadSurfaceWaterRange>0.18</MaxSlickTreadSurfaceWaterRange>
+    <MaxSlickTreadSurfaceWaterRange>0.16</MaxSlickTreadSurfaceWaterRange>
     
     <MinLightTreadSurfaceWaterRange>0.10</MinLightTreadSurfaceWaterRange>
     <MaxLightTreadSurfaceWaterRange>0.68</MaxLightTreadSurfaceWaterRange>
     
     <MinHeavyTreadSurfaceWaterRange>0.60</MinHeavyTreadSurfaceWaterRange>
     <MaxHeavyTreadSurfaceWaterRange>1</MaxHeavyTreadSurfaceWaterRange>
-
+ 
     <MaxAdaptabilityWaterRangeOffset>0.05</MaxAdaptabilityWaterRangeOffset>
     <BestTyreSupplierWaterRangeOffset>0.05</BestTyreSupplierWaterRangeOffset>
     <TyreSupplierSpeedBonusMaxTimeCost>4</TyreSupplierSpeedBonusMaxTimeCost>
     <TyreSupplierHighTyreWearModiffier>1.05</TyreSupplierHighTyreWearModiffier>
-
+    
     <!-- This reduces the performance when the temperature is either hot or cold, and increases the tyre wear rate. This is a moddifier that is applied to the current mode-->
     <TyreTemperaturePerformanceModiffier>0.5</TyreTemperaturePerformanceModiffier>
     <TyreTemperatureWearModiffier>0.5</TyreTemperatureWearModiffier>
@@ -96,20 +96,20 @@
     <!-- When a wrong tyre is fitted, the car incurs in a time cost and increased tyre wear -->
     <WrongTyreCompoundTimeCost>2.5</WrongTyreCompoundTimeCost>
     <WrongTyreCompoundTyreWearCost>0.01</WrongTyreCompoundTyreWearCost>
-    <LostTyreTimeCost>45.0</LostTyreTimeCost>
+    <LostTyreTimeCost>90.0</LostTyreTimeCost>
     <MinimumDetachTyreDelay>20.0</MinimumDetachTyreDelay>
-    <MaximumDetachTyreDelay>1200.00</MaximumDetachTyreDelay>
+    <MaximumDetachTyreDelay>900.0</MaximumDetachTyreDelay>
 
     <!-- How many Wets and Inters to take to the race -->
-    <WetsAndIntermediatesTyreCount>8</WetsAndIntermediatesTyreCount>
-    
+    <WetsAndIntermediatesTyreCount>6</WetsAndIntermediatesTyreCount>
+
     <!-- Base tyre compounds. Lap and performance -->
     
     <!-- ULTRA SOFTS -->
     <UltraSofts>
 
       <!-- Cliff condition is the point at which all performance is lost. 1.0 is at 100% new and 0.1 is at 10% of rubber left. -->
-      <CliffCondition>0.15</CliffCondition>
+      <CliffCondition>0.12</CliffCondition>
       <CliffConditionTimeCost>5</CliffConditionTimeCost>
 
       <!-- The time cost per lap of being on these tyres in the wrong weather conditions -->
@@ -158,7 +158,7 @@
     <Softs>
 
       <CliffCondition>0.1</CliffCondition>
-      <CliffConditionTimeCost>3.5</CliffConditionTimeCost>
+      <CliffConditionTimeCost>4</CliffConditionTimeCost>
 
       <WrongTreadForWaterLevelTimeCost>15</WrongTreadForWaterLevelTimeCost>
 
@@ -175,8 +175,8 @@
     <!-- MEDIUMS -->
     <Mediums>
 
-      <CliffCondition>0.0</CliffCondition>
-      <CliffConditionTimeCost>2.5</CliffConditionTimeCost>
+      <CliffCondition>0.05</CliffCondition>
+      <CliffConditionTimeCost>3</CliffConditionTimeCost>
 
       <WrongTreadForWaterLevelTimeCost>15</WrongTreadForWaterLevelTimeCost>
 
@@ -212,9 +212,9 @@
     <Inters>
 
       <CliffCondition>0.0</CliffCondition>
-      <CliffConditionTimeCost>3</CliffConditionTimeCost>
+      <CliffConditionTimeCost>4</CliffConditionTimeCost>
 
-      <WrongTreadForWaterLevelTimeCost>12</WrongTreadForWaterLevelTimeCost>
+      <WrongTreadForWaterLevelTimeCost>10</WrongTreadForWaterLevelTimeCost>
 
       <TemperatureIncreaseTimeInMinutes>6</TemperatureIncreaseTimeInMinutes>
       <TemperatureDecreaseTimeInMinutes>7</TemperatureDecreaseTimeInMinutes>
@@ -230,7 +230,7 @@
     <Wets>
 
       <CliffCondition>0.0</CliffCondition>
-      <CliffConditionTimeCost>3</CliffConditionTimeCost>
+      <CliffConditionTimeCost>6</CliffConditionTimeCost>
 
       <WrongTreadForWaterLevelTimeCost>20</WrongTreadForWaterLevelTimeCost>
 
@@ -253,11 +253,11 @@
   <!-- SHORT RACE LENGTHS -->
   <!-- **************************** -->
   <ShortGameLength>
-    
+    <!-- Weather Forecast Bars-->
+    <WeatherBarsForecastCount>20</WeatherBarsForecastCount>
+
     <!-- ENERGY RECOVERY SYSTEM DATA -->
     <EnergyRecoverySystem>
-      <!-- Weather Forecast Bars-->
-      <WeatherBarsForecastCount>20</WeatherBarsForecastCount>
 
       <!-- Vehicle Battery Size  -->
       <SmallBatterySize>60</SmallBatterySize>
@@ -270,13 +270,15 @@
       <PowerModeRate>150</PowerModeRate>
 
       <!-- Boost when in Power Mode in seconds-->
-      <PowerModeTimeCostGain>25</PowerModeTimeCostGain>
+      <PowerModeTimeCostGain>30</PowerModeTimeCostGain>
 
       <!-- Fuel rate consumption when in Hybrid Mode in percentage -->
       <HybridModeFuelSave>0.8</HybridModeFuelSave>
 
       <!-- Data for Hybrid Mode energy depletion in gates-->
       <HybridModeRate>1000</HybridModeRate>
+
+      <!-- Cooldown for mode change in seconds-->
 
       <!-- Cooldown for mode change in seconds-->
       <PowerModeChangeCooldown>10</PowerModeChangeCooldown>
@@ -296,26 +298,26 @@
         <SessionBonusTimeCostReduction>0.25</SessionBonusTimeCostReduction>
         <MechanicBonusTyreWearRate>0.85</MechanicBonusTyreWearRate>
 		
-		</Bonuses>
-
+		</Bonuses>		
+      
       <!--Behaviour type time costs-->
-      <BehaviourType>
-
+    <BehaviourType>
+      
         <MaxRunWideTimeCost>50.0</MaxRunWideTimeCost>
         <MaxCutCornerTimeCost>15.0</MaxCutCornerTimeCost>
-
-      </BehaviourType>
+    
+    </BehaviourType>
 
       <!-- CAR CONDITION -->
       <CarCondition isActive="true">
 
         <!-- Time cost in seconds per lap for having a problem with a specific part -->
-        <BrakeFailureTimeCost>10</BrakeFailureTimeCost>
+        <BrakeFailureTimeCost>20</BrakeFailureTimeCost>
         <EngineFailureTimeCost>40</EngineFailureTimeCost>
-        <FrontWingFailureTimeCost>5</FrontWingFailureTimeCost>
+        <FrontWingFailureTimeCost>10</FrontWingFailureTimeCost>
         <GearboxFailureTimeCost>30</GearboxFailureTimeCost>
-        <RearWingFailureTimeCost>5</RearWingFailureTimeCost>
-        <SuspensionFailureTimeCost>20</SuspensionFailureTimeCost>
+        <RearWingFailureTimeCost>20</RearWingFailureTimeCost>
+        <SuspensionFailureTimeCost>30</SuspensionFailureTimeCost>
         <CarConditionTicksPerSession>10</CarConditionTicksPerSession>
 
       </CarCondition>
@@ -352,7 +354,7 @@
           <TimeCostForRank>0.69</TimeCostForRank>
           <TimeCostForRank>0.72</TimeCostForRank>
           <TimeCostForRank>0.73</TimeCostForRank>
-
+          
           <TimeCostForRank>0.74</TimeCostForRank>
           <TimeCostForRank>0.75</TimeCostForRank>
           <TimeCostForRank>0.76</TimeCostForRank>
@@ -379,7 +381,7 @@
 
         <!-- The max time cost per lap that the worse driver in the game can have to the best driver in the game -->
         <MaxDriverTimeCostWithDriverAidsOn>1.0</MaxDriverTimeCostWithDriverAidsOn>
-        <MaxDriverTimeCostWithDriverAidsOff>3.0</MaxDriverTimeCostWithDriverAidsOff>
+        <MaxDriverTimeCostWithDriverAidsOff>2.0</MaxDriverTimeCostWithDriverAidsOff>
         <MaxDriverStaminaTimeCost>3.0</MaxDriverStaminaTimeCost>
         <StaminaDecreaseRate> 0.8</StaminaDecreaseRate>
         <StaminaRestingRate> 4.0</StaminaRestingRate>
@@ -430,7 +432,7 @@
         <MaxEngineModeTimeCost>3.0</MaxEngineModeTimeCost>
 
         <OutOfFuelTimeCost>60</OutOfFuelTimeCost>
-        <TimeCostPerLapOfFuel>0.17</TimeCostPerLapOfFuel>
+        <TimeCostPerLapOfFuel>0.25</TimeCostPerLapOfFuel>
 
         <!-- Performance: 0.0 = Low performance and maximum time cost -->
         <!-- Performance: 1.0 = High performance and no time cost -->
@@ -472,8 +474,8 @@
         <BalancedPitstopStrategyTimeCost>0.25</BalancedPitstopStrategyTimeCost>
         <FastPitstopStrategyTimeCost>0</FastPitstopStrategyTimeCost>
         <!-- Pitstop duration values in seconds -->
-        <PitstopTimeCostPerLapOfFuel>0.8</PitstopTimeCostPerLapOfFuel>
-        <PitstopTyreChangeTimeCost>18</PitstopTyreChangeTimeCost>
+        <PitstopTimeCostPerLapOfFuel>0.7</PitstopTimeCostPerLapOfFuel>
+        <PitstopTyreChangeTimeCost>3</PitstopTyreChangeTimeCost>
         <SetupChangeTimeCost>5</SetupChangeTimeCost>
         <TrimChangeTimeCost>10</TrimChangeTimeCost>
         <DriverChangeTimeCost>40</DriverChangeTimeCost>
@@ -537,11 +539,17 @@
       <!-- Tyre life is split into three bands: high, medium, and low -->
       <!-- A band allows you to set the number of laps available to it and the time cost -->
       <!-- This allows you to say that these tyres have, for example, one fantastic lap, then four laps at an average pace, followed by two slow laps -->
-      <HighPerformanceLapCount>4</HighPerformanceLapCount>
+      <HighPerformanceLapCount>3</HighPerformanceLapCount>
       <HighPerformanceTimeCost>0</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>1</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>0</MedHighPerformanceTimeCost>
 
       <MediumPerformanceLapCount>3</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>1.25</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>4</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>0</MedLowPerformanceTimeCost>
 
       <LowPerformanceLapCount>2</LowPerformanceLapCount>
       <LowPerformanceTimeCost>4.0</LowPerformanceTimeCost>
@@ -564,9 +572,15 @@
 
       <HighPerformanceLapCount>3</HighPerformanceLapCount>
       <HighPerformanceTimeCost>0.75</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>1</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>0.75</MedHighPerformanceTimeCost>
 
       <MediumPerformanceLapCount>6</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>1.75</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>1</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>1.75</MedLowPerformanceTimeCost>
 
       <LowPerformanceLapCount>2</LowPerformanceLapCount>
       <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
@@ -582,11 +596,17 @@
     <!-- HARDEST TYRE COMPOUND AT A RACE WEEKEND -->
     <ThirdOptionTyres>
 
-      <HighPerformanceLapCount>3</HighPerformanceLapCount>
+      <HighPerformanceLapCount>2</HighPerformanceLapCount>
       <HighPerformanceTimeCost>1.5</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>1</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1.5</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>6</MediumPerformanceLapCount>
+      <MediumPerformanceLapCount>5</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>2</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>1</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2</MedLowPerformanceTimeCost>
 
       <LowPerformanceLapCount>4</LowPerformanceLapCount>
       <LowPerformanceTimeCost>2.5</LowPerformanceTimeCost>
@@ -602,11 +622,17 @@
     <!-- INTERMEDIATE TYRES -->
     <IntermediatesTyres>
 
-      <HighPerformanceLapCount>3</HighPerformanceLapCount>
+      <HighPerformanceLapCount>2</HighPerformanceLapCount>
       <HighPerformanceTimeCost>1</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>1</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>5</MediumPerformanceLapCount>
+      <MediumPerformanceLapCount>4</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>1.5</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>1</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>1.5</MedLowPerformanceTimeCost>
 
       <LowPerformanceLapCount>3</LowPerformanceLapCount>
       <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
@@ -622,11 +648,17 @@
     <!-- WET TYRES -->
     <WetTyres>
 
-      <HighPerformanceLapCount>3</HighPerformanceLapCount>
+      <HighPerformanceLapCount>2</HighPerformanceLapCount>
       <HighPerformanceTimeCost>1</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>1</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>5</MediumPerformanceLapCount>
+      <MediumPerformanceLapCount>4</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>1.5</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>1</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>1.5</MedLowPerformanceTimeCost>
 
       <LowPerformanceLapCount>3</LowPerformanceLapCount>
       <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
@@ -653,9 +685,9 @@
       <!-- How many months before the pit crew reaches peak age and retire -->
       <MinMonthsToPeakAge>30</MinMonthsToPeakAge>
       <MaxMonthsToPeakAge>60</MaxMonthsToPeakAge>
-      
-      <!-- Pit stop times -->
 
+      <!-- Pit stop times -->
+      
            <!-- Front Jack Minimum and Maximum times during pit stops -->
       <MinimumFrontJackTaskTime>0.25</MinimumFrontJackTaskTime>
       <MedianFrontJackTaskTime>1.5</MedianFrontJackTaskTime>
@@ -667,7 +699,7 @@
       <MaximumRearJackTaskTime>2.0</MaximumRearJackTaskTime>
 
       <!-- Tyres Minimum and Maximum times during pit stops -->
-      <MinimumTyresTaskTime>1.5</MinimumTyresTaskTime>
+      <MinimumTyresTaskTime>1.25</MinimumTyresTaskTime>
       <MedianTyresTaskTime>2.5</MedianTyresTaskTime>
       <MaximumTyresTaskTime>3.0</MaximumTyresTaskTime>
 
@@ -682,21 +714,19 @@
         <EngineMaxTime>25.0</EngineMaxTime>
 
         <FrontWingMinTime>4.0</FrontWingMinTime>
-		<FrontWingMedTime>7.0</FrontWingMedTime>
+		<FrontWingMedTime>6.5</FrontWingMedTime>
         <FrontWingMaxTime>8.0</FrontWingMaxTime>
-       
 
         <GearboxMinTime>18.0</GearboxMinTime>
 		<GearboxMedTime>23.0</GearboxMedTime>
         <GearboxMaxTime>25.0</GearboxMaxTime>
-       
 
         <RearWingMinTime>10.0</RearWingMinTime>
-		<RearWingMedTime>13.0</RearWingMedTime>
+        <RearWingMedTime>13.0</RearWingMedTime>
         <RearWingMaxTime>15.0</RearWingMaxTime>
 
         <SuspensionMinTime>8.0</SuspensionMinTime>
-		<SuspensionMedTime>11.0</SuspensionMedTime>
+		<SuspensionMedTime>10.5</SuspensionMedTime>
         <SuspensionMaxTime>12.0</SuspensionMaxTime>
       </FixingPartsTaskTimes>
 
@@ -707,14 +737,14 @@
 
       <!-- Battery Minimum and Maximum times during pit stops -->
       <MinimumBatteryTaskTime>2.0</MinimumBatteryTaskTime>
-      <MedianBatteryTaskTime>3.5</MedianBatteryTaskTime>
+      <MedianBatteryTaskTime>3.25</MedianBatteryTaskTime>
       <MaximumBatteryTaskTime>4.0</MaximumBatteryTaskTime>
 
       <!-- The error percentage added to each pit crew member based on strategy, number from 0 to 1 -->
       <SafeStrategyErrorPercent>0</SafeStrategyErrorPercent>
       <BalancedStrategyErrorPercent>0.01</BalancedStrategyErrorPercent>
       <FastStrategyErrorPercent>0.02</FastStrategyErrorPercent>
-	  
+      
       <!-- Confidence Impacts, for decrease and increase rate at the end of every race -->
       <!-- Confidence is a stat from 0 to 1 -->
       <FrontJackConfidenceDecrease>0.05</FrontJackConfidenceDecrease>
@@ -729,12 +759,12 @@
       <TyresConfidenceDecreaseMistake>0.25</TyresConfidenceDecreaseMistake>
       <FixingPartsConfidenceDecreaseMistake>0.15</FixingPartsConfidenceDecreaseMistake>
       <RefuellingConfidenceDecreaseMistake>0.25</RefuellingConfidenceDecreaseMistake>
-      
+
       <!-- Pit Crew Funding increases -->
       <LowPitCrewFundingConfidenceIncrease>0.1</LowPitCrewFundingConfidenceIncrease>
       <MediumPitCrewFundingConfidenceIncrease>0.15</MediumPitCrewFundingConfidenceIncrease>
       <HighPitCrewFundingConfidenceIncrease>0.2</HighPitCrewFundingConfidenceIncrease>
-
+      
       <!-- Pit Crew Funding Costs on a Per-Race basis -->
       <PitCrewFundings>
 
@@ -798,32 +828,32 @@
   <!-- MEDIUM RACE LENGTHS -->
   <!-- **************************** -->
   <MediumGameLength>
-    
+    <!-- Weather Forecast Bars-->
+    <WeatherBarsForecastCount>20</WeatherBarsForecastCount>
+
     <!-- ENERGY RECOVERY SYSTEM DATA -->
     <EnergyRecoverySystem>
-      <!-- Weather Forecast Bars-->
-      <WeatherBarsForecastCount>60</WeatherBarsForecastCount>
 
-      <!-- Vehicle Battery Size  -->
+    <!-- Vehicle Battery Size  -->
       <SmallBatterySize>60</SmallBatterySize>
       <LargeBatterySize>100</LargeBatterySize>
 
       <!-- HarvestMode - Vehicles need to travel x gates to charge the rate given -->
-      <HarvestModeRate>6250</HarvestModeRate>
+      <HarvestModeRate>4250</HarvestModeRate>
 
-     <!-- Data for Power mode energy depletion in gates-->
-      <PowerModeRate>200</PowerModeRate>
+      <!-- Data for Power mode energy depletion in gates-->
+      <PowerModeRate>120</PowerModeRate>
 
       <!-- Boost when in Power Mode in seconds-->
-      <PowerModeTimeCostGain>18</PowerModeTimeCostGain>
+      <PowerModeTimeCostGain>40</PowerModeTimeCostGain>
 
       <!-- Fuel rate consumption when in Hybrid Mode in percentage -->
-      <HybridModeFuelSave>0.15</HybridModeFuelSave>
+      <HybridModeFuelSave>0.2</HybridModeFuelSave>
 
       <!-- Data for Hybrid Mode energy depletion in gates-->
-      <HybridModeRate>2250</HybridModeRate>
+      <HybridModeRate>1700</HybridModeRate>
 
-      <!-- Cooldown for mode change in seconds-->      
+      <!-- Cooldown for mode change in seconds-->
       <PowerModeChangeCooldown>10</PowerModeChangeCooldown>
       <HybridModeChangeCooldown>10</HybridModeChangeCooldown>
       <HarvestModeChangeCooldown>0.5</HarvestModeChangeCooldown>
@@ -837,30 +867,30 @@
 	  
 		<LowFuelBurnRateBonus>0.9</LowFuelBurnRateBonus>
         <HighFuelBurnRateBonus>1.05</HighFuelBurnRateBonus>
-        <SessionBonusTotalTimeCost>1</SessionBonusTotalTimeCost>
-        <SessionBonusTimeCostReduction>0.1</SessionBonusTimeCostReduction>
+        <SessionBonusTotalTimeCost>0.5</SessionBonusTotalTimeCost>
+        <SessionBonusTimeCostReduction>0.2</SessionBonusTimeCostReduction>
         <MechanicBonusTyreWearRate>0.8</MechanicBonusTyreWearRate>
 		
 		</Bonuses>
 
       <!--Behaviour type time costs-->
-      <BehaviourType>
-
+    <BehaviourType>
+      
         <MaxRunWideTimeCost>50.0</MaxRunWideTimeCost>
         <MaxCutCornerTimeCost>15.0</MaxCutCornerTimeCost>
-
-      </BehaviourType>
-
+    
+    </BehaviourType>
+      
       <!-- CAR CONDITION -->
       <CarCondition isActive="true">
 
         <!-- Time cost in seconds per lap for having a problem with a specific part -->
-        <BrakeFailureTimeCost>40</BrakeFailureTimeCost>
-        <EngineFailureTimeCost>85</EngineFailureTimeCost>
-        <FrontWingFailureTimeCost>15</FrontWingFailureTimeCost>
-        <GearboxFailureTimeCost>60</GearboxFailureTimeCost>
-        <RearWingFailureTimeCost>25</RearWingFailureTimeCost>
-        <SuspensionFailureTimeCost>55</SuspensionFailureTimeCost>
+        <BrakeFailureTimeCost>30</BrakeFailureTimeCost>
+        <EngineFailureTimeCost>65</EngineFailureTimeCost>
+        <FrontWingFailureTimeCost>10</FrontWingFailureTimeCost>
+        <GearboxFailureTimeCost>45</GearboxFailureTimeCost>
+        <RearWingFailureTimeCost>20</RearWingFailureTimeCost>
+        <SuspensionFailureTimeCost>40</SuspensionFailureTimeCost>
         <CarConditionTicksPerSession>11</CarConditionTicksPerSession>
 
       </CarCondition>
@@ -870,39 +900,39 @@
         <!-- The maxiumum possible time loss for having a car that isn't suited to the current circuit (ordered by rank on grid) -->
         <CriticalPartTimeCosts>
 
-          <!-- Rank 1-5 0.5-->
+          <!-- Rank 1-5 -->
           <TimeCostForRank>0.0</TimeCostForRank>
-          <TimeCostForRank>0.09</TimeCostForRank>
-          <TimeCostForRank>0.21</TimeCostForRank>
-          <TimeCostForRank>0.34</TimeCostForRank>
-          <TimeCostForRank>0.46</TimeCostForRank>
+          <TimeCostForRank>0.17</TimeCostForRank>
+          <TimeCostForRank>0.41</TimeCostForRank>
+          <TimeCostForRank>0.57</TimeCostForRank>
+          <TimeCostForRank>0.77</TimeCostForRank>
 
-          <!-- Rank 6-10 1.05-->
-          <TimeCostForRank>0.51</TimeCostForRank>
-          <TimeCostForRank>0.58</TimeCostForRank>
-          <TimeCostForRank>0.71</TimeCostForRank>
-          <TimeCostForRank>0.89</TimeCostForRank>
-          <TimeCostForRank>1.03</TimeCostForRank>
+          <!-- Rank 6-10 -->
+          <TimeCostForRank>0.92</TimeCostForRank>
+          <TimeCostForRank>1.04</TimeCostForRank>
+          <TimeCostForRank>1.19</TimeCostForRank>
+          <TimeCostForRank>1.41</TimeCostForRank>
+          <TimeCostForRank>1.75</TimeCostForRank>
 
-          <!-- Rank 11-15 1.9-->
-          <TimeCostForRank>1.2</TimeCostForRank>
-          <TimeCostForRank>1.37</TimeCostForRank>
-          <TimeCostForRank>1.58</TimeCostForRank>
-          <TimeCostForRank>1.68</TimeCostForRank>
-          <TimeCostForRank>1.83</TimeCostForRank>
+          <!-- Rank 11-15 -->
+          <TimeCostForRank>1.79</TimeCostForRank>
+          <TimeCostForRank>2.01</TimeCostForRank>
+          <TimeCostForRank>2.14</TimeCostForRank>
+          <TimeCostForRank>2.37</TimeCostForRank>
+          <TimeCostForRank>2.71</TimeCostForRank>
 
-          <!-- Rank 16-20 2.7-->
-          <TimeCostForRank>1.92</TimeCostForRank>
-          <TimeCostForRank>2.04</TimeCostForRank>
-          <TimeCostForRank>2.18</TimeCostForRank>
-          <TimeCostForRank>2.3</TimeCostForRank>
-          <TimeCostForRank>2.39</TimeCostForRank>
+          <!-- Rank 16-20 -->
+          <TimeCostForRank>2.75</TimeCostForRank>
+          <TimeCostForRank>2.79</TimeCostForRank>
+          <TimeCostForRank>3.02</TimeCostForRank>
+          <TimeCostForRank>3.08</TimeCostForRank>
+          <TimeCostForRank>3.66</TimeCostForRank>
 
-          <TimeCostForRank>2.52</TimeCostForRank>
-          <TimeCostForRank>2.55</TimeCostForRank>
-          <TimeCostForRank>2.62</TimeCostForRank>
-          <TimeCostForRank>2.69</TimeCostForRank>
-          
+          <TimeCostForRank>3.72</TimeCostForRank>
+          <TimeCostForRank>3.81</TimeCostForRank>
+          <TimeCostForRank>4.08</TimeCostForRank>
+          <TimeCostForRank>4.3</TimeCostForRank>
+
         </CriticalPartTimeCosts>
 
       </CriticalCarPart>
@@ -911,11 +941,11 @@
       <DriverForm isActive="true">
 
         <!-- The time cost per lap of not being on top form -->
-        <MaxDriverFormTimeCost>0.5</MaxDriverFormTimeCost>
-        <TotalUpdateChunks>8</TotalUpdateChunks>
+        <MaxDriverFormTimeCost>0.3</MaxDriverFormTimeCost>
+        <TotalUpdateChunks>10</TotalUpdateChunks>
         <TotalUpdateChunksQualifying>4</TotalUpdateChunksQualifying>
-        <ConsistencyMaxFormLoss>0.1</ConsistencyMaxFormLoss>
-        <ConsistencyMinFormLoss>0.05</ConsistencyMinFormLoss>
+        <ConsistencyMaxFormLoss>0.3</ConsistencyMaxFormLoss>
+        <ConsistencyMinFormLoss>0.1</ConsistencyMinFormLoss>
 
       </DriverForm>
 
@@ -923,8 +953,8 @@
       <DriverPerformance isActive="true">
 
         <!-- The max time cost per lap that the worse driver in the game can have to the best driver in the game -->
-        <MaxDriverTimeCostWithDriverAidsOn>1.1</MaxDriverTimeCostWithDriverAidsOn>
-        <MaxDriverTimeCostWithDriverAidsOff>3.5</MaxDriverTimeCostWithDriverAidsOff>
+        <MaxDriverTimeCostWithDriverAidsOn>0.85</MaxDriverTimeCostWithDriverAidsOn>
+        <MaxDriverTimeCostWithDriverAidsOff>3.75</MaxDriverTimeCostWithDriverAidsOff>
         <MaxDriverStaminaTimeCost>3.0</MaxDriverStaminaTimeCost>
         <StaminaDecreaseRate> 0.8</StaminaDecreaseRate>
         <StaminaRestingRate> 4.0</StaminaRestingRate>
@@ -948,11 +978,11 @@
 
         <!-- Attack -->
         <AttackPerformance>1.0</AttackPerformance>
-        <AttackTyreWearRate>1.15</AttackTyreWearRate>
+        <AttackTyreWearRate>1.3</AttackTyreWearRate>
 
         <!-- Push -->
         <PushPerformance>0.75</PushPerformance>
-        <PushTyreWearRate>1.06</PushTyreWearRate>
+        <PushTyreWearRate>1.1</PushTyreWearRate>
 
         <!-- Neutral -->
         <NeutralPerformance>0.5</NeutralPerformance>
@@ -960,11 +990,11 @@
 
         <!-- Conserve -->
         <ConservePerformance>0.25</ConservePerformance>
-        <ConserveTyreWearRate>0.90</ConserveTyreWearRate>
+        <ConserveTyreWearRate>0.8</ConserveTyreWearRate>
 
         <!-- BackUp -->
         <BackUpPerformance>0</BackUpPerformance>
-        <BackUpTyreWearRate>0.80</BackUpTyreWearRate>
+        <BackUpTyreWearRate>0.6</BackUpTyreWearRate>
 
       </DrivingStyle>
 
@@ -974,8 +1004,8 @@
         <!-- The maxiumum time cost per lap of being on the 'Low' engine mode setting in comparison to the 'Super Overtake' setting -->
         <MaxEngineModeTimeCost>2.0</MaxEngineModeTimeCost>
 
-        <OutOfFuelTimeCost>75</OutOfFuelTimeCost>
-        <TimeCostPerLapOfFuel>0.08</TimeCostPerLapOfFuel>
+        <OutOfFuelTimeCost>60</OutOfFuelTimeCost>
+        <TimeCostPerLapOfFuel>0.1</TimeCostPerLapOfFuel>
 
         <!-- Performance: 0.0 = Low performance and maximum time cost -->
         <!-- Performance: 1.0 = High performance and no time cost -->
@@ -1010,19 +1040,19 @@
       <Setup isActive="true">
 
         <!-- Max time cost in seconds per lap for having the completely wrong setup -->
-        <MaxSetupTimeCost>0.75</MaxSetupTimeCost>
+        <MaxSetupTimeCost>0.5</MaxSetupTimeCost>
 
         <!-- Pitstop Strategy adds a percentage of the expected pit stop time. Value from 0 to 1 -->
-        <SafePitstopStrategyTimeCost>0.12</SafePitstopStrategyTimeCost>
-        <BalancedPitstopStrategyTimeCost>0.05</BalancedPitstopStrategyTimeCost>
+        <SafePitstopStrategyTimeCost>0.5</SafePitstopStrategyTimeCost>
+        <BalancedPitstopStrategyTimeCost>0.25</BalancedPitstopStrategyTimeCost>
         <FastPitstopStrategyTimeCost>0</FastPitstopStrategyTimeCost>
         <!-- Pitstop duration values in seconds -->
-        <PitstopTimeCostPerLapOfFuel>1</PitstopTimeCostPerLapOfFuel>
-        <PitstopTyreChangeTimeCost>18</PitstopTyreChangeTimeCost>
-        <SetupChangeTimeCost>25</SetupChangeTimeCost>
+        <PitstopTimeCostPerLapOfFuel>0.7</PitstopTimeCostPerLapOfFuel>
+        <PitstopTyreChangeTimeCost>3</PitstopTyreChangeTimeCost>
+        <SetupChangeTimeCost>15</SetupChangeTimeCost>
         <TrimChangeTimeCost>3</TrimChangeTimeCost>
         <DriverChangeTimeCost>40</DriverChangeTimeCost>
-
+        
       </Setup>
 
       <!-- QUALIFYING TEMPERATURE OPTIMISATION  -->
@@ -1048,7 +1078,7 @@
         <!-- The time cost per lap of driving on a totally wet track in comparison to a dry track -->
         <MaxWetTrackTimeCost>20</MaxWetTrackTimeCost>
         <MaxWetSetupPerformanceTimeCost>2</MaxWetSetupPerformanceTimeCost>
-        <NoRubberOnTrackTimeCost>0.7</NoRubberOnTrackTimeCost>
+        <NoRubberOnTrackTimeCost>0.5</NoRubberOnTrackTimeCost>
 
       </TrackWater>
 
@@ -1082,78 +1112,102 @@
       <!-- Tyre life is split into three bands: high, medium, and low -->
       <!-- A band allows you to set the number of laps available to it and the time cost -->
       <!-- This allows you to say that these tyres have, for example, one fantastic lap, then four laps at an average pace, followed by two slow laps -->
-      <HighPerformanceLapCount>4</HighPerformanceLapCount>
+      <HighPerformanceLapCount>2</HighPerformanceLapCount>
       <HighPerformanceTimeCost>0</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>2</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>0.45</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>12</MediumPerformanceLapCount>
-      <MediumPerformanceTimeCost>1.5</MediumPerformanceTimeCost>
+      <MediumPerformanceLapCount>3</MediumPerformanceLapCount>
+      <MediumPerformanceTimeCost>1</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>3</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.3</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>4</LowPerformanceLapCount>
-      <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
+      <LowPerformanceLapCount>2</LowPerformanceLapCount>
+      <LowPerformanceTimeCost>5</LowPerformanceTimeCost>
 
       <!-- Driver smoothness impacts the number of medium band laps they can get from the tyre -->
       <!-- The drivers are sorted into thirds based on their smoothness rating -->
       <!-- The top third gain laps, the bottom third lose laps -->
-      <DriverSmoothnessLapCountIncrease>2</DriverSmoothnessLapCountIncrease>
-      <DriverSmoothnessLapCountDecrease>2</DriverSmoothnessLapCountDecrease>
+      <DriverSmoothnessLapCountIncrease>1</DriverSmoothnessLapCountIncrease>
+      <DriverSmoothnessLapCountDecrease>1</DriverSmoothnessLapCountDecrease>
 
       <!-- Circuits have different wear rates for tyres -->
       <!-- High wear reduces the medium band lap count and low tyre wear increases the medium band lap count -->
-      <CircuitHighTyreWearLapCountDecrease>3</CircuitHighTyreWearLapCountDecrease>
-      <CircuitLowTyreWearLapCountIncrease>3</CircuitLowTyreWearLapCountIncrease>
+      <CircuitHighTyreWearLapCountDecrease>1</CircuitHighTyreWearLapCountDecrease>
+      <CircuitLowTyreWearLapCountIncrease>1</CircuitLowTyreWearLapCountIncrease>
 
     </FirstOptionTyres>
 
     <!-- MIDDLE TYRE COMPOUND AT A RACE WEEKEND -->
     <SecondOptionTyres>
 
-      <HighPerformanceLapCount>5</HighPerformanceLapCount>
-      <HighPerformanceTimeCost>0.7</HighPerformanceTimeCost>
+      <HighPerformanceLapCount>3</HighPerformanceLapCount>
+      <HighPerformanceTimeCost>0.75</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>2</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1.35</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>22</MediumPerformanceLapCount>
-      <MediumPerformanceTimeCost>1.65</MediumPerformanceTimeCost>
+      <MediumPerformanceLapCount>7</MediumPerformanceLapCount>
+      <MediumPerformanceTimeCost>2</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>3</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.7</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>7</LowPerformanceLapCount>
-      <LowPerformanceTimeCost>3.25</LowPerformanceTimeCost>
+      <LowPerformanceLapCount>3</LowPerformanceLapCount>
+      <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
 
-      <DriverSmoothnessLapCountIncrease>3</DriverSmoothnessLapCountIncrease>
-      <DriverSmoothnessLapCountDecrease>3</DriverSmoothnessLapCountDecrease>
+      <DriverSmoothnessLapCountIncrease>1</DriverSmoothnessLapCountIncrease>
+      <DriverSmoothnessLapCountDecrease>1</DriverSmoothnessLapCountDecrease>
 
-      <CircuitHighTyreWearLapCountDecrease>4</CircuitHighTyreWearLapCountDecrease>
-      <CircuitLowTyreWearLapCountIncrease>4</CircuitLowTyreWearLapCountIncrease>
+      <CircuitHighTyreWearLapCountDecrease>1</CircuitHighTyreWearLapCountDecrease>
+      <CircuitLowTyreWearLapCountIncrease>1</CircuitLowTyreWearLapCountIncrease>
 
     </SecondOptionTyres>
 
     <!-- HARDEST TYRE COMPOUND AT A RACE WEEKEND -->
     <ThirdOptionTyres>
 
-      <HighPerformanceLapCount>9</HighPerformanceLapCount>
-      <HighPerformanceTimeCost>1.05</HighPerformanceTimeCost>
+      <HighPerformanceLapCount>3</HighPerformanceLapCount>
+      <HighPerformanceTimeCost>2</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>4</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>2.2</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>25</MediumPerformanceLapCount>
-      <MediumPerformanceTimeCost>1.8</MediumPerformanceTimeCost>
+      <MediumPerformanceLapCount>11</MediumPerformanceLapCount>
+      <MediumPerformanceTimeCost>2.45</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>3</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.72</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>11</LowPerformanceLapCount>
-      <LowPerformanceTimeCost>2.4</LowPerformanceTimeCost>
+      <LowPerformanceLapCount>3</LowPerformanceLapCount>
+      <LowPerformanceTimeCost>3.0</LowPerformanceTimeCost>
 
-      <DriverSmoothnessLapCountIncrease>2</DriverSmoothnessLapCountIncrease>
-      <DriverSmoothnessLapCountDecrease>2</DriverSmoothnessLapCountDecrease>
+      <DriverSmoothnessLapCountIncrease>1</DriverSmoothnessLapCountIncrease>
+      <DriverSmoothnessLapCountDecrease>1</DriverSmoothnessLapCountDecrease>
 
-      <CircuitHighTyreWearLapCountDecrease>6</CircuitHighTyreWearLapCountDecrease>
-      <CircuitLowTyreWearLapCountIncrease>6</CircuitLowTyreWearLapCountIncrease>
+      <CircuitHighTyreWearLapCountDecrease>1</CircuitHighTyreWearLapCountDecrease>
+      <CircuitLowTyreWearLapCountIncrease>1</CircuitLowTyreWearLapCountIncrease>
 
     </ThirdOptionTyres>
 
     <!-- INTERMEDIATE TYRES -->
     <IntermediatesTyres>
 
-      <HighPerformanceLapCount>6</HighPerformanceLapCount>
+      <HighPerformanceLapCount>3</HighPerformanceLapCount>
       <HighPerformanceTimeCost>1</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>3</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1.1</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>20</MediumPerformanceLapCount>
+      <MediumPerformanceLapCount>11</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>1.3</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>3</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.2</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>7</LowPerformanceLapCount>
+      <LowPerformanceLapCount>3</LowPerformanceLapCount>
       <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
 
       <DriverSmoothnessLapCountIncrease>1</DriverSmoothnessLapCountIncrease>
@@ -1167,13 +1221,19 @@
     <!-- WET TYRES -->
     <WetTyres>
 
-      <HighPerformanceLapCount>6</HighPerformanceLapCount>
+      <HighPerformanceLapCount>3</HighPerformanceLapCount>
       <HighPerformanceTimeCost>1</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>3</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1.1</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>20</MediumPerformanceLapCount>
+      <MediumPerformanceLapCount>11</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>1.3</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>3</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.2</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>7</LowPerformanceLapCount>
+      <LowPerformanceLapCount>3</LowPerformanceLapCount>
       <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
 
       <DriverSmoothnessLapCountIncrease>1</DriverSmoothnessLapCountIncrease>
@@ -1183,8 +1243,8 @@
       <CircuitLowTyreWearLapCountIncrease>1</CircuitLowTyreWearLapCountIncrease>
 
     </WetTyres>
-
-    <!-- PIT CREW DESIGN DATA -->
+    
+  <!-- PIT CREW DESIGN DATA -->
     <PitCrew>
 
       <!-- How many pit crew members can a team have -->
@@ -1198,9 +1258,9 @@
       <!-- How many months before the pit crew reaches peak age and retire -->
       <MinMonthsToPeakAge>30</MinMonthsToPeakAge>
       <MaxMonthsToPeakAge>120</MaxMonthsToPeakAge>
-
+      
       <!-- Pit stop times -->
-
+      
            <!-- Front Jack Minimum and Maximum times during pit stops -->
       <MinimumFrontJackTaskTime>0.25</MinimumFrontJackTaskTime>
       <MedianFrontJackTaskTime>1.5</MedianFrontJackTaskTime>
@@ -1212,9 +1272,9 @@
       <MaximumRearJackTaskTime>2.0</MaximumRearJackTaskTime>
 
       <!-- Tyres Minimum and Maximum times during pit stops -->
-      <MinimumTyresTaskTime>18</MinimumTyresTaskTime>
-      <MedianTyresTaskTime>22</MedianTyresTaskTime>
-      <MaximumTyresTaskTime>24.5</MaximumTyresTaskTime>
+      <MinimumTyresTaskTime>1.25</MinimumTyresTaskTime>
+      <MedianTyresTaskTime>2.5</MedianTyresTaskTime>
+      <MaximumTyresTaskTime>3.0</MaximumTyresTaskTime>
 
       <!-- Fixing Parts Minimum and Maximum times during pit stops -->
       <FixingPartsTaskTimes>
@@ -1227,21 +1287,19 @@
         <EngineMaxTime>25.0</EngineMaxTime>
 
         <FrontWingMinTime>4.0</FrontWingMinTime>
-		<FrontWingMedTime>7.0</FrontWingMedTime>
+		<FrontWingMedTime>6.5</FrontWingMedTime>
         <FrontWingMaxTime>8.0</FrontWingMaxTime>
-       
 
         <GearboxMinTime>18.0</GearboxMinTime>
 		<GearboxMedTime>23.0</GearboxMedTime>
         <GearboxMaxTime>25.0</GearboxMaxTime>
-       
 
         <RearWingMinTime>10.0</RearWingMinTime>
-		<RearWingMedTime>13.0</RearWingMedTime>
+        <RearWingMedTime>13.0</RearWingMedTime>
         <RearWingMaxTime>15.0</RearWingMaxTime>
 
         <SuspensionMinTime>8.0</SuspensionMinTime>
-		<SuspensionMedTime>11.0</SuspensionMedTime>
+		<SuspensionMedTime>10.5</SuspensionMedTime>
         <SuspensionMaxTime>12.0</SuspensionMaxTime>
       </FixingPartsTaskTimes>
 
@@ -1252,7 +1310,7 @@
 
       <!-- Battery Minimum and Maximum times during pit stops -->
       <MinimumBatteryTaskTime>2.0</MinimumBatteryTaskTime>
-      <MedianBatteryTaskTime>3.5</MedianBatteryTaskTime>
+      <MedianBatteryTaskTime>3.25</MedianBatteryTaskTime>
       <MaximumBatteryTaskTime>4.0</MaximumBatteryTaskTime>
 
       <!-- The error percentage added to each pit crew member based on strategy, number from 0 to 1 -->
@@ -1262,24 +1320,24 @@
       
       <!-- Confidence Impacts, for decrease and increase rate at the end of every race -->
       <!-- Confidence is a stat from 0 to 1 -->
-      <FrontJackConfidenceDecrease>0.08</FrontJackConfidenceDecrease>
-      <RearJackConfidenceDecrease>0.08</RearJackConfidenceDecrease>
-      <TyresConfidenceDecrease>0.18</TyresConfidenceDecrease>
-      <FixingPartsConfidenceDecrease>0.13</FixingPartsConfidenceDecrease>
-      <RefuellingConfidenceDecrease>0.12</RefuellingConfidenceDecrease>
+      <FrontJackConfidenceDecrease>0.05</FrontJackConfidenceDecrease>
+      <RearJackConfidenceDecrease>0.05</RearJackConfidenceDecrease>
+      <TyresConfidenceDecrease>0.07</TyresConfidenceDecrease>
+      <FixingPartsConfidenceDecrease>0.05</FixingPartsConfidenceDecrease>
+      <RefuellingConfidenceDecrease>0.04</RefuellingConfidenceDecrease>
 
       <!-- Additional confidence hit when making mistakes -->
-      <FrontJackConfidenceDecreaseMistake>0.04</FrontJackConfidenceDecreaseMistake>
-      <RearJackConfidenceDecreaseMistake>0.04</RearJackConfidenceDecreaseMistake>
-      <TyresConfidenceDecreaseMistake>0.14</TyresConfidenceDecreaseMistake>
-      <FixingPartsConfidenceDecreaseMistake>0.1</FixingPartsConfidenceDecreaseMistake>
-      <RefuellingConfidenceDecreaseMistake>0.11</RefuellingConfidenceDecreaseMistake>
+      <FrontJackConfidenceDecreaseMistake>0.10</FrontJackConfidenceDecreaseMistake>
+      <RearJackConfidenceDecreaseMistake>0.10</RearJackConfidenceDecreaseMistake>
+      <TyresConfidenceDecreaseMistake>0.25</TyresConfidenceDecreaseMistake>
+      <FixingPartsConfidenceDecreaseMistake>0.15</FixingPartsConfidenceDecreaseMistake>
+      <RefuellingConfidenceDecreaseMistake>0.25</RefuellingConfidenceDecreaseMistake>
       
       <!-- Pit Crew Funding increases -->
       <LowPitCrewFundingConfidenceIncrease>0.1</LowPitCrewFundingConfidenceIncrease>
       <MediumPitCrewFundingConfidenceIncrease>0.15</MediumPitCrewFundingConfidenceIncrease>
       <HighPitCrewFundingConfidenceIncrease>0.2</HighPitCrewFundingConfidenceIncrease>
-
+      
       <!-- Pit Crew Funding Costs on a Per-Race basis -->
       <PitCrewFundings>
 
@@ -1318,33 +1376,33 @@
       <!-- Per Race Cost for pit crew based on stars value -->
       <PitCrewContractPerRaceCosts>
         <!-- Zero Stars -->
-        <PerRaceCost>1350</PerRaceCost>
+        <PerRaceCost>2100</PerRaceCost>
         <!-- 1 Star -->
-        <PerRaceCost>1800</PerRaceCost>
+        <PerRaceCost>2800</PerRaceCost>
         <!-- 2 Stars -->
-        <PerRaceCost>3600</PerRaceCost>
+        <PerRaceCost>5600</PerRaceCost>
         <!-- 3 Stars -->
-        <PerRaceCost>6750</PerRaceCost>
+        <PerRaceCost>10500</PerRaceCost>
         <!-- 4 Stars -->
-        <PerRaceCost>11250</PerRaceCost>
+        <PerRaceCost>16500</PerRaceCost>
         <!-- 5 Stars -->
-        <PerRaceCost>18750</PerRaceCost>
+        <PerRaceCost>23000</PerRaceCost>
         <!-- Upper Limit -->
-        <PerRaceCost>24000</PerRaceCost>
+        <PerRaceCost>30000</PerRaceCost>
       </PitCrewContractPerRaceCosts>
 
       <!-- One off expenditure when hiring new pit crew members -->
-      <ContractSignOnFee>35000</ContractSignOnFee>
+      <ContractSignOnFee>45000</ContractSignOnFee>
       
     </PitCrew>
-
+  
   </MediumGameLength>
 
   <!-- LONG RACE LENGTHS -->
   <!-- **************************** -->
   <LongGameLength>
     <!-- Weather Forecast Bars-->
-    <WeatherBarsForecastCount>90</WeatherBarsForecastCount>
+    <WeatherBarsForecastCount>40</WeatherBarsForecastCount>
 
     <!-- ENERGY RECOVERY SYSTEM DATA -->
     <EnergyRecoverySystem>
@@ -1354,21 +1412,21 @@
       <LargeBatterySize>100</LargeBatterySize>
 
       <!-- HarvestMode - Vehicles need to travel x gates to charge the rate given -->
-      <HarvestModeRate>6250</HarvestModeRate>
+      <HarvestModeRate>4250</HarvestModeRate>
 
       <!-- Data for Power mode energy depletion in gates-->
-      <PowerModeRate>200</PowerModeRate>
+      <PowerModeRate>120</PowerModeRate>
 
       <!-- Boost when in Power Mode in seconds-->
-      <PowerModeTimeCostGain>18</PowerModeTimeCostGain>
+      <PowerModeTimeCostGain>30</PowerModeTimeCostGain>
 
       <!-- Fuel rate consumption when in Hybrid Mode in percentage -->
-      <HybridModeFuelSave>0.15</HybridModeFuelSave>
+      <HybridModeFuelSave>0.2</HybridModeFuelSave>
 
       <!-- Data for Hybrid Mode energy depletion in gates-->
-      <HybridModeRate>2250</HybridModeRate>
+      <HybridModeRate>1700</HybridModeRate>
 
-      <!-- Cooldown for mode change in seconds-->      
+      <!-- Cooldown for mode change in seconds-->
       <PowerModeChangeCooldown>10</PowerModeChangeCooldown>
       <HybridModeChangeCooldown>10</HybridModeChangeCooldown>
       <HarvestModeChangeCooldown>0.5</HarvestModeChangeCooldown>
@@ -1380,32 +1438,32 @@
 
       <Bonuses isActive="true">
 	  
-		<LowFuelBurnRateBonus>0.9</LowFuelBurnRateBonus>
+		    <LowFuelBurnRateBonus>0.9</LowFuelBurnRateBonus>
         <HighFuelBurnRateBonus>1.05</HighFuelBurnRateBonus>
-        <SessionBonusTotalTimeCost>0.5</SessionBonusTotalTimeCost>
-        <SessionBonusTimeCostReduction>0.25</SessionBonusTimeCostReduction>
+        <SessionBonusTotalTimeCost>0.35</SessionBonusTotalTimeCost>
+        <SessionBonusTimeCostReduction>0.15</SessionBonusTimeCostReduction>
         <MechanicBonusTyreWearRate>0.9</MechanicBonusTyreWearRate>
 		
 		</Bonuses>
-
+		
       <!--Behaviour type time costs-->
-      <BehaviourType>
-
+    <BehaviourType>
+      
         <MaxRunWideTimeCost>50.0</MaxRunWideTimeCost>
         <MaxCutCornerTimeCost>15.0</MaxCutCornerTimeCost>
-
-      </BehaviourType>
+    
+    </BehaviourType>
 
       <!-- CAR CONDITION -->
       <CarCondition isActive="true">
 
         <!-- Time cost in seconds per lap for having a problem with a specific part -->
-        <BrakeFailureTimeCost>40</BrakeFailureTimeCost>
-        <EngineFailureTimeCost>85</EngineFailureTimeCost>
-        <FrontWingFailureTimeCost>15</FrontWingFailureTimeCost>
-        <GearboxFailureTimeCost>60</GearboxFailureTimeCost>
-        <RearWingFailureTimeCost>25</RearWingFailureTimeCost>
-        <SuspensionFailureTimeCost>55</SuspensionFailureTimeCost>
+        <BrakeFailureTimeCost>30</BrakeFailureTimeCost>
+        <EngineFailureTimeCost>65</EngineFailureTimeCost>
+        <FrontWingFailureTimeCost>10</FrontWingFailureTimeCost>
+        <GearboxFailureTimeCost>45</GearboxFailureTimeCost>
+        <RearWingFailureTimeCost>20</RearWingFailureTimeCost>
+        <SuspensionFailureTimeCost>40</SuspensionFailureTimeCost>
         <CarConditionTicksPerSession>11</CarConditionTicksPerSession>
 
       </CarCondition>
@@ -1415,39 +1473,39 @@
         <!-- The maxiumum possible time loss for having a car that isn't suited to the current circuit (ordered by rank on grid) -->
         <CriticalPartTimeCosts>
 
-          <!-- Rank 1-5 0.5-->
+          <!-- Rank 1-5 0.6-->
           <TimeCostForRank>0.0</TimeCostForRank>
-          <TimeCostForRank>0.09</TimeCostForRank>
-          <TimeCostForRank>0.21</TimeCostForRank>
-          <TimeCostForRank>0.34</TimeCostForRank>
-          <TimeCostForRank>0.46</TimeCostForRank>
+          <TimeCostForRank>0.17</TimeCostForRank>
+          <TimeCostForRank>0.38</TimeCostForRank>
+          <TimeCostForRank>0.44</TimeCostForRank>
+          <TimeCostForRank>0.57</TimeCostForRank>
 
-          <!-- Rank 6-10 1.05-->
-          <TimeCostForRank>0.51</TimeCostForRank>
-          <TimeCostForRank>0.58</TimeCostForRank>
-          <TimeCostForRank>0.71</TimeCostForRank>
-          <TimeCostForRank>0.89</TimeCostForRank>
-          <TimeCostForRank>1.03</TimeCostForRank>
+          <!-- Rank 6-10 1.4-->
+          <TimeCostForRank>0.81</TimeCostForRank>
+          <TimeCostForRank>1.04</TimeCostForRank>
+          <TimeCostForRank>1.19</TimeCostForRank>
+          <TimeCostForRank>1.27</TimeCostForRank>
+          <TimeCostForRank>1.39</TimeCostForRank>
 
-          <!-- Rank 11-15 1.9-->
-          <TimeCostForRank>1.2</TimeCostForRank>
-          <TimeCostForRank>1.37</TimeCostForRank>
-          <TimeCostForRank>1.58</TimeCostForRank>
-          <TimeCostForRank>1.68</TimeCostForRank>
-          <TimeCostForRank>1.83</TimeCostForRank>
+          <!-- Rank 11-15 2.0-->
+          <TimeCostForRank>1.47</TimeCostForRank>
+          <TimeCostForRank>1.63</TimeCostForRank>
+          <TimeCostForRank>1.72</TimeCostForRank>
+          <TimeCostForRank>1.89</TimeCostForRank>
+          <TimeCostForRank>1.96</TimeCostForRank>
 
-          <!-- Rank 16-20 2.7-->
-          <TimeCostForRank>1.92</TimeCostForRank>
+          <!-- Rank 16-20 3.15-->
           <TimeCostForRank>2.04</TimeCostForRank>
-          <TimeCostForRank>2.18</TimeCostForRank>
-          <TimeCostForRank>2.3</TimeCostForRank>
-          <TimeCostForRank>2.39</TimeCostForRank>
-
-          <TimeCostForRank>2.52</TimeCostForRank>
-          <TimeCostForRank>2.55</TimeCostForRank>
+          <TimeCostForRank>2.17</TimeCostForRank>
+          <TimeCostForRank>2.23</TimeCostForRank>
+          <TimeCostForRank>2.56</TimeCostForRank>
           <TimeCostForRank>2.62</TimeCostForRank>
-          <TimeCostForRank>2.69</TimeCostForRank>
-          
+
+          <TimeCostForRank>2.9</TimeCostForRank>
+          <TimeCostForRank>2.95</TimeCostForRank>
+          <TimeCostForRank>3.01</TimeCostForRank>
+          <TimeCostForRank>3.12</TimeCostForRank>
+
         </CriticalPartTimeCosts>
 
       </CriticalCarPart>
@@ -1456,20 +1514,20 @@
       <DriverForm isActive="true">
 
         <!-- The time cost per lap of not being on top form -->
-        <MaxDriverFormTimeCost>0.5</MaxDriverFormTimeCost>
+        <MaxDriverFormTimeCost>0.3</MaxDriverFormTimeCost>
         <TotalUpdateChunks>8</TotalUpdateChunks>
         <TotalUpdateChunksQualifying>4</TotalUpdateChunksQualifying>
-        <ConsistencyMaxFormLoss>0.1</ConsistencyMaxFormLoss>
-        <ConsistencyMinFormLoss>0.05</ConsistencyMinFormLoss>
-        
+        <ConsistencyMaxFormLoss>0.2</ConsistencyMaxFormLoss>
+        <ConsistencyMinFormLoss>0.1</ConsistencyMinFormLoss>
+
       </DriverForm>
 
       <!-- DRIVER PERFORMANCE -->
       <DriverPerformance isActive="true">
 
         <!-- The max time cost per lap that the worse driver in the game can have to the best driver in the game -->
-        <MaxDriverTimeCostWithDriverAidsOn>1.1</MaxDriverTimeCostWithDriverAidsOn>
-        <MaxDriverTimeCostWithDriverAidsOff>3.5</MaxDriverTimeCostWithDriverAidsOff>
+        <MaxDriverTimeCostWithDriverAidsOn>1.25</MaxDriverTimeCostWithDriverAidsOn>
+        <MaxDriverTimeCostWithDriverAidsOff>4.15</MaxDriverTimeCostWithDriverAidsOff>
         <MaxDriverStaminaTimeCost>3.0</MaxDriverStaminaTimeCost>
         <StaminaDecreaseRate> 0.8</StaminaDecreaseRate>
         <StaminaRestingRate> 4.0</StaminaRestingRate>
@@ -1493,11 +1551,11 @@
 
         <!-- Attack -->
         <AttackPerformance>1.0</AttackPerformance>
-        <AttackTyreWearRate>1.15</AttackTyreWearRate>
+        <AttackTyreWearRate>1.3</AttackTyreWearRate>
 
         <!-- Push -->
         <PushPerformance>0.75</PushPerformance>
-        <PushTyreWearRate>1.06</PushTyreWearRate>
+        <PushTyreWearRate>1.15</PushTyreWearRate>
 
         <!-- Neutral -->
         <NeutralPerformance>0.5</NeutralPerformance>
@@ -1505,11 +1563,11 @@
 
         <!-- Conserve -->
         <ConservePerformance>0.25</ConservePerformance>
-        <ConserveTyreWearRate>0.90</ConserveTyreWearRate>
+        <ConserveTyreWearRate>0.8</ConserveTyreWearRate>
 
         <!-- BackUp -->
         <BackUpPerformance>0</BackUpPerformance>
-        <BackUpTyreWearRate>0.80</BackUpTyreWearRate>
+        <BackUpTyreWearRate>0.6</BackUpTyreWearRate>
 
       </DrivingStyle>
 
@@ -1520,7 +1578,7 @@
         <MaxEngineModeTimeCost>2.0</MaxEngineModeTimeCost>
 
         <OutOfFuelTimeCost>60</OutOfFuelTimeCost>
-        <TimeCostPerLapOfFuel>0.05</TimeCostPerLapOfFuel>
+        <TimeCostPerLapOfFuel>0.1</TimeCostPerLapOfFuel>
 
         <!-- Performance: 0.0 = Low performance and maximum time cost -->
         <!-- Performance: 1.0 = High performance and no time cost -->
@@ -1555,16 +1613,16 @@
       <Setup isActive="true">
 
         <!-- Max time cost in seconds per lap for having the completely wrong setup -->
-        <MaxSetupTimeCost>1</MaxSetupTimeCost>
+        <MaxSetupTimeCost>0.5</MaxSetupTimeCost>
 
         <!-- Pitstop Strategy adds a percentage of the expected pit stop time. Value from 0 to 1 -->
-        <SafePitstopStrategyTimeCost>0.12</SafePitstopStrategyTimeCost>
-        <BalancedPitstopStrategyTimeCost>0.05</BalancedPitstopStrategyTimeCost>
+        <SafePitstopStrategyTimeCost>0.5</SafePitstopStrategyTimeCost>
+        <BalancedPitstopStrategyTimeCost>0.25</BalancedPitstopStrategyTimeCost>
         <FastPitstopStrategyTimeCost>0</FastPitstopStrategyTimeCost>
         <!-- Pitstop duration values in seconds -->
-        <PitstopTimeCostPerLapOfFuel>1</PitstopTimeCostPerLapOfFuel>
-        <PitstopTyreChangeTimeCost>18</PitstopTyreChangeTimeCost>
-        <SetupChangeTimeCost>25</SetupChangeTimeCost>
+        <PitstopTimeCostPerLapOfFuel>0.7</PitstopTimeCostPerLapOfFuel>
+        <PitstopTyreChangeTimeCost>3</PitstopTyreChangeTimeCost>
+        <SetupChangeTimeCost>15</SetupChangeTimeCost>
         <TrimChangeTimeCost>3</TrimChangeTimeCost>
         <DriverChangeTimeCost>40</DriverChangeTimeCost>
         
@@ -1591,7 +1649,7 @@
       <TrackWater isActive="true">
 
         <!-- The time cost per lap of driving on a totally wet track in comparison to a dry track -->
-        <MaxWetTrackTimeCost>17</MaxWetTrackTimeCost>
+        <MaxWetTrackTimeCost>20</MaxWetTrackTimeCost>
         <MaxWetSetupPerformanceTimeCost>2</MaxWetSetupPerformanceTimeCost>
         <NoRubberOnTrackTimeCost>0.5</NoRubberOnTrackTimeCost>
 
@@ -1627,39 +1685,77 @@
       <!-- Tyre life is split into three bands: high, medium, and low -->
       <!-- A band allows you to set the number of laps available to it and the time cost -->
       <!-- This allows you to say that these tyres have, for example, one fantastic lap, then four laps at an average pace, followed by two slow laps -->
-      <HighPerformanceLapCount>4</HighPerformanceLapCount>
+      <HighPerformanceLapCount>2</HighPerformanceLapCount>
       <HighPerformanceTimeCost>0</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>5</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>0.7</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>14</MediumPerformanceLapCount>
-      <MediumPerformanceTimeCost>1.5</MediumPerformanceTimeCost>
+      <MediumPerformanceLapCount>4</MediumPerformanceLapCount>
+      <MediumPerformanceTimeCost>1.3</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>3</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>3</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>4</LowPerformanceLapCount>
-      <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
+      <LowPerformanceLapCount>2</LowPerformanceLapCount>
+      <LowPerformanceTimeCost>4.3</LowPerformanceTimeCost>
 
       <!-- Driver smoothness impacts the number of medium band laps they can get from the tyre -->
       <!-- The drivers are sorted into thirds based on their smoothness rating -->
       <!-- The top third gain laps, the bottom third lose laps -->
-      <DriverSmoothnessLapCountIncrease>2</DriverSmoothnessLapCountIncrease>
-      <DriverSmoothnessLapCountDecrease>2</DriverSmoothnessLapCountDecrease>
+      <DriverSmoothnessLapCountIncrease>1</DriverSmoothnessLapCountIncrease>
+      <DriverSmoothnessLapCountDecrease>1</DriverSmoothnessLapCountDecrease>
 
       <!-- Circuits have different wear rates for tyres -->
       <!-- High wear reduces the medium band lap count and low tyre wear increases the medium band lap count -->
-      <CircuitHighTyreWearLapCountDecrease>3</CircuitHighTyreWearLapCountDecrease>
-      <CircuitLowTyreWearLapCountIncrease>3</CircuitLowTyreWearLapCountIncrease>
+      <CircuitHighTyreWearLapCountDecrease>2</CircuitHighTyreWearLapCountDecrease>
+      <CircuitLowTyreWearLapCountIncrease>2</CircuitLowTyreWearLapCountIncrease>
 
     </FirstOptionTyres>
 
     <!-- MIDDLE TYRE COMPOUND AT A RACE WEEKEND -->
     <SecondOptionTyres>
 
-      <HighPerformanceLapCount>5</HighPerformanceLapCount>
+      <HighPerformanceLapCount>3</HighPerformanceLapCount>
       <HighPerformanceTimeCost>0.75</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>5</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1.35</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>25</MediumPerformanceLapCount>
-      <MediumPerformanceTimeCost>1.75</MediumPerformanceTimeCost>
+      <MediumPerformanceLapCount>6</MediumPerformanceLapCount>
+      <MediumPerformanceTimeCost>1.8</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>6</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.8</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>7</LowPerformanceLapCount>
-      <LowPerformanceTimeCost>3.25</LowPerformanceTimeCost>
+      <LowPerformanceLapCount>4</LowPerformanceLapCount>
+      <LowPerformanceTimeCost>3.7</LowPerformanceTimeCost>
+
+      <DriverSmoothnessLapCountIncrease>2</DriverSmoothnessLapCountIncrease>
+      <DriverSmoothnessLapCountDecrease>2</DriverSmoothnessLapCountDecrease>
+
+      <CircuitHighTyreWearLapCountDecrease>3</CircuitHighTyreWearLapCountDecrease>
+      <CircuitLowTyreWearLapCountIncrease>3</CircuitLowTyreWearLapCountIncrease>
+
+    </SecondOptionTyres>
+
+    <!-- HARDEST TYRE COMPOUND AT A RACE WEEKEND -->
+    <ThirdOptionTyres>
+
+      <HighPerformanceLapCount>4</HighPerformanceLapCount>
+      <HighPerformanceTimeCost>1.5</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>7</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1.68</MedHighPerformanceTimeCost>
+
+      <MediumPerformanceLapCount>12</MediumPerformanceLapCount>
+      <MediumPerformanceTimeCost>2.1</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>7</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.3</MedLowPerformanceTimeCost>
+
+      <LowPerformanceLapCount>4</LowPerformanceLapCount>
+      <LowPerformanceTimeCost>3.3</LowPerformanceTimeCost>
 
       <DriverSmoothnessLapCountIncrease>3</DriverSmoothnessLapCountIncrease>
       <DriverSmoothnessLapCountDecrease>3</DriverSmoothnessLapCountDecrease>
@@ -1667,85 +1763,76 @@
       <CircuitHighTyreWearLapCountDecrease>4</CircuitHighTyreWearLapCountDecrease>
       <CircuitLowTyreWearLapCountIncrease>4</CircuitLowTyreWearLapCountIncrease>
 
-    </SecondOptionTyres>
-
-    <!-- HARDEST TYRE COMPOUND AT A RACE WEEKEND -->
-    <ThirdOptionTyres>
-
-      <HighPerformanceLapCount>9</HighPerformanceLapCount>
-      <HighPerformanceTimeCost>1.5</HighPerformanceTimeCost>
-
-      <MediumPerformanceLapCount>30</MediumPerformanceLapCount>
-      <MediumPerformanceTimeCost>2</MediumPerformanceTimeCost>
-
-      <LowPerformanceLapCount>11</LowPerformanceLapCount>
-      <LowPerformanceTimeCost>2.5</LowPerformanceTimeCost>
-
-      <DriverSmoothnessLapCountIncrease>2</DriverSmoothnessLapCountIncrease>
-      <DriverSmoothnessLapCountDecrease>2</DriverSmoothnessLapCountDecrease>
-
-      <CircuitHighTyreWearLapCountDecrease>6</CircuitHighTyreWearLapCountDecrease>
-      <CircuitLowTyreWearLapCountIncrease>6</CircuitLowTyreWearLapCountIncrease>
-
     </ThirdOptionTyres>
 
     <!-- INTERMEDIATE TYRES -->
     <IntermediatesTyres>
 
-      <HighPerformanceLapCount>6</HighPerformanceLapCount>
+      <HighPerformanceLapCount>2</HighPerformanceLapCount>
       <HighPerformanceTimeCost>1</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>3</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1.1</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>25</MediumPerformanceLapCount>
+      <MediumPerformanceLapCount>13</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>1.3</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>4</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.05</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>7</LowPerformanceLapCount>
+      <LowPerformanceLapCount>4</LowPerformanceLapCount>
       <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
 
-      <DriverSmoothnessLapCountIncrease>1</DriverSmoothnessLapCountIncrease>
-      <DriverSmoothnessLapCountDecrease>1</DriverSmoothnessLapCountDecrease>
+      <DriverSmoothnessLapCountIncrease>2</DriverSmoothnessLapCountIncrease>
+      <DriverSmoothnessLapCountDecrease>2</DriverSmoothnessLapCountDecrease>
 
-      <CircuitHighTyreWearLapCountDecrease>1</CircuitHighTyreWearLapCountDecrease>
-      <CircuitLowTyreWearLapCountIncrease>1</CircuitLowTyreWearLapCountIncrease>
+      <CircuitHighTyreWearLapCountDecrease>2</CircuitHighTyreWearLapCountDecrease>
+      <CircuitLowTyreWearLapCountIncrease>2</CircuitLowTyreWearLapCountIncrease>
 
     </IntermediatesTyres>
 
     <!-- WET TYRES -->
     <WetTyres>
 
-      <HighPerformanceLapCount>6</HighPerformanceLapCount>
+      <HighPerformanceLapCount>2</HighPerformanceLapCount>
       <HighPerformanceTimeCost>1</HighPerformanceTimeCost>
+	  
+	  <MedHighPerformanceLapCount>3</MedHighPerformanceLapCount>
+      <MedHighPerformanceTimeCost>1.1</MedHighPerformanceTimeCost>
 
-      <MediumPerformanceLapCount>25</MediumPerformanceLapCount>
+      <MediumPerformanceLapCount>13</MediumPerformanceLapCount>
       <MediumPerformanceTimeCost>1.3</MediumPerformanceTimeCost>
+	  
+	  <MedLowPerformanceLapCount>4</MedLowPerformanceLapCount>
+      <MedLowPerformanceTimeCost>2.05</MedLowPerformanceTimeCost>
 
-      <LowPerformanceLapCount>7</LowPerformanceLapCount>
+      <LowPerformanceLapCount>4</LowPerformanceLapCount>
       <LowPerformanceTimeCost>3.5</LowPerformanceTimeCost>
 
-      <DriverSmoothnessLapCountIncrease>1</DriverSmoothnessLapCountIncrease>
-      <DriverSmoothnessLapCountDecrease>1</DriverSmoothnessLapCountDecrease>
+      <DriverSmoothnessLapCountIncrease>2</DriverSmoothnessLapCountIncrease>
+      <DriverSmoothnessLapCountDecrease>2</DriverSmoothnessLapCountDecrease>
 
-      <CircuitHighTyreWearLapCountDecrease>1</CircuitHighTyreWearLapCountDecrease>
-      <CircuitLowTyreWearLapCountIncrease>1</CircuitLowTyreWearLapCountIncrease>
+      <CircuitHighTyreWearLapCountDecrease>2</CircuitHighTyreWearLapCountDecrease>
+      <CircuitLowTyreWearLapCountIncrease>2</CircuitLowTyreWearLapCountIncrease>
 
     </WetTyres>
-
-    <!-- PIT CREW DESIGN DATA -->
+    
+  <!-- PIT CREW DESIGN DATA -->
     <PitCrew>
 
       <!-- How many pit crew members can a team have -->
       <MaximumPitCrewSize>15</MaximumPitCrewSize>
 
       <!-- Pit Crew Scouting -->
-      <MaximumPitCrewApplicants>10</MaximumPitCrewApplicants>
+      <MaximumPitCrewApplicants>6</MaximumPitCrewApplicants>
       <NumberOfRacesToRemoveApplicant>3</NumberOfRacesToRemoveApplicant>
 
       <!-- Regen Rules -->
       <!-- How many months before the pit crew reaches peak age and retire -->
       <MinMonthsToPeakAge>30</MinMonthsToPeakAge>
       <MaxMonthsToPeakAge>120</MaxMonthsToPeakAge>
-      
       <!-- Pit stop times -->
-
+      
            <!-- Front Jack Minimum and Maximum times during pit stops -->
       <MinimumFrontJackTaskTime>0.25</MinimumFrontJackTaskTime>
       <MedianFrontJackTaskTime>1.5</MedianFrontJackTaskTime>
@@ -1757,9 +1844,9 @@
       <MaximumRearJackTaskTime>2.0</MaximumRearJackTaskTime>
 
       <!-- Tyres Minimum and Maximum times during pit stops -->
-      <MinimumTyresTaskTime>18</MinimumTyresTaskTime>
-      <MedianTyresTaskTime>22.5</MedianTyresTaskTime>
-      <MaximumTyresTaskTime>24.5</MaximumTyresTaskTime>
+      <MinimumTyresTaskTime>1.25</MinimumTyresTaskTime>
+      <MedianTyresTaskTime>2.5</MedianTyresTaskTime>
+      <MaximumTyresTaskTime>3.0</MaximumTyresTaskTime>
 
       <!-- Fixing Parts Minimum and Maximum times during pit stops -->
       <FixingPartsTaskTimes>
@@ -1772,21 +1859,19 @@
         <EngineMaxTime>25.0</EngineMaxTime>
 
         <FrontWingMinTime>4.0</FrontWingMinTime>
-		<FrontWingMedTime>7.0</FrontWingMedTime>
+		<FrontWingMedTime>6.5</FrontWingMedTime>
         <FrontWingMaxTime>8.0</FrontWingMaxTime>
-       
 
         <GearboxMinTime>18.0</GearboxMinTime>
 		<GearboxMedTime>23.0</GearboxMedTime>
         <GearboxMaxTime>25.0</GearboxMaxTime>
-       
 
         <RearWingMinTime>10.0</RearWingMinTime>
-		<RearWingMedTime>13.0</RearWingMedTime>
+        <RearWingMedTime>13.0</RearWingMedTime>
         <RearWingMaxTime>15.0</RearWingMaxTime>
 
         <SuspensionMinTime>8.0</SuspensionMinTime>
-		<SuspensionMedTime>11.0</SuspensionMedTime>
+		<SuspensionMedTime>10.5</SuspensionMedTime>
         <SuspensionMaxTime>12.0</SuspensionMaxTime>
       </FixingPartsTaskTimes>
 
@@ -1797,7 +1882,7 @@
 
       <!-- Battery Minimum and Maximum times during pit stops -->
       <MinimumBatteryTaskTime>2.0</MinimumBatteryTaskTime>
-      <MedianBatteryTaskTime>3.5</MedianBatteryTaskTime>
+      <MedianBatteryTaskTime>3.25</MedianBatteryTaskTime>
       <MaximumBatteryTaskTime>4.0</MaximumBatteryTaskTime>
 
       <!-- The error percentage added to each pit crew member based on strategy, number from 0 to 1 -->
@@ -1807,24 +1892,24 @@
       
       <!-- Confidence Impacts, for decrease and increase rate at the end of every race -->
       <!-- Confidence is a stat from 0 to 1 -->
-      <FrontJackConfidenceDecrease>0.05</FrontJackConfidenceDecrease>
-      <RearJackConfidenceDecrease>0.05</RearJackConfidenceDecrease>
-      <TyresConfidenceDecrease>0.10</TyresConfidenceDecrease>
-      <FixingPartsConfidenceDecrease>0.07</FixingPartsConfidenceDecrease>
-      <RefuellingConfidenceDecrease>0.10</RefuellingConfidenceDecrease>
+      <FrontJackConfidenceDecrease>0.03</FrontJackConfidenceDecrease>
+      <RearJackConfidenceDecrease>0.03</RearJackConfidenceDecrease>
+      <TyresConfidenceDecrease>0.07</TyresConfidenceDecrease>
+      <FixingPartsConfidenceDecrease>0.05</FixingPartsConfidenceDecrease>
+      <RefuellingConfidenceDecrease>0.04</RefuellingConfidenceDecrease>
 
       <!-- Additional confidence hit when making mistakes -->
-      <FrontJackConfidenceDecreaseMistake>0.04</FrontJackConfidenceDecreaseMistake>
-      <RearJackConfidenceDecreaseMistake>0.04</RearJackConfidenceDecreaseMistake>
-      <TyresConfidenceDecreaseMistake>0.14</TyresConfidenceDecreaseMistake>
-      <FixingPartsConfidenceDecreaseMistake>0.10</FixingPartsConfidenceDecreaseMistake>
-      <RefuellingConfidenceDecreaseMistake>0.11</RefuellingConfidenceDecreaseMistake>
+      <FrontJackConfidenceDecreaseMistake>0.10</FrontJackConfidenceDecreaseMistake>
+      <RearJackConfidenceDecreaseMistake>0.10</RearJackConfidenceDecreaseMistake>
+      <TyresConfidenceDecreaseMistake>0.25</TyresConfidenceDecreaseMistake>
+      <FixingPartsConfidenceDecreaseMistake>0.15</FixingPartsConfidenceDecreaseMistake>
+      <RefuellingConfidenceDecreaseMistake>0.25</RefuellingConfidenceDecreaseMistake>
       
       <!-- Pit Crew Funding increases -->
       <LowPitCrewFundingConfidenceIncrease>0.1</LowPitCrewFundingConfidenceIncrease>
       <MediumPitCrewFundingConfidenceIncrease>0.15</MediumPitCrewFundingConfidenceIncrease>
       <HighPitCrewFundingConfidenceIncrease>0.2</HighPitCrewFundingConfidenceIncrease>
-
+      
       <!-- Pit Crew Funding Costs on a Per-Race basis -->
       <PitCrewFundings>
 
@@ -1863,26 +1948,26 @@
       <!-- Per Race Cost for pit crew based on stars value -->
       <PitCrewContractPerRaceCosts>
         <!-- Zero Stars -->
-        <PerRaceCost>1350</PerRaceCost>
+        <PerRaceCost>2100</PerRaceCost>
         <!-- 1 Star -->
-        <PerRaceCost>1800</PerRaceCost>
+        <PerRaceCost>2800</PerRaceCost>
         <!-- 2 Stars -->
-        <PerRaceCost>3600</PerRaceCost>
+        <PerRaceCost>5600</PerRaceCost>
         <!-- 3 Stars -->
-        <PerRaceCost>6750</PerRaceCost>
+        <PerRaceCost>10500</PerRaceCost>
         <!-- 4 Stars -->
-        <PerRaceCost>11250</PerRaceCost>
+        <PerRaceCost>16500</PerRaceCost>
         <!-- 5 Stars -->
-        <PerRaceCost>18750</PerRaceCost>
+        <PerRaceCost>23000</PerRaceCost>
         <!-- Upper Limit -->
-        <PerRaceCost>24000</PerRaceCost>
+        <PerRaceCost>30000</PerRaceCost>
       </PitCrewContractPerRaceCosts>
 
       <!-- One off expenditure when hiring new pit crew members -->
-      <ContractSignOnFee>35000</ContractSignOnFee>
+      <ContractSignOnFee>45000</ContractSignOnFee>
       
     </PitCrew>
-    
+  
   </LongGameLength>
   
 </DesignData>

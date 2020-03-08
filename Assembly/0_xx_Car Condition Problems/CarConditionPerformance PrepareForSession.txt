@@ -6,7 +6,7 @@ public override void PrepareForSession()
 		DesignData designData = DesignDataManager.instance.GetDesignData();
 		if (designData.carPerformance.carCondition.carConditionTicksPerSession >= 2f)
 		{
-			this.mSegmentDistance = num / designData.carPerformance.carCondition.carConditionTicksPerSession - 2 + RandomUtility.GetRandomInc(0,4);
+			this.mSegmentDistance = num / (designData.carPerformance.carCondition.carConditionTicksPerSession - 2f + (float)RandomUtility.GetRandomInc(0, 4));
 		}
 		this.mNextUpdateDistance = this.mSegmentDistance;
 		this.mSessionType = sessionManager.sessionType;

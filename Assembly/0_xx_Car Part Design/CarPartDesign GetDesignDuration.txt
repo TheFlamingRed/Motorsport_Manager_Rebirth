@@ -1,0 +1,59 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020000FE RID: 254
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class CarPartDesign
+{
+	// Token: 0x060005DC RID: 1500
+	public TimeSpan GetDesignDuration()
+	{
+		float num = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()].buildTimeDays;
+		HQsBuilding_v1 building = this.mTeam.headquarters.GetBuilding(HQsBuildingInfo.Type.DesignCentre);
+		float manager = 0f;
+		if (this.mTeam.IsPlayersTeam())
+		{
+			manager = (Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement) / 100f;
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.Engine || this.mCarPart.GetPartType() == CarPart.PartType.EngineGT || this.mCarPart.GetPartType() == CarPart.PartType.EngineGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeA - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.Brakes || this.mCarPart.GetPartType() == CarPart.PartType.BrakesGT || this.mCarPart.GetPartType() == CarPart.PartType.BrakesGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeB - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.FrontWing || this.mCarPart.GetPartType() == CarPart.PartType.FrontWingGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeC - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.Gearbox || this.mCarPart.GetPartType() == CarPart.PartType.GearboxGT || this.mCarPart.GetPartType() == CarPart.PartType.GearboxGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeD - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.Suspension || this.mCarPart.GetPartType() == CarPart.PartType.SuspensionGT || this.mCarPart.GetPartType() == CarPart.PartType.SuspensionGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeE - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.RearWing || this.mCarPart.GetPartType() == CarPart.PartType.RearWingGT || this.mCarPart.GetPartType() == CarPart.PartType.RearWingGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeF - manager) * num);
+		}
+		if (building != null && building.isBuilt)
+		{
+			num += HQsBuilding_v1.designCentrePartDaysPerLevel[building.currentLevel];
+		}
+		num += (float)this.GetComponentsDesignDurationBonus().TotalDays;
+		num = Math.Max(0f, num);
+		int hours = Mathf.RoundToInt((num - (float)((int)num)) * 24f);
+		TimeSpan result = new TimeSpan((int)num, hours, 0, 0);
+		if (this.mTeam.IsPlayersTeam())
+		{
+			result = result.Subtract(Game.instance.player.designPartTimeModifier);
+		}
+		return result;
+	}
+}
+

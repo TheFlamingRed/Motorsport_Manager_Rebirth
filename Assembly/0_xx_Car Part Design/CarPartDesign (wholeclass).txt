@@ -1,0 +1,1487 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using MM2;
+using UnityEngine;
+
+// Token: 0x020000FE RID: 254
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class CarPartDesign
+{
+	// Token: 0x060005B4 RID: 1460
+	public CarPartDesign()
+	{
+	}
+
+	// Token: 0x060005B5 RID: 1461
+	public void Start(Team team)
+	{
+		this.mTeam = team;
+	}
+
+	// Token: 0x060005B6 RID: 1462
+	public Dictionary<int, List<CarPartComponent>> GetComponentsForPartType(CarPart.PartType inPartType)
+	{
+		switch (inPartType)
+		{
+		case CarPart.PartType.Brakes:
+			return this.brakeComponents;
+		case CarPart.PartType.Engine:
+			return this.engineComponents;
+		case CarPart.PartType.FrontWing:
+			return this.frontWingComponents;
+		case CarPart.PartType.Gearbox:
+			return this.gearboxComponents;
+		case CarPart.PartType.RearWing:
+			return this.rearWingComponents;
+		case CarPart.PartType.Suspension:
+			return this.suspensionComponents;
+		case CarPart.PartType.RearWingGT:
+			return this.rearWingGTComponents;
+		case CarPart.PartType.BrakesGT:
+			return this.brakeGTComponents;
+		case CarPart.PartType.EngineGT:
+			return this.engineGTComponents;
+		case CarPart.PartType.GearboxGT:
+			return this.gearboxGTComponents;
+		case CarPart.PartType.SuspensionGT:
+			return this.suspensionGTComponents;
+		case CarPart.PartType.BrakesGET:
+			return this.brakeComponentsGET;
+		case CarPart.PartType.EngineGET:
+			return this.engineComponentsGET;
+		case CarPart.PartType.FrontWingGET:
+			return this.frontWingComponentsGET;
+		case CarPart.PartType.GearboxGET:
+			return this.gearboxComponentsGET;
+		case CarPart.PartType.RearWingGET:
+			return this.rearWingComponentsGET;
+		case CarPart.PartType.SuspensionGET:
+			return this.suspensionComponentsGET;
+		default:
+			return null;
+		}
+	}
+
+	// Token: 0x060005B7 RID: 1463
+	public int GetComponentsAvailableCount(CarPart.PartType inPartType, int inLevel)
+	{
+		Dictionary<int, List<CarPartComponent>> componentsForPartType = this.GetComponentsForPartType(inPartType);
+		PartTypeSlotSettings partTypeSlotSettings = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][inPartType];
+		Engineer engineer = (Engineer)this.mTeam.contractManager.GetPersonOnJob(Contract.Job.EngineerLead);
+		int num = 0;
+		for (int i = 0; i < componentsForPartType.Keys.Count; i++)
+		{
+			if (i <= inLevel && partTypeSlotSettings.IsUnlocked(this.mTeam, i))
+			{
+				if (engineer.availableComponents.Count > i && engineer.availableComponents[i].IsUnlocked(this.mTeam))
+				{
+					num++;
+				}
+				for (int j = 0; j < componentsForPartType[i].Count; j++)
+				{
+					if (componentsForPartType[i][j].IsUnlocked(this.mTeam))
+					{
+						num++;
+					}
+				}
+			}
+		}
+		return num;
+	}
+
+	// Token: 0x060005B8 RID: 1464
+	public int GetComponentsCountForPartType(CarPart.PartType inPartType)
+	{
+		Dictionary<int, List<CarPartComponent>> componentsForPartType = this.GetComponentsForPartType(inPartType);
+		Engineer engineer = (Engineer)this.mTeam.contractManager.GetPersonOnJob(Contract.Job.EngineerLead);
+		int num = 0;
+		for (int i = 0; i < componentsForPartType.Keys.Count; i++)
+		{
+			if (i < engineer.availableComponents.Count)
+			{
+				num++;
+			}
+			for (int j = 0; j < componentsForPartType[i].Count; j++)
+			{
+				num++;
+			}
+		}
+		return num;
+	}
+
+	// Token: 0x060005B9 RID: 1465
+	public void OnNewSeasonStart()
+	{
+		this.ChooseComponentsForSeason();
+		this.SetSeasonStartingStats();
+	}
+
+	// Token: 0x060005BA RID: 1466
+	public void SetSeasonStartingStats()
+	{
+		CarPart.PartType[] partType = CarPart.GetPartType(this.mTeam.championship.series, false);
+		float random = RandomUtility.GetRandom01();
+		float num = (float)App.instance.preferencesManager.gamePreferences.GetAIDriverLevel();
+		float num2 = 0f;
+		if (Game.instance.time.now.Year > 2016)
+		{
+			num2 = (float)(Game.instance.player.team.GetExpectedChampionshipResult() - this.mTeam.GetExpectedChampionshipResult());
+			if (num2 == 0f)
+			{
+				num2 += 1f;
+			}
+		}
+		if (Game.instance.player.playerBackStoryType == PlayerBackStory.PlayerBackStoryType.UpandComingManager)
+		{
+			float raceManagement = Game.instance.player.stats.raceManagement;
+			float num3 = MathsUtility.Clamp(num - raceManagement + 10f, 0f, 30f);
+			foreach (CarPart.PartType partType2 in partType)
+			{
+				CarPart partWithHighestStat = this.mTeam.carManager.partInventory.GetPartWithHighestStat(partType2, CarPartStats.CarPartStat.MainStat);
+				global::Debug.Assert(partWithHighestStat != null, string.Format("{0} Original part is null, maybe theres no part being added from the database? Continuing with dummy data", partType2));
+				if (partWithHighestStat == null)
+				{
+					this.mTeam.carManager.ResetParts(new CarStats());
+				}
+				if (partWithHighestStat != null && this.mTeam.IsPlayersTeam())
+				{
+					this.seasonPartStartingStat[partType2] = (int)partWithHighestStat.stats.statWithPerformance;
+				}
+				if (partWithHighestStat != null && this.mTeam.IsPlayersTeam() && random < 0.002f && num2 != 0f)
+				{
+					this.seasonPartStartingStat[partType2] = (int)(partWithHighestStat.stats.statWithPerformance + RandomUtility.GetRandom(20f, 20f + num3 * 4f));
+					if (partType2 == CarPart.PartType.Brakes || CarPart.PartType.BrakesGT == partType2 || CarPart.PartType.BrakesGET == partType2)
+					{
+						StringVariableParser.rumourTeam = this.mTeam;
+						StringVariableParser.carPart = partWithHighestStat;
+						Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+						{
+							new DialogCriteria("Who", "MediaPerson"),
+							new DialogCriteria("Source", "SmallBoost"),
+							new DialogCriteria("Type", "Header")
+						});
+					}
+				}
+				if (partWithHighestStat != null && !this.mTeam.IsPlayersTeam())
+				{
+					this.seasonPartStartingStat[partType2] = (int)(partWithHighestStat.stats.statWithPerformance * (1f + num3 / 400f) + num3 * 2f);
+				}
+				if (partWithHighestStat != null && !this.mTeam.IsPlayersTeam() && random < 0.2f && num2 > 0f)
+				{
+					this.seasonPartStartingStat[partType2] = (int)(partWithHighestStat.stats.statWithPerformance * (1f + num3 / 200f) + num3 * 4f);
+					if (partType2 == CarPart.PartType.Brakes || CarPart.PartType.BrakesGT == partType2 || CarPart.PartType.BrakesGET == partType2)
+					{
+						StringVariableParser.rumourTeam = this.mTeam;
+						StringVariableParser.carPart = partWithHighestStat;
+						Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+						{
+							new DialogCriteria("Who", "MediaPerson"),
+							new DialogCriteria("Source", "SmallBoost"),
+							new DialogCriteria("Type", "Header")
+						});
+					}
+				}
+				if (partWithHighestStat != null && !this.mTeam.IsPlayersTeam() && random < 0.2f && num2 < 0f)
+				{
+					this.seasonPartStartingStat[partType2] = (int)(partWithHighestStat.stats.statWithPerformance * (1f + num3 / 200f) + num3 * 8f);
+					if (partType2 == CarPart.PartType.Brakes || CarPart.PartType.BrakesGT == partType2 || CarPart.PartType.BrakesGET == partType2)
+					{
+						StringVariableParser.rumourTeam = this.mTeam;
+						StringVariableParser.carPart = partWithHighestStat;
+						Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+						{
+							new DialogCriteria("Who", "MediaPerson"),
+							new DialogCriteria("Source", "BigBoost"),
+							new DialogCriteria("Type", "Header")
+						});
+					}
+				}
+			}
+		}
+		if (Game.instance.player.playerBackStoryType != PlayerBackStory.PlayerBackStoryType.UpandComingManager)
+		{
+			foreach (CarPart.PartType partType3 in partType)
+			{
+				CarPart partWithHighestStat2 = this.mTeam.carManager.partInventory.GetPartWithHighestStat(partType3, CarPartStats.CarPartStat.MainStat);
+				global::Debug.Assert(partWithHighestStat2 != null, string.Format("{0} Original part is null, maybe theres no part being added from the database? Continuing with dummy data", partType3));
+				if (partWithHighestStat2 == null)
+				{
+					this.mTeam.carManager.ResetParts(new CarStats());
+				}
+				if (partWithHighestStat2 != null && this.mTeam.IsPlayersTeam())
+				{
+					this.seasonPartStartingStat[partType3] = (int)partWithHighestStat2.stats.statWithPerformance;
+				}
+				if (partWithHighestStat2 != null && this.mTeam.IsPlayersTeam() && random < 0.002f && num2 != 0f)
+				{
+					this.seasonPartStartingStat[partType3] = (int)(partWithHighestStat2.stats.statWithPerformance + RandomUtility.GetRandom(20f, 20f + num * 4f));
+					if (partType3 == CarPart.PartType.Brakes || CarPart.PartType.BrakesGT == partType3 || CarPart.PartType.BrakesGET == partType3)
+					{
+						StringVariableParser.rumourTeam = this.mTeam;
+						StringVariableParser.carPart = partWithHighestStat2;
+						Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+						{
+							new DialogCriteria("Who", "MediaPerson"),
+							new DialogCriteria("Source", "SmallBoost"),
+							new DialogCriteria("Type", "Header")
+						});
+					}
+				}
+				if (partWithHighestStat2 != null && !this.mTeam.IsPlayersTeam())
+				{
+					this.seasonPartStartingStat[partType3] = (int)(partWithHighestStat2.stats.statWithPerformance * (1f + num / 400f) + num * 2f);
+				}
+				if (partWithHighestStat2 != null && !this.mTeam.IsPlayersTeam() && random < 0.2f && num2 > 0f)
+				{
+					this.seasonPartStartingStat[partType3] = (int)(partWithHighestStat2.stats.statWithPerformance * (1f + num / 200f) + num * 4f);
+					if (partType3 == CarPart.PartType.Brakes || CarPart.PartType.BrakesGT == partType3 || CarPart.PartType.BrakesGET == partType3)
+					{
+						StringVariableParser.rumourTeam = this.mTeam;
+						StringVariableParser.carPart = partWithHighestStat2;
+						Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+						{
+							new DialogCriteria("Who", "MediaPerson"),
+							new DialogCriteria("Source", "SmallBoost"),
+							new DialogCriteria("Type", "Header")
+						});
+					}
+				}
+				if (partWithHighestStat2 != null && !this.mTeam.IsPlayersTeam() && random < 0.2f && num2 < 0f)
+				{
+					this.seasonPartStartingStat[partType3] = (int)(partWithHighestStat2.stats.statWithPerformance * (1f + num / 200f) + num * 8f);
+					if (partType3 == CarPart.PartType.Brakes || CarPart.PartType.BrakesGT == partType3 || CarPart.PartType.BrakesGET == partType3)
+					{
+						StringVariableParser.rumourTeam = this.mTeam;
+						StringVariableParser.carPart = partWithHighestStat2;
+						Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+						{
+							new DialogCriteria("Who", "MediaPerson"),
+							new DialogCriteria("Source", "BigBoost"),
+							new DialogCriteria("Type", "Header")
+						});
+					}
+				}
+			}
+		}
+	}
+
+	// Token: 0x060005BB RID: 1467
+	private void ChooseComponentsForSeason()
+	{
+		foreach (CarPart.PartType partType2 in CarPart.GetPartType(this.mTeam.championship.series, false))
+		{
+			for (int i = 1; i <= 5; i++)
+			{
+				this.SetComponents(this.GetComponentsForPartType(partType2), partType2, i);
+			}
+		}
+	}
+
+	// Token: 0x060005BC RID: 1468
+	private void SetComponents(Dictionary<int, List<CarPartComponent>> inDictionary, CarPart.PartType inType, int inLevel)
+	{
+		List<CarPartComponent> componentsOfLevel = App.instance.componentsManager.GetComponentsOfLevel(inType, inLevel, new CarPartComponent.ComponentType[]
+		{
+			CarPartComponent.ComponentType.Stock,
+			CarPartComponent.ComponentType.Risky
+		});
+		inDictionary[inLevel - 1] = this.ChooseComponents(componentsOfLevel);
+	}
+
+	// Token: 0x060005BD RID: 1469
+	private List<CarPartComponent> ChooseComponents(List<CarPartComponent> inAllComponents)
+	{
+		List<CarPartComponent> list = new List<CarPartComponent>();
+		while (list.Count < 3)
+		{
+			CarPartComponent item = inAllComponents[RandomUtility.GetRandom(0, inAllComponents.Count)];
+			if (!list.Contains(item))
+			{
+				list.Add(item);
+			}
+		}
+		return list;
+	}
+
+	// Token: 0x060005BE RID: 1470
+	public void Reset()
+	{
+		this.mStage = CarPartDesign.Stage.Idle;
+		this.mExtraCopies = 0;
+		this.mComponentTimeDaysBonus = 0f;
+		this.mImidiateFinish = false;
+		if (this.mCarPart != null)
+		{
+			this.mCarPart.DestroyCarPart();
+			this.mCarPart = null;
+		}
+		this.startDate = Game.instance.time.now;
+		this.endDate = Game.instance.time.now;
+		this.mCalendarEvent = null;
+		if (this.belongsToPlayer)
+		{
+			StringVariableParser.partWithRandomComponent = null;
+			StringVariableParser.randomComponent = null;
+		}
+	}
+
+	// Token: 0x060005BF RID: 1471
+	public void Cancel()
+	{
+		int inAmount = this.GetDesignCost() / 2;
+		Transaction transaction = new Transaction(Transaction.Group.CarParts, Transaction.Type.Credit, inAmount, Localisation.LocaliseID("PSG_10002082", null));
+		Game.instance.player.team.financeController.finance.ProcessTransactions(null, null, false, new Transaction[]
+		{
+			transaction
+		});
+		if (this.mCalendarEvent != null)
+		{
+			Game.instance.calendar.RemoveEvent(this.mCalendarEvent);
+		}
+		this.Reset();
+		this.SetPartNotificationProgress(0f);
+	}
+
+	// Token: 0x060005C0 RID: 1472
+	public void InitializeNewPart(CarPart.PartType inType)
+	{
+		this.Reset();
+		this.componentSlots.Clear();
+		this.componentBonusSlots.Clear();
+		this.componentBonusSlotsLevel.Clear();
+		int numberOfSlots = this.GetNumberOfSlots(inType);
+		for (int i = 0; i < numberOfSlots; i++)
+		{
+			this.componentSlots.Add(null);
+		}
+		this.mCarPart = CarPart.CreatePartEntity(inType, this.mTeam.championship);
+		this.mCarPart.components = new List<CarPartComponent>(this.componentSlots);
+		this.mCarPart.PostStatsSetup(this.mTeam.championship);
+		this.SetBaseStats(this.mCarPart);
+	}
+
+	// Token: 0x060005C1 RID: 1473
+	public void SetCarPart(CarPart inCarPart)
+	{
+		this.mCarPart = inCarPart;
+	}
+
+	// Token: 0x060005C2 RID: 1474
+	public int GetNumberOfSlots(CarPart.PartType inType)
+	{
+		int num = this.mTeam.carManager.partInventory.GetHighestLevel(inType, true).stats.level + 1;
+		if (Game.instance.dilemmaSystem.carPartsLeveledUp.Contains(inType))
+		{
+			num++;
+		}
+		num = Mathf.Clamp(num, 1, GameStatsConstants.slotCount);
+		if (this.mAllPartsUnlocked)
+		{
+			num = GameStatsConstants.slotCount;
+		}
+		return num;
+	}
+
+	// Token: 0x060005C3 RID: 1475
+	private void SetBaseStats(CarPart inPart)
+	{
+		Engineer engineer = (Engineer)this.mTeam.contractManager.GetPersonOnJob(Contract.Job.EngineerLead);
+		inPart.stats = new CarPartStats(inPart);
+		float num = (float)(this.seasonPartStartingStat[inPart.GetPartType()] + Mathf.FloorToInt(engineer.stats.partContributionStats.GetStat(inPart.stats.statType)) * 3);
+		inPart.stats.level = this.GetLevelFromComponents(inPart);
+		inPart.stats.maxPerformance = Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.improvability * 2.5f, 0f, 50f);
+		inPart.stats.SetStat(CarPartStats.CarPartStat.Reliability, GameStatsConstants.initialReliabilityValue + Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.tyreHeating * 0.02f, 0f, 0.4f));
+		inPart.stats.maxReliability = GameStatsConstants.initialMaxReliabilityValue + Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.improvability * 0.01f, 0f, 0.2f);
+		inPart.stats.partCondition.redZone = GameStatsConstants.initialRedZone - Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.tyreWear * 0.01f, 0f, 0.2f);
+		inPart.stats.SetStat(CarPartStats.CarPartStat.MainStat, num + Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.fuelEfficiency * 1.25f, 0f, 25f));
+	}
+
+	// Token: 0x060005C4 RID: 1476
+	private int GetLevelFromComponents(CarPart inPart)
+	{
+		int num = 0;
+		for (int i = 0; i < inPart.components.Count; i++)
+		{
+			CarPartComponent carPartComponent = inPart.components[i];
+			if (carPartComponent != null)
+			{
+				num += carPartComponent.level;
+			}
+		}
+		if (num >= 15)
+		{
+			return 5;
+		}
+		if (num >= 10)
+		{
+			return 4;
+		}
+		if (num >= 6)
+		{
+			return 3;
+		}
+		if (num >= 3)
+		{
+			return 2;
+		}
+		if (num >= 1)
+		{
+			return 1;
+		}
+		return 0;
+	}
+
+	// Token: 0x060005C5 RID: 1477
+	public bool HasComponent(CarPartComponent inComponent)
+	{
+		return this.componentBonusSlots.Contains(inComponent) || this.componentSlots.Contains(inComponent);
+	}
+
+	// Token: 0x060005C6 RID: 1478
+	public void AddSlot(int inLevelSlot)
+	{
+		this.componentBonusSlotsLevel.Add(inLevelSlot);
+		this.componentBonusSlots.Add(null);
+	}
+
+	// Token: 0x060005C7 RID: 1479
+	public void RemoveSlot(int inLevelSlot)
+	{
+		int index = this.componentBonusSlotsLevel.IndexOf(inLevelSlot);
+		if (this.componentBonusSlots[index] != null)
+		{
+			this.RemoveComponent(this.mCarPart, this.componentBonusSlots[index]);
+		}
+		this.componentBonusSlotsLevel.RemoveAt(index);
+		this.componentBonusSlots.RemoveAt(index);
+	}
+
+	// Token: 0x060005C8 RID: 1480
+	public void AddComponent(CarPart inPart, CarPartComponent inComponent)
+	{
+		List<CarPartComponent> list = null;
+		int num = inComponent.level - 1;
+		int index = 0;
+		for (int i = 0; i < this.componentSlots.Count; i++)
+		{
+			if (i >= num && this.componentSlots[i] == null)
+			{
+				index = i;
+				list = this.componentSlots;
+				break;
+			}
+		}
+		for (int j = 0; j < this.componentBonusSlots.Count; j++)
+		{
+			if (this.componentBonusSlotsLevel[j] >= num + 1 && this.componentBonusSlots[j] == null)
+			{
+				index = j;
+				list = this.componentBonusSlots;
+				break;
+			}
+		}
+		list[index] = inComponent;
+		list[index].OnSelect(this, inPart);
+		List<CarPartComponent> list2 = new List<CarPartComponent>();
+		list2.AddRange(this.componentSlots);
+		list2.AddRange(this.componentBonusSlots);
+		inPart.components = new List<CarPartComponent>(list2);
+		this.ApplyComponents(inPart);
+		this.DesignModified();
+	}
+
+	// Token: 0x060005C9 RID: 1481
+	public void RemoveComponent(CarPart inPart, CarPartComponent inComponent)
+	{
+		inComponent.OnDeSelect(this, inPart);
+		List<CarPartComponent> list = this.componentSlots;
+		if (this.componentBonusSlots.Contains(inComponent))
+		{
+			list = this.componentBonusSlots;
+		}
+		for (int i = 0; i < list.Count; i++)
+		{
+			if (list[i] == inComponent)
+			{
+				list[i] = null;
+				this.MoveComponentsToLowerCostSlot();
+				break;
+			}
+		}
+		List<CarPartComponent> list2 = new List<CarPartComponent>();
+		list2.AddRange(this.componentSlots);
+		list2.AddRange(this.componentBonusSlots);
+		inPart.components = new List<CarPartComponent>(list2);
+		this.ApplyComponents(inPart);
+		this.DesignModified();
+	}
+
+	// Token: 0x060005CA RID: 1482
+	public void ApplyComponents(CarPart inPart)
+	{
+		this.mComponentTimeDaysBonus = 0f;
+		this.SetBaseStats(inPart);
+		inPart.AddAllComponentStats();
+		inPart.components.ForEach(delegate(CarPartComponent component)
+		{
+			if (component != null)
+			{
+				component.ApplyBonus(this, inPart);
+			}
+		});
+		if (inPart.stats.GetStat(CarPartStats.CarPartStat.MainStat) < 1f)
+		{
+			inPart.stats.SetStat(CarPartStats.CarPartStat.MainStat, 1f);
+		}
+	}
+
+	// Token: 0x060005CB RID: 1483
+	private void MoveComponentsToLowerCostSlot()
+	{
+		List<CarPartComponent> list = new List<CarPartComponent>();
+		for (int i = 0; i < this.componentSlots.Count; i++)
+		{
+			if (this.componentSlots[i] != null)
+			{
+				list.Add(this.componentSlots[i]);
+				this.componentSlots[i] = null;
+			}
+		}
+		for (int j = 0; j < list.Count; j++)
+		{
+			CarPartComponent carPartComponent = list[j];
+			for (int k = carPartComponent.level - 1; k < this.componentSlots.Count; k++)
+			{
+				if (this.componentSlots[k] == null)
+				{
+					this.componentSlots[k] = carPartComponent;
+					break;
+				}
+			}
+		}
+	}
+
+	// Token: 0x060005CC RID: 1484
+	private void DesignModified()
+	{
+		if (this.OnDesignModified != null)
+		{
+			this.OnDesignModified();
+		}
+	}
+
+	// Token: 0x060005CD RID: 1485
+	public bool HasSlotForLevel(int inLevel)
+	{
+		for (int i = inLevel - 1; i < this.componentSlots.Count; i++)
+		{
+			if (this.componentSlots[i] == null)
+			{
+				return true;
+			}
+		}
+		for (int j = 0; j < this.componentBonusSlots.Count; j++)
+		{
+			if (this.componentBonusSlots[j] == null && this.componentBonusSlotsLevel[j] >= inLevel)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Token: 0x060005CE RID: 1486
+	public bool HasComponentOfLevel(int inLevel)
+	{
+		for (int i = inLevel - 1; i < this.componentSlots.Count; i++)
+		{
+			if (this.componentSlots[i] != null && this.componentSlots[i].level == inLevel)
+			{
+				return true;
+			}
+		}
+		for (int j = 0; j < this.componentBonusSlots.Count; j++)
+		{
+			if (this.componentBonusSlots[j] != null && this.componentBonusSlotsLevel[j] == inLevel)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Token: 0x060005CF RID: 1487
+	public void StartDesigning()
+	{
+		this.mCarPart.components.ForEach(delegate(CarPartComponent component)
+		{
+			if (component != null)
+			{
+				component.OnPartBuildStart(this, this.mCarPart);
+			}
+		});
+		this.ApplyComponents(this.mCarPart);
+		this.mStage = CarPartDesign.Stage.Designing;
+		this.startDate = Game.instance.time.now;
+		this.endDate = this.startDate.Add(this.GetDesignDuration());
+		StringVariableParser.carPart = this.mCarPart;
+		StringVariableParser.partFrontendUI = this.mCarPart.GetPartType();
+		this.mCalendarEvent = new CalendarEvent_v1
+		{
+			category = CalendarEventCategory.Design,
+			showOnCalendar = this.belongsToPlayer,
+			interruptGameTime = this.belongsToPlayer,
+			triggerDate = this.endDate,
+			triggerState = GameState.Type.FrontendState,
+			OnEventTrigger = MMAction.CreateFromAction(new Action(this.PartComplete)),
+			displayEffect = new TeamDisplayEffect
+			{
+				changeDisplay = true,
+				changeInterrupt = true,
+				team = this.mTeam
+			}
+		};
+		this.mCalendarEvent.SetDynamicDescription("PSG_10009151");
+		if (this.belongsToPlayer)
+		{
+			FeedbackPopup.Open(Localisation.LocaliseID("PSG_10010523", null), Localisation.LocaliseID("PSG_10010524", null));
+			this.SetPartNotificationProgress(0.001f);
+		}
+		Game.instance.calendar.AddEvent(this.mCalendarEvent);
+	}
+
+	// Token: 0x060005D0 RID: 1488
+	public void Update()
+	{
+		if (this.mStage == CarPartDesign.Stage.Designing)
+		{
+			DateTime d = this.endDate;
+			this.SetPartNotificationProgress(this.GetCreationTimeElapsedNormalised());
+			if (d != this.endDate)
+			{
+				Game.instance.calendar.ChangeEventTriggerDate(this.mCalendarEvent, this.endDate);
+			}
+		}
+	}
+
+	// Token: 0x060005D1 RID: 1489
+	public void FinishPartImmediatly()
+	{
+		if (this.mStage == CarPartDesign.Stage.Designing && this.mCalendarEvent != null)
+		{
+			Game.instance.calendar.RemoveEvent(this.mCalendarEvent);
+			if (this.mCalendarEvent != null)
+			{
+				this.mImidiateFinish = true;
+				this.mCalendarEvent.OnEventTrigger.Invoke();
+			}
+		}
+	}
+
+	// Token: 0x060005D2 RID: 1490
+	private void SetPartNotificationProgress(float inProgress)
+	{
+		if (this.belongsToPlayer)
+		{
+			if (this.mNotification == null)
+			{
+				this.mNotification = Game.instance.notificationManager.GetNotification("PartDesigning");
+			}
+			this.mNotification.SetProgress(inProgress);
+			return;
+		}
+		if (this.mNotification != null)
+		{
+			this.mNotification.SetProgress(0f);
+			this.mNotification = null;
+		}
+	}
+
+	// Token: 0x060005D3 RID: 1491
+	public void BuildTwoParts(int inValue)
+	{
+		this.mExtraCopies += inValue;
+		this.mExtraCopies = Mathf.Max(this.mExtraCopies, 0);
+	}
+
+	// Token: 0x060005D4 RID: 1492
+	private void PartComplete()
+	{
+		global::Debug.Assert(this.mStage == CarPartDesign.Stage.Designing);
+		if (this.mStage != CarPartDesign.Stage.Designing)
+		{
+			return;
+		}
+		this.mStage = CarPartDesign.Stage.Idle;
+		int num = 1 + this.mExtraCopies;
+		for (int i = 0; i < num; i++)
+		{
+			this.CloneAndCreateNewPart(this.mCarPart);
+		}
+		this.mCarPart.buildDate = Game.instance.time.now;
+		this.mLastCarPart = this.mCarPart;
+		Game.instance.dilemmaSystem.carPartsLeveledUp.Remove(this.mCarPart.GetPartType());
+		if (this.belongsToPlayer)
+		{
+			this.UpdatePartBuiltAchievements();
+			StringVariableParser.partForUI = this.mCarPart;
+			StringVariableParser.partWithRandomComponent = this.mCarPart;
+			StringVariableParser.randomComponent = this.mRandomComponent;
+			this.SetPartNotificationProgress(0f);
+			if (!this.mImidiateFinish)
+			{
+				FeedbackPopup.Open(Localisation.LocaliseID("PSG_10010525", null), Localisation.LocaliseID("PSG_10010526", null));
+				this.SendCarPartBuiltMessage(this.mCarPart);
+			}
+			this.mRandomComponent = null;
+		}
+		else
+		{
+			this.mTeam.teamAIController.FitPartsOnCars();
+		}
+		if (this.OnPartBuilt != null)
+		{
+			this.OnPartBuilt();
+		}
+		this.Reset();
+	}
+
+	// Token: 0x060005D5 RID: 1493
+	public CarPart CloneAndCreateNewPart(CarPart inPart)
+	{
+		CarPart carPart = CarPart.CreatePartEntity(inPart.GetPartType(), this.mTeam.championship);
+		carPart.components = new List<CarPartComponent>(inPart.components);
+		this.ApplyComponents(carPart);
+		carPart.buildDate = Game.instance.time.now;
+		carPart.OnPartBuilt(this);
+		carPart.PostStatsSetup(this.mTeam.championship);
+		this.mTeam.carManager.partInventory.AddPart(carPart);
+		Notification notification = Game.instance.notificationManager.GetNotification(inPart.GetPartType().ToString());
+		if (!this.mImidiateFinish && this.belongsToPlayer)
+		{
+			Game.instance.notificationManager.CreateNotification(carPart.name, notification).IncrementCount();
+		}
+		return carPart;
+	}
+
+	// Token: 0x060005D6 RID: 1494
+	private void SendCarPartBuiltMessage(CarPart inPart)
+	{
+		Game.instance.dialogSystem.OnPartBuilt(inPart);
+	}
+
+	// Token: 0x060005D7 RID: 1495
+	public int GetComponentDesignCostBonus()
+	{
+		PartTypeSlotSettings partTypeSlotSettings = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()];
+		float num = 0f;
+		for (int i = 0; i < this.mCarPart.components.Count; i++)
+		{
+			CarPartComponent carPartComponent = this.mCarPart.components[i];
+			if (carPartComponent != null)
+			{
+				if (carPartComponent.cost != 0f)
+				{
+					num += carPartComponent.cost;
+				}
+				else if (carPartComponent.componentType != CarPartComponent.ComponentType.Engineer)
+				{
+					num += partTypeSlotSettings.costPerLevel[carPartComponent.level - 1];
+				}
+			}
+		}
+		return Mathf.RoundToInt(num);
+	}
+
+	// Token: 0x060005D8 RID: 1496
+	public int GetDesignCost()
+	{
+		if (this.mTeam.IsPlayersTeam())
+		{
+			float num = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()].materialsCost;
+			num += (float)this.GetComponentDesignCostBonus();
+			num = Math.Max(0f, num);
+			return Mathf.RoundToInt(num);
+		}
+		if (!this.mTeam.IsPlayersTeam())
+		{
+			float num2 = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()].materialsCost * 0.1f;
+			num2 += (float)this.GetComponentDesignCostBonus();
+			num2 = Math.Max(0f, num2);
+			return Mathf.RoundToInt(num2);
+		}
+		return 0;
+	}
+
+	// Token: 0x060005D9 RID: 1497
+	public TimeSpan GetComponentsDesignDurationBonus()
+	{
+		float num = 0f;
+		for (int i = 0; i < this.mCarPart.components.Count; i++)
+		{
+			CarPartComponent carPartComponent = this.mCarPart.components[i];
+			if (carPartComponent != null && carPartComponent.isRandomComponent)
+			{
+				carPartComponent.isRandomComponent = false;
+			}
+			else
+			{
+				num += this.GetComponentDesignDurationBonus(carPartComponent);
+			}
+		}
+		num += this.mComponentTimeDaysBonus;
+		int hours = Mathf.RoundToInt((num - (float)((int)num)) * 24f);
+		return new TimeSpan((int)num, hours, 0, 0);
+	}
+
+	// Token: 0x060005DA RID: 1498
+	public float GetComponentDesignDurationBonus(CarPartComponent inComponent)
+	{
+		PartTypeSlotSettings partTypeSlotSettings = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()];
+		float num = 0f;
+		if (inComponent != null)
+		{
+			if (inComponent.productionTime != 0f)
+			{
+				num += inComponent.productionTime;
+			}
+			else if (inComponent.componentType != CarPartComponent.ComponentType.Engineer)
+			{
+				num += partTypeSlotSettings.timePerLevel[inComponent.level - 1];
+			}
+		}
+		return num;
+	}
+
+	// Token: 0x060005DB RID: 1499
+	public void SetComponentsTimeBonus(float inDays)
+	{
+		this.mComponentTimeDaysBonus += inDays;
+	}
+
+	// Token: 0x060005DC RID: 1500
+	public TimeSpan GetDesignDuration()
+	{
+		float num = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()].buildTimeDays;
+		HQsBuilding_v1 building = this.mTeam.headquarters.GetBuilding(HQsBuildingInfo.Type.DesignCentre);
+		float manager = 0f;
+		if (this.mTeam.IsPlayersTeam())
+		{
+			manager = (Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement) / 100f;
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.Engine || this.mCarPart.GetPartType() == CarPart.PartType.EngineGT || this.mCarPart.GetPartType() == CarPart.PartType.EngineGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeA - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.Brakes || this.mCarPart.GetPartType() == CarPart.PartType.BrakesGT || this.mCarPart.GetPartType() == CarPart.PartType.BrakesGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeB - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.FrontWing || this.mCarPart.GetPartType() == CarPart.PartType.FrontWingGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeC - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.Gearbox || this.mCarPart.GetPartType() == CarPart.PartType.GearboxGT || this.mCarPart.GetPartType() == CarPart.PartType.GearboxGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeD - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.Suspension || this.mCarPart.GetPartType() == CarPart.PartType.SuspensionGT || this.mCarPart.GetPartType() == CarPart.PartType.SuspensionGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeE - manager) * num);
+		}
+		if (this.mCarPart.GetPartType() == CarPart.PartType.RearWing || this.mCarPart.GetPartType() == CarPart.PartType.RearWingGT || this.mCarPart.GetPartType() == CarPart.PartType.RearWingGET)
+		{
+			num += Mathf.Floor((this.mTeam.chairman.attitudeTypeF - manager) * num);
+		}
+		if (building != null && building.isBuilt)
+		{
+			num += HQsBuilding_v1.designCentrePartDaysPerLevel[building.currentLevel];
+		}
+		num += (float)this.GetComponentsDesignDurationBonus().TotalDays;
+		num = Math.Max(0f, num);
+		int hours = Mathf.RoundToInt((num - (float)((int)num)) * 24f);
+		TimeSpan result = new TimeSpan((int)num, hours, 0, 0);
+		if (this.mTeam.IsPlayersTeam())
+		{
+			result = result.Subtract(Game.instance.player.designPartTimeModifier);
+		}
+		return result;
+	}
+
+	// Token: 0x060005DD RID: 1501
+	public string GetCostBreakdown()
+	{
+		string str = GameUtility.ColorToRichTextHex(UIConstants.positiveColor);
+		string str2 = GameUtility.ColorToRichTextHex(UIConstants.negativeColor);
+		PartTypeSlotSettings partTypeSlotSettings = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()];
+		string text = string.Empty;
+		StringVariableParser.ordinalNumberString = str2 + GameUtility.GetCurrencyString((long)((int)partTypeSlotSettings.materialsCost), 0) + "</color>";
+		text += Localisation.LocaliseID("PSG_10010514", null);
+		for (int i = 0; i < this.mCarPart.components.Count; i++)
+		{
+			float num = 0f;
+			CarPartComponent carPartComponent = this.mCarPart.components[i];
+			if (carPartComponent != null)
+			{
+				if (carPartComponent.cost != 0f)
+				{
+					num = carPartComponent.cost;
+				}
+				else if (carPartComponent.componentType != CarPartComponent.ComponentType.Engineer)
+				{
+					num = partTypeSlotSettings.costPerLevel[carPartComponent.level - 1];
+				}
+				if (num != 0f)
+				{
+					if (num > 0f)
+					{
+						StringVariableParser.ordinalNumberString = str2 + GameUtility.GetCurrencyString((long)((int)num), 0) + "</color>";
+						text = text + "\n" + Localisation.LocaliseID("PSG_10010723", null);
+					}
+					else
+					{
+						StringVariableParser.ordinalNumberString = str + GameUtility.GetCurrencyString((long)((int)num), 0) + "</color>";
+						text = text + "\n" + Localisation.LocaliseID("PSG_10010723", null);
+					}
+				}
+			}
+		}
+		return text;
+	}
+
+	// Token: 0x060005DE RID: 1502
+	public string GetDesignTimeBreakdown()
+	{
+		string text = GameUtility.ColorToRichTextHex(UIConstants.positiveColor);
+		string arg = GameUtility.ColorToRichTextHex(UIConstants.negativeColor);
+		PartTypeSlotSettings partTypeSlotSettings = Game.instance.partSettingsManager.championshipPartSettings[this.mTeam.championship.championshipID][this.mCarPart.GetPartType()];
+		string text2 = string.Empty;
+		StringVariableParser.ordinalNumberString = arg + partTypeSlotSettings.buildTimeDays;
+		text2 += Localisation.LocaliseID("PSG_10010519", null);
+		HQsBuilding_v1 building = this.mTeam.headquarters.GetBuilding(HQsBuildingInfo.Type.DesignCentre);
+		if (building != null && building.isBuilt)
+		{
+			float num = Mathf.Abs(HQsBuilding_v1.designCentrePartDaysPerLevel[building.currentLevel]);
+			if (num != 0f)
+			{
+				StringVariableParser.ordinalNumberString = text + num.ToString("0.#") + "</color>";
+				text2 = text2 + "\n" + Localisation.LocaliseID("PSG_10012148", null);
+			}
+			float manager = (Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement) / 100f;
+			num = partTypeSlotSettings.buildTimeDays;
+			if (this.mCarPart.GetPartType() == CarPart.PartType.Engine || this.mCarPart.GetPartType() == CarPart.PartType.EngineGT || this.mCarPart.GetPartType() == CarPart.PartType.EngineGET)
+			{
+				num = Mathf.Floor((this.mTeam.chairman.attitudeTypeA - manager) * num);
+				if (num > 0f)
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n + ",
+						arg,
+						num.ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+				else
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n - ",
+						text,
+						(num * -1f).ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+			}
+			if (this.mCarPart.GetPartType() == CarPart.PartType.Brakes || this.mCarPart.GetPartType() == CarPart.PartType.BrakesGT || this.mCarPart.GetPartType() == CarPart.PartType.BrakesGET)
+			{
+				num = Mathf.Floor((this.mTeam.chairman.attitudeTypeB - manager) * num);
+				if (num > 0f)
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n + ",
+						arg,
+						num.ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+				else
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n - ",
+						text,
+						(num * -1f).ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+			}
+			if (this.mCarPart.GetPartType() == CarPart.PartType.FrontWing || this.mCarPart.GetPartType() == CarPart.PartType.FrontWingGET)
+			{
+				num = Mathf.Floor((this.mTeam.chairman.attitudeTypeC - manager) * num);
+				if (num > 0f)
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n + ",
+						arg,
+						num.ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+				else
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n - ",
+						text,
+						(num * -1f).ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+			}
+			if (this.mCarPart.GetPartType() == CarPart.PartType.Gearbox || this.mCarPart.GetPartType() == CarPart.PartType.GearboxGT || this.mCarPart.GetPartType() == CarPart.PartType.GearboxGET)
+			{
+				num = Mathf.Floor((this.mTeam.chairman.attitudeTypeD - manager) * num);
+				if (num > 0f)
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n + ",
+						arg,
+						num.ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+				else
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n - ",
+						text,
+						(num * -1f).ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+			}
+			if (this.mCarPart.GetPartType() == CarPart.PartType.Suspension || this.mCarPart.GetPartType() == CarPart.PartType.SuspensionGT || this.mCarPart.GetPartType() == CarPart.PartType.SuspensionGET)
+			{
+				num = Mathf.Floor((this.mTeam.chairman.attitudeTypeE - manager) * num);
+				if (num > 0f)
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n + ",
+						arg,
+						num.ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+				else
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n - ",
+						text,
+						(num * -1f).ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+			}
+			if (this.mCarPart.GetPartType() == CarPart.PartType.RearWing || this.mCarPart.GetPartType() == CarPart.PartType.RearWingGT || this.mCarPart.GetPartType() == CarPart.PartType.RearWingGET)
+			{
+				num = Mathf.Floor((this.mTeam.chairman.attitudeTypeF - manager) * num);
+				if (num > 0f)
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n + ",
+						arg,
+						num.ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+				else
+				{
+					text2 = string.Concat(new string[]
+					{
+						text2,
+						"\n - ",
+						text,
+						(num * -1f).ToString("0.#"),
+						"</color> from Team Management"
+					});
+				}
+			}
+		}
+		if (this.mTeam.IsPlayersTeam() && Game.instance.player.playerBackStoryType == PlayerBackStory.PlayerBackStoryType.ExEngineer)
+		{
+			StringVariableParser.ordinalNumberString = text + Game.instance.player.designPartTimeModifier.TotalDays;
+			text2 = text2 + "\n" + Localisation.LocaliseID("PSG_10010518", null);
+		}
+		if (this.mComponentTimeDaysBonus != 0f)
+		{
+			if (this.mComponentTimeDaysBonus > 0f)
+			{
+				StringVariableParser.ordinalNumberString = arg + this.mComponentTimeDaysBonus;
+				text2 = text2 + "\n" + Localisation.LocaliseID("PSG_10010520", null);
+			}
+			else
+			{
+				StringVariableParser.ordinalNumberString = text + this.mComponentTimeDaysBonus;
+				text2 = text2 + "\n" + Localisation.LocaliseID("PSG_10010521", null);
+			}
+		}
+		for (int i = 0; i < this.mCarPart.components.Count; i++)
+		{
+			float num2 = 0f;
+			CarPartComponent carPartComponent = this.mCarPart.components[i];
+			if (carPartComponent != null)
+			{
+				if (carPartComponent.productionTime != 0f)
+				{
+					num2 = carPartComponent.productionTime;
+				}
+				else if (carPartComponent.componentType != CarPartComponent.ComponentType.Engineer)
+				{
+					num2 = partTypeSlotSettings.timePerLevel[carPartComponent.level - 1];
+				}
+				if (num2 != 0f)
+				{
+					if (num2 > 0f)
+					{
+						StringVariableParser.ordinalNumberString = arg + num2;
+						text2 = text2 + "\n" + Localisation.LocaliseID("PSG_10010520", null);
+					}
+					else
+					{
+						StringVariableParser.ordinalNumberString = text + num2;
+						text2 = text2 + "\n" + Localisation.LocaliseID("PSG_10010521", null);
+					}
+				}
+			}
+		}
+		return text2;
+	}
+
+	// Token: 0x060005DF RID: 1503
+	public float GetCreationTimeElapsedNormalised()
+	{
+		double totalSeconds = (this.endDate - this.startDate).TotalSeconds;
+		double totalSeconds2 = (this.endDate - Game.instance.time.now).TotalSeconds;
+		return Mathf.Clamp01((float)((totalSeconds - totalSeconds2) / totalSeconds));
+	}
+
+	// Token: 0x060005E0 RID: 1504
+	public string GetTimeRemainingString()
+	{
+		string result = string.Empty;
+		if (this.remainingTime.Days > 0)
+		{
+			StringVariableParser.intValue1 = this.remainingTime.Days;
+			StringVariableParser.intValue2 = this.remainingTime.Hours;
+			result = Localisation.LocaliseID("PSG_10010636", null);
+		}
+		else
+		{
+			StringVariableParser.intValue1 = this.remainingTime.Hours;
+			result = Localisation.LocaliseID("PSG_10010540", null);
+		}
+		return result;
+	}
+
+	// Token: 0x060005E1 RID: 1505
+	public string GetPerformanceBreakdown()
+	{
+		int num = this.seasonPartStartingStat[this.mCarPart.GetPartType()];
+		Engineer engineer = (Engineer)this.mTeam.contractManager.GetPersonOnJob(Contract.Job.EngineerLead);
+		string text = string.Empty;
+		StringVariableParser.ordinalNumberString = num.ToString("N0");
+		text += Localisation.LocaliseID("PSG_10010514", null);
+		StringVariableParser.ordinalNumberString = Mathf.FloorToInt(engineer.stats.partContributionStats.GetStat(this.mCarPart.stats.statType) * 3f).ToString("N0");
+		text = text + "\n" + Localisation.LocaliseID("PSG_10010515", null);
+		if (this.mCarPart.stats.performance != 0f)
+		{
+			StringVariableParser.ordinalNumberString = this.mCarPart.stats.performance.ToString("N0");
+			text = text + "\n" + Localisation.LocaliseID("PSG_10010637", null);
+		}
+		float num2 = 0f;
+		for (int i = 0; i < this.mCarPart.components.Count; i++)
+		{
+			if (this.mCarPart.components[i] != null)
+			{
+				num2 += this.mCarPart.components[i].statBoost;
+			}
+		}
+		if (num2 != 0f)
+		{
+			StringVariableParser.ordinalNumberString = num2.ToString("N0");
+			text = text + "\n" + Localisation.LocaliseID("PSG_10010516", null);
+		}
+		return text;
+	}
+
+	// Token: 0x060005E2 RID: 1506
+	public string GetReliabilityBreakdown()
+	{
+		string text = string.Empty;
+		StringVariableParser.ordinalNumberString = GameStatsConstants.initialReliabilityValue.ToString("P0");
+		text += Localisation.LocaliseID("PSG_10010514", null);
+		float num = 0f;
+		for (int i = 0; i < this.mCarPart.components.Count; i++)
+		{
+			if (this.mCarPart.components[i] != null)
+			{
+				num += this.mCarPart.components[i].reliabilityBoost;
+			}
+		}
+		if (num != 0f)
+		{
+			StringVariableParser.ordinalNumberString = num.ToString("P0");
+			text = text + "\n" + Localisation.LocaliseID("PSG_10010516", null);
+		}
+		return text;
+	}
+
+	// Token: 0x060005E3 RID: 1507
+	private void UpdatePartBuiltAchievements()
+	{
+		if (this.GetLevelFromComponents(this.mCarPart) == 5)
+		{
+			App.instance.steamAchievementsManager.UnlockAchievement(Achievements.AchievementEnum.Build_Level_5_Part);
+		}
+	}
+
+	// Token: 0x170000A7 RID: 167
+	// (get) Token: 0x060005E4 RID: 1508
+	public bool belongsToPlayer
+	{
+		get
+		{
+			return this.mTeam == Game.instance.player.team;
+		}
+	}
+
+	// Token: 0x170000A8 RID: 168
+	// (get) Token: 0x060005E5 RID: 1509
+	public CarPartDesign.Stage stage
+	{
+		get
+		{
+			return this.mStage;
+		}
+	}
+
+	// Token: 0x170000A9 RID: 169
+	// (get) Token: 0x060005E6 RID: 1510
+	public CarPart part
+	{
+		get
+		{
+			return this.mCarPart;
+		}
+	}
+
+	// Token: 0x170000AA RID: 170
+	// (get) Token: 0x060005E8 RID: 1512
+	// (set) Token: 0x060005E7 RID: 1511
+	public CarPart lastCarPart
+	{
+		get
+		{
+			return this.mLastCarPart;
+		}
+		set
+		{
+			this.mLastCarPart = value;
+		}
+	}
+
+	// Token: 0x170000AB RID: 171
+	// (get) Token: 0x060005E9 RID: 1513
+	public TimeSpan remainingTime
+	{
+		get
+		{
+			return this.endDate - Game.instance.time.now;
+		}
+	}
+
+	// Token: 0x170000AC RID: 172
+	// (get) Token: 0x060005EA RID: 1514
+	public CalendarEvent_v1 buildEvent
+	{
+		get
+		{
+			return this.mCalendarEvent;
+		}
+	}
+
+	// Token: 0x170000AD RID: 173
+	// (set) Token: 0x060005EB RID: 1515
+	public bool allPartsUnlocked
+	{
+		set
+		{
+			this.mAllPartsUnlocked = value;
+		}
+	}
+
+	// Token: 0x170000AE RID: 174
+	// (get) Token: 0x060005EC RID: 1516
+	// (set) Token: 0x060005ED RID: 1517
+	public CarPartComponent randomComponent
+	{
+		get
+		{
+			return this.mRandomComponent;
+		}
+		set
+		{
+			this.mRandomComponent = value;
+		}
+	}
+
+	// Token: 0x170000AF RID: 175
+	// (get) Token: 0x060005EE RID: 1518
+	public Team team
+	{
+		get
+		{
+			return this.mTeam;
+		}
+	}
+
+	// Token: 0x0400061F RID: 1567
+	public Action OnDesignModified;
+
+	// Token: 0x04000620 RID: 1568
+	public Action OnPartBuilt;
+
+	// Token: 0x04000621 RID: 1569
+	private CarPartDesign.Stage mStage;
+
+	// Token: 0x04000622 RID: 1570
+	private CarPart mCarPart;
+
+	// Token: 0x04000623 RID: 1571
+	private CarPart mLastCarPart;
+
+	// Token: 0x04000624 RID: 1572
+	private int mExtraCopies;
+
+	// Token: 0x04000625 RID: 1573
+	private bool mBuildTwoCopies;
+
+	// Token: 0x04000626 RID: 1574
+	public List<CarPartComponent> componentSlots = new List<CarPartComponent>();
+
+	// Token: 0x04000627 RID: 1575
+	public List<CarPartComponent> componentBonusSlots = new List<CarPartComponent>();
+
+	// Token: 0x04000628 RID: 1576
+	public List<int> componentBonusSlotsLevel = new List<int>();
+
+	// Token: 0x04000629 RID: 1577
+	public DateTime startDate;
+
+	// Token: 0x0400062A RID: 1578
+	public DateTime endDate;
+
+	// Token: 0x0400062B RID: 1579
+	private bool mAllPartsUnlocked;
+
+	// Token: 0x0400062C RID: 1580
+	private float mComponentTimeDaysBonus;
+
+	// Token: 0x0400062D RID: 1581
+	private Notification mNotification;
+
+	// Token: 0x0400062E RID: 1582
+	private CalendarEvent_v1 mCalendarEvent;
+
+	// Token: 0x0400062F RID: 1583
+	private Team mTeam;
+
+	// Token: 0x04000630 RID: 1584
+	private CarPartComponent mRandomComponent;
+
+	// Token: 0x04000631 RID: 1585
+	private Dictionary<CarPart.PartType, int> seasonPartStartingStat = new Dictionary<CarPart.PartType, int>();
+
+	// Token: 0x04000632 RID: 1586
+	private Dictionary<int, List<CarPartComponent>> brakeComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000633 RID: 1587
+	private Dictionary<int, List<CarPartComponent>> engineComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000634 RID: 1588
+	private Dictionary<int, List<CarPartComponent>> frontWingComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000635 RID: 1589
+	private Dictionary<int, List<CarPartComponent>> rearWingComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000636 RID: 1590
+	private Dictionary<int, List<CarPartComponent>> suspensionComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000637 RID: 1591
+	private Dictionary<int, List<CarPartComponent>> gearboxComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000638 RID: 1592
+	private Dictionary<int, List<CarPartComponent>> engineGTComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000639 RID: 1593
+	private Dictionary<int, List<CarPartComponent>> rearWingGTComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x0400063A RID: 1594
+	private Dictionary<int, List<CarPartComponent>> brakeGTComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x0400063B RID: 1595
+	private Dictionary<int, List<CarPartComponent>> suspensionGTComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x0400063C RID: 1596
+	private Dictionary<int, List<CarPartComponent>> gearboxGTComponents = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x0400063D RID: 1597
+	private Dictionary<int, List<CarPartComponent>> brakeComponentsGET = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x0400063E RID: 1598
+	private Dictionary<int, List<CarPartComponent>> engineComponentsGET = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x0400063F RID: 1599
+	private Dictionary<int, List<CarPartComponent>> frontWingComponentsGET = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000640 RID: 1600
+	private Dictionary<int, List<CarPartComponent>> rearWingComponentsGET = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000641 RID: 1601
+	private Dictionary<int, List<CarPartComponent>> suspensionComponentsGET = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000642 RID: 1602
+	private Dictionary<int, List<CarPartComponent>> gearboxComponentsGET = new Dictionary<int, List<CarPartComponent>>();
+
+	// Token: 0x04000643 RID: 1603
+	private bool mImidiateFinish;
+
+	// Token: 0x020000FF RID: 255
+	public enum Stage
+	{
+		// Token: 0x04000645 RID: 1605
+		Idle,
+		// Token: 0x04000646 RID: 1606
+		Designing
+	}
+}

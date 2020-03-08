@@ -1,0 +1,2 @@
+case "PromotedTeam":
+				string_builder.Append(StringVariableParser.promotedTeam.oldname);

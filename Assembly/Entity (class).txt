@@ -1,0 +1,53 @@
+using System;
+using FullSerializer;
+
+// Token: 0x0200019D RID: 413
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class Entity : InstanceCounter
+{
+	// Token: 0x06000ACE RID: 2766
+	public Entity()
+	{
+		this.id = Guid.NewGuid();
+		base..ctor();
+	}
+
+	// Token: 0x06000ACF RID: 2767
+	public virtual void OnStart()
+	{
+	}
+
+	// Token: 0x06000AD0 RID: 2768
+	public virtual void Setup()
+	{
+	}
+
+	// Token: 0x06000AD1 RID: 2769
+	public virtual void OnDestory()
+	{
+	}
+
+	// Token: 0x06000AD2 RID: 2770
+	public virtual void Update()
+	{
+	}
+
+	// Token: 0x06000AD3 RID: 2771
+	public virtual void OnSave()
+	{
+	}
+
+	// Token: 0x06000AD4 RID: 2772
+	public virtual void OnLoad()
+	{
+	}
+
+	// Token: 0x04000A3B RID: 2619
+	public string name = string.Empty;
+
+	// Token: 0x04000A3C RID: 2620
+	public Guid id;
+
+	// Token: 0x04004E41 RID: 20033
+	public string oldname = string.Empty;
+}

@@ -2,10 +2,10 @@
 	{
 		if (global::Game.instance.sessionManager.sessionType == global::SessionDetails.SessionType.Race && this.mVehicle.pathState.stateType == global::PathStateManager.StateType.Grid)
 		{
-			this.SetTemperature(0.25f);
+			this.SetTemperature(RandomUtility.GetRandom(0.15f, 0.3f));
 		}
 		else
 		{
-			this.SetTemperature(global::RandomUtility.GetRandom(0.1f, 0.5f));
+			this.SetTemperature(global::RandomUtility.GetRandom(0.2f, 0.4f));
 		}
 	}

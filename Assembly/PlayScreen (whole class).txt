@@ -1,0 +1,248 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+
+// Token: 0x020006C4 RID: 1732
+public class PlayerScreen : UIScreen
+{
+	// Token: 0x060030DF RID: 12511
+	public PlayerScreen()
+	{
+	}
+
+	// Token: 0x060030E0 RID: 12512
+	public override void OnStart()
+	{
+		base.OnStart();
+		this.playerWidget.OnStart();
+	}
+
+	// Token: 0x060030E1 RID: 12513
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		DLCManager dlcManager = App.instance.dlcManager;
+		dlcManager.OnOwnedDlcChanged = (Action)Delegate.Combine(dlcManager.OnOwnedDlcChanged, new Action(this.jobsWidget.Setup));
+		base.showNavigationBars = true;
+		this.mPlayer = Game.instance.player;
+		bool flag = !this.mPlayer.IsUnemployed();
+		this.playerWidget.Setup(this.mPlayer);
+		this.statsWidget.Setup(this.mPlayer);
+		this.careerWidget.Setup(this.mPlayer);
+		this.trophiesWidget.Setup(this.mPlayer);
+		this.jobsWidget.Setup();
+		GameUtility.SetActive(this.notificationsWidget.gameObject, !flag);
+		GameUtility.SetActive(this.applicationsWidget.gameObject, this.mPlayer.jobApplications.Count > 0);
+		GameUtility.SetActive(this.chairmanWidget.gameObject, flag);
+		if (!flag)
+		{
+			this.notificationsWidget.Setup();
+		}
+		else
+		{
+			this.chairmanWidget.Setup(this.mPlayer);
+		}
+		if (this.applicationsWidget.gameObject.activeSelf)
+		{
+			this.applicationsWidget.Setup();
+		}
+		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionHome, 0f);
+	}
+
+	// Token: 0x060030E2 RID: 12514
+	public override void OnExit()
+	{
+		base.OnExit();
+		this.notificationsWidget.OnExit();
+		DLCManager dlcManager = App.instance.dlcManager;
+		dlcManager.OnOwnedDlcChanged = (Action)Delegate.Remove(dlcManager.OnOwnedDlcChanged, new Action(this.jobsWidget.Setup));
+	}
+
+	// Token: 0x060030E3 RID: 12515
+	private void OnGUI()
+	{
+		StreamReader streamReader = new StreamReader("custom_team_maintext.txt");
+		string team_name = streamReader.ReadToEnd();
+		streamReader.Close();
+		string team_append = new StreamReader("custom_team_subtext.txt").ReadToEnd();
+		streamReader.Close();
+		this.toggleStyle = GUI.skin.toggle;
+		this.InitializeToggle();
+		List<Team> teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
+		EntityManager entityManager = Game.instance.entityManager;
+		List<DatabaseEntry> teamData = App.instance.database.teamData;
+		bool flag = false;
+		bool flag2 = false;
+		bool flag3 = false;
+		int teamSS = -1;
+		int teamGT = -1;
+		int teamEN = -1;
+		teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
+		for (int i = 0; i < teamList.Count; i++)
+		{
+			if (teamList[i].name == Game.instance.player.team.name && Game.instance.player.team.championship.championshipID != 0)
+			{
+				flag = true;
+				teamSS = teamList[i].teamID;
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(1).standings.GetTeamList();
+		for (int j = 0; j < teamList.Count; j++)
+		{
+			if (teamList[j].name == Game.instance.player.team.name && Game.instance.player.team.championship.championshipID != 1)
+			{
+				flag = true;
+				teamSS = teamList[j].teamID;
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(2).standings.GetTeamList();
+		for (int k = 0; k < teamList.Count; k++)
+		{
+			if (teamList[k].name == Game.instance.player.team.name && Game.instance.player.team.championship.championshipID != 2)
+			{
+				flag = true;
+				teamSS = teamList[k].teamID;
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(3).standings.GetTeamList();
+		for (int l = 0; l < teamList.Count; l++)
+		{
+			if (teamList[l].name == Game.instance.player.team.name && Game.instance.player.team.championship.championshipID != 3)
+			{
+				flag2 = true;
+				teamGT = teamList[l].teamID;
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(4).standings.GetTeamList();
+		for (int m = 0; m < teamList.Count; m++)
+		{
+			if (teamList[m].name == Game.instance.player.team.name && Game.instance.player.team.championship.championshipID != 4)
+			{
+				flag2 = true;
+				teamGT = teamList[m].teamID;
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(5).standings.GetTeamList();
+		for (int n = 0; n < teamList.Count; n++)
+		{
+			if (teamList[n].name == Game.instance.player.team.name && Game.instance.player.team.championship.championshipID != 5)
+			{
+				flag3 = true;
+				teamEN = teamList[n].teamID;
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(6).standings.GetTeamList();
+		for (int i2 = 0; i2 < teamList.Count; i2++)
+		{
+			if (teamList[i2].name == Game.instance.player.team.name && Game.instance.player.team.championship.championshipID != 6)
+			{
+				flag3 = true;
+				teamEN = teamList[i2].teamID;
+			}
+		}
+		if (GUI.Toggle(this.firstRect, false, flag.ToString() + teamSS.ToString(), this.toggleStyle) && flag)
+		{
+			Game.instance.PlayerSwitchToEndurance(Game.instance.teamManager.GetEntity(teamSS));
+		}
+		if (GUI.Toggle(this.secondRect, false, flag2.ToString() + teamGT.ToString(), this.toggleStyle) && flag2)
+		{
+			Game.instance.PlayerSwitchToEndurance(Game.instance.teamManager.GetEntity(teamGT));
+		}
+		if (GUI.Toggle(this.thirdRect, false, flag3.ToString() + teamEN.ToString(), this.toggleStyle) && flag3)
+		{
+			Game.instance.PlayerSwitchToEndurance(Game.instance.teamManager.GetEntity(teamEN));
+		}
+		if (GUI.Toggle(this.forthRect, false, Game.instance.player.team.GetTeamColor().customLogoColor.primary.ToString(), this.toggleStyle))
+		{
+			Game.instance.player.team.customLogo.teamFirstName = team_name;
+			Game.instance.player.team.customLogo.teamLasttName = team_append;
+			Game.instance.player.team.name = team_name + " " + team_append;
+			Game.instance.player.team.GetTeamColor().customLogoColor.primary = Game.instance.player.team.GetTeamColor().livery.primary;
+			Game.instance.player.team.GetTeamColor().customLogoColor.secondary = Game.instance.player.team.GetTeamColor().livery.secondary;
+			Game.instance.player.hasCreatedTeam = true;
+			Game.instance.player.createdTeamID = Game.instance.player.team.teamID;
+			Game.instance.player.team.isCreatedByPlayer = true;
+			Game.instance.PlayerSwitchToEndurance(Game.instance.teamManager.GetEntity(0));
+			Game.instance.player.team.chairman.Retire();
+			Game.instance.player.team.contractManager.HireReplacementChairman();
+			Game.instance.player.team.chairman.SetMorale(100f);
+		}
+		if (GUI.Toggle(this.fifthRect, false, Game.instance.teamManager.count.ToString() + App.instance.database.teamData.Count.ToString(), this.toggleStyle))
+		{
+			Game.instance.teamManager.TeamRebrand();
+		}
+	}
+
+	// Token: 0x060030E4 RID: 12516
+	public void InitializeToggle()
+	{
+		if (this.toggleStyleInilized)
+		{
+			return;
+		}
+		this.firstRect = new Rect((float)Screen.width * 0.2f, (float)Screen.height * 0.86203f, (float)Screen.width * 0.07552f, (float)Screen.height * 0.049074f);
+		this.secondRect = new Rect((float)Screen.width * 0.3f, (float)Screen.height * 0.86203f, (float)Screen.width * 0.07552f, (float)Screen.height * 0.049074f);
+		this.thirdRect = new Rect((float)Screen.width * 0.4f, (float)Screen.height * 0.86203f, (float)Screen.width * 0.07552f, (float)Screen.height * 0.049074f);
+		this.forthRect = new Rect((float)Screen.width * 0.5f, (float)Screen.height * 0.86203f, (float)Screen.width * 0.07552f, (float)Screen.height * 0.049074f);
+		this.fifthRect = new Rect((float)Screen.width * 0.6f, (float)Screen.height * 0.86203f, (float)Screen.width * 0.07552f, (float)Screen.height * 0.049074f);
+		this.toggleStyle.border = new RectOffset(5, 5, 5, 5);
+		this.toggleStyle.margin = new RectOffset(0, 0, 0, 0);
+		this.toggleStyle.fontSize = Mathf.FloorToInt((float)Screen.height * 0.013f);
+		this.toggleStyleInilized = true;
+	}
+
+	// Token: 0x04002C8C RID: 11404
+	public UIPlayerWidget playerWidget;
+
+	// Token: 0x04002C8D RID: 11405
+	public UIPlayerStatsWidget statsWidget;
+
+	// Token: 0x04002C8E RID: 11406
+	public UIPlayerNotificationsWidget notificationsWidget;
+
+	// Token: 0x04002C8F RID: 11407
+	public UIPlayerHappinessWidget chairmanWidget;
+
+	// Token: 0x04002C90 RID: 11408
+	public UIPlayerAvailableJobsWidget jobsWidget;
+
+	// Token: 0x04002C91 RID: 11409
+	public UIPlayerJobApplicationsWidget applicationsWidget;
+
+	// Token: 0x04002C92 RID: 11410
+	public PersonCareerWidget careerWidget;
+
+	// Token: 0x04002C93 RID: 11411
+	public UIPlayerTrophiesWidget trophiesWidget;
+
+	// Token: 0x04002C94 RID: 11412
+	private Player mPlayer;
+
+	// Token: 0x04002C95 RID: 11413
+	private bool autoRace = ConsoleCommands.useAIForDrivers;
+
+	// Token: 0x04002C96 RID: 11414
+	private GUIStyle toggleStyle;
+
+	// Token: 0x04002C97 RID: 11415
+	public bool toggleStyleInilized;
+
+	// Token: 0x04002C98 RID: 11416
+	private Rect firstRect;
+
+	// Token: 0x04002C99 RID: 11417
+	private Rect secondRect;
+
+	// Token: 0x04002C9A RID: 11418
+	private bool autoPit;
+
+	// Token: 0x04004E49 RID: 20041
+	private Rect thirdRect;
+
+	// Token: 0x04004E4A RID: 20042
+	private Rect forthRect;
+
+	// Token: 0x04004E4B RID: 20043
+	private Rect fifthRect;
+}

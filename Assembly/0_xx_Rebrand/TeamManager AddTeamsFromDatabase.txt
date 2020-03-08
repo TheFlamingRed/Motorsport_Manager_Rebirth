@@ -15,7 +15,6 @@ public partial class TeamManager : GenericManager<Team>
 	int teamcounting = 0;
 	if (teamData.Count > 72)
 			{
-			DatabaseEntry d;
 			teamcounting = 62 - teamData.Count + teamData[0].GetIntValue("Opinions - Manager");
 			}
 			
@@ -27,6 +26,7 @@ public partial class TeamManager : GenericManager<Team>
 		base.AddEntity(team);
 		team.teamID = index;
 		team.name = databaseEntry.GetStringValue("Name");
+		team.oldname = team.name;
 		team.SetShortName(databaseEntry.GetStringValue("Short Name"));
 		team.SetTeamStartDescriptionID(databaseEntry.GetStringValue("Team Start Description"));
 		team.locationID = databaseEntry.GetStringValue("Location ID");

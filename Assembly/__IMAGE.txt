@@ -1,0 +1,17 @@
+	private void OnGUI()
+	{
+		byte[] fileData = File.ReadAllBytes("rebrand.png");
+		Texture2D tex = new Texture2D(20, 200);
+		tex.LoadImage(fileData);
+		if (GUI.Button(new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.95f, 214f, 48f), tex, GUIStyle.none))
+		{
+			Game.instance.teamManager.StartGameRebrand();
+			MovieScreen screen2 = UIManager.instance.GetScreen<MovieScreen>();
+			screen2.PlayMovie(SoundID.Video_ChampVideo, new string[]
+			{
+				this.mChampionship.GetIdentMovieString()
+			});
+			screen2.SetNextScreen((!this.mChampionship.IsConcurrentChampionship()) ? "ChooseTeamScreen" : "ChooseEnduranceTeamScreen", 1.5f, this.mChampionship);
+			UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+		}
+	}

@@ -1,0 +1,331 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+using UnityEngine.UI;
+
+// Token: 0x020006A5 RID: 1701
+public class ChooseTeamScreen : UIScreen
+{
+	// Token: 0x06002FC2 RID: 12226
+	public ChooseTeamScreen()
+	{
+	}
+
+	// Token: 0x06002FC3 RID: 12227
+	public override void OnStart()
+	{
+		base.OnStart();
+	}
+
+	// Token: 0x06002FC4 RID: 12228
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		this.mAllowMenuSounds = false;
+		base.showNavigationBars = true;
+		base.continueButtonLabel = Localisation.LocaliseID("PSG_10002716", null);
+		this.mChampionship = (Championship)base.data;
+		if (this.mChampionship == null)
+		{
+			this.mChampionship = Game.instance.championshipManager.GetMainChampionship(Championship.Series.SingleSeaterSeries);
+		}
+		base.SetTopBarMode(UITopBar.Mode.Core);
+		base.SetBottomBarMode(UIBottomBar.Mode.Core);
+		this.SetupTeamsEntry();
+		this.LoadScene();
+		this.SelectTeam(this.mSelectedTeam, true);
+		this.mAllowMenuSounds = true;
+	}
+
+	// Token: 0x06002FC5 RID: 12229
+	public override void OnExit()
+	{
+		base.OnExit();
+		this.mSelectedTeam = null;
+		this.mChampionship = null;
+		this.DestroyTeamsEntry();
+		if (base.screenMode == UIScreen.ScreenMode.Mode3D)
+		{
+			this.mStudioScene.TuneSpotlight(true);
+			this.mStudioScene.SetCameraTargetToTrackAlongCar(false);
+			SceneManager.instance.LeaveCurrentScene();
+		}
+	}
+
+	// Token: 0x06002FC6 RID: 12230
+	private void LoadScene()
+	{
+		GameUtility.SetActive(this.carBackground.gameObject, base.screenMode == UIScreen.ScreenMode.Mode2D);
+		if (base.screenMode == UIScreen.ScreenMode.Mode3D)
+		{
+			SceneManager.instance.SwitchScene("TrackFrontEnd");
+			GameObject sceneGameObject = SceneManager.instance.GetSceneGameObject("TrackFrontEnd");
+			this.mStudioScene = sceneGameObject.GetComponent<StudioScene>();
+			this.mStudioScene.SetSeries(this.mChampionship.series);
+			this.mStudioScene.SetDefaultCarVisuals(this.mSelectedTeam.teamID, this.mChampionship.championshipID);
+			this.mStudioCar = this.mStudioScene.GetGeneratedCar(0);
+			this.mStudioScene.EnableCamera(this.mStudioScene.GetTeamSelectCameraString(this.mChampionship.series));
+			GameCamera component = this.mStudioScene.GetCamera(this.mStudioScene.GetTeamSelectCameraString(this.mChampionship.series)).GetComponent<GameCamera>();
+			component.freeRoamCamera.SetTarget(this.mStudioScene.GetCameraTArget(), CameraManager.Transition.Instant, 0f, null);
+			component.freeRoamCamera.enabled = true;
+			Transform transform = this.mStudioCar.gameObject.transform;
+			component.SetTiltShiftActive(false);
+			component.depthOfField.focalTransform = this.mStudioCar.gameObject.transform;
+			this.mStudioScene.TuneSpotlight(false);
+			component.transform.localEulerAngles = new Vector3(30f, transform.eulerAngles.y + 125f, 0f);
+			this.mStudioScene.SetCameraTargetToTrackAlongCar(true);
+		}
+	}
+
+	// Token: 0x06002FC7 RID: 12231
+	private void SetupTeamsEntry()
+	{
+		List<Team> list = new List<Team>();
+		int teamEntryCount = this.mChampionship.standings.teamEntryCount;
+		for (int i = 0; i < teamEntryCount; i++)
+		{
+			list.Add(this.mChampionship.standings.GetTeamEntry(i).GetEntity<Team>());
+		}
+		list.Sort((Team x, Team y) => x.GetStarsStat().CompareTo(y.GetStarsStat()));
+		list.Reverse();
+		this.mSelectedTeam = list[0];
+		for (int j = 0; j < teamEntryCount; j++)
+		{
+			Team team = list[j];
+			if (Game.instance.gameType != Game.GameType.Career || !team.isBlockedByChallenge)
+			{
+				this.mSelectedTeam = team;
+				break;
+			}
+		}
+		this.teamGrid.HideListItems();
+		GameUtility.SetActive(this.teamGrid.itemPrefab, true);
+		for (int k = teamEntryCount - 1; k >= 0; k--)
+		{
+			Team team2 = list[k];
+			bool locked = Game.instance.gameType == Game.GameType.Career && team2.isBlockedByChallenge;
+			ChooseTeamEntry chooseTeamEntry = this.teamGrid.CreateListItem<ChooseTeamEntry>();
+			chooseTeamEntry.Setup(team2);
+			this.mTeamsEntry.Add(chooseTeamEntry);
+			chooseTeamEntry.SetLocked(locked);
+			chooseTeamEntry.OnStart();
+		}
+		this.toggleGroup.SetAllTogglesOff();
+		GameUtility.SetActive(this.teamGrid.itemPrefab, false);
+	}
+
+	// Token: 0x06002FC8 RID: 12232
+	public void DestroyTeamsEntry()
+	{
+		for (int i = 0; i < this.mTeamsEntry.Count; i++)
+		{
+			this.mTeamsEntry[i].toggle.onValueChanged.RemoveAllListeners();
+		}
+		this.mTeamsEntry.Clear();
+		this.teamGrid.DestroyListItems();
+	}
+
+	// Token: 0x06002FC9 RID: 12233
+	public void HighlightTeamEntry()
+	{
+		int count = this.mTeamsEntry.Count;
+		for (int i = 0; i < count; i++)
+		{
+			ChooseTeamEntry chooseTeamEntry = this.mTeamsEntry[i];
+			chooseTeamEntry.toggle.isOn = (chooseTeamEntry.team == this.mSelectedTeam);
+			chooseTeamEntry.Highlight(chooseTeamEntry.team == this.mSelectedTeam);
+		}
+	}
+
+	// Token: 0x06002FCA RID: 12234
+	public void SelectTeam(Team inTeam, bool ForceSelect)
+	{
+		if (this.mSelectedTeam != inTeam || ForceSelect)
+		{
+			if (this.mSelectedTeam != inTeam && this.mAllowMenuSounds)
+			{
+				scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionTeam, 0f);
+			}
+			this.mSelectedTeam = inTeam;
+			this.teamOverviewWidget.Setup(this.mSelectedTeam);
+			App.instance.uiTeamColourManager.SetCurrentColour(App.instance.teamColorManager.GetColor(this.mSelectedTeam.colorID), true, null);
+			this.HighlightTeamEntry();
+			if (base.screenMode == UIScreen.ScreenMode.Mode3D && this.mStudioScene != null && this.mStudioCar != null)
+			{
+				this.mStudioScene.ResetMode();
+				this.mStudioScene.SetDefaultCarVisuals(inTeam.teamID, this.mChampionship.championshipID);
+				this.mStudioCar = this.mStudioScene.GetGeneratedCar(0);
+			}
+			this.SetCarColors();
+			if (base.screenMode == UIScreen.ScreenMode.Mode3D)
+			{
+				int wheelID = Car.GetWheelID(this.mChampionship.championshipID);
+				this.mStudioCar.SetWheelModel(wheelID, this.mChampionship.championshipID, App.instance.carPartModelDatabase);
+			}
+			this.supplierRollover.Setup(inTeam, false);
+		}
+	}
+
+	// Token: 0x06002FCB RID: 12235
+	private void SetCarColors()
+	{
+		if (base.screenMode == UIScreen.ScreenMode.Mode3D && this.mStudioCar != null)
+		{
+			LiveryData livery = Game.instance.liveryManager.GetLivery(this.mSelectedTeam.liveryID);
+			this.mStudioCar.SetColours(this.mSelectedTeam.GetTeamColor().livery);
+			this.mStudioCar.SetLiveryData(livery);
+			SponsorSlot[] slots = this.mSelectedTeam.sponsorController.slots;
+			for (int i = 0; i < 6; i++)
+			{
+				SponsorSlot sponsorSlot = slots[i];
+				int sponsorLogoId = (sponsorSlot == null || sponsorSlot.sponsorshipDeal == null) ? 0 : sponsorSlot.sponsorshipDeal.sponsor.logoIndex;
+				this.mStudioCar.SetSponsorTexture(i, sponsorLogoId);
+			}
+			return;
+		}
+		if (base.screenMode == UIScreen.ScreenMode.Mode2D)
+		{
+			this.carBackground.SetCar(this.mSelectedTeam);
+		}
+	}
+
+	// Token: 0x06002FCC RID: 12236
+	public override UIScreen.NavigationButtonEvent OnContinueButton()
+	{
+		if (Game.instance.tutorialSystem.isTutorialActive && (!this.mChampionship.IsBaseGameChampionship || App.instance.modManager.GetNewGameModsCount(true) > 0))
+		{
+			Game.instance.tutorialSystem.SetTutorialActive(false);
+		}
+		Game.instance.time.Pause(GameTimer.PauseType.Game);
+		Game.instance.ManageTeam(this.mSelectedTeam);
+		MovieScreen screen = UIManager.instance.GetScreen<MovieScreen>();
+		screen.PlayTeamMovie(SoundID.Video_TeamLogo, this.mSelectedTeam.teamID);
+		if (App.instance.gameStateManager.currentState is QuickRaceSetupState)
+		{
+			QuickRaceSetupState quickRaceSetupState = (QuickRaceSetupState)App.instance.gameStateManager.GetState(GameState.Type.QuickRaceSetup);
+			quickRaceSetupState.PrepareCircuit();
+			if (quickRaceSetupState.raceWeekend == QuickRaceSetupState.RaceWeekend.RaceOnly)
+			{
+				Game.instance.stateInfo.SetStateToGoToAfterPlayerConfirms(GameState.Type.RacePreSession);
+			}
+			else
+			{
+				Game.instance.stateInfo.SetStateToGoToAfterPlayerConfirms(GameState.Type.PracticePreSession);
+			}
+			screen.SetNextState(GameState.Type.EventLoading);
+		}
+		else if (Game.instance.tutorialSystem.isTutorialActive)
+		{
+			Game.instance.time.SetTime(Game.instance.player.team.championship.GetCurrentEventDetails().currentSession.sessionDateTime);
+			this.TutorialRemoveOldNotTriggeredEvents();
+			Team team = Game.instance.player.team;
+			team.StoreTeamDataBeforeEvent();
+			Game.instance.teamManager.UpdateSponsorObjectives(Game.instance.player.team.championship);
+			List<SponsorshipDeal> sponsorshipDeals = Game.instance.player.team.sponsorController.sponsorshipDeals;
+			if (sponsorshipDeals.Count > 0 && sponsorshipDeals[0] != null)
+			{
+				for (int i = 0; i < sponsorshipDeals.Count; i++)
+				{
+					if (sponsorshipDeals[i].hasRaceBonusReward)
+					{
+						Game.instance.player.team.sponsorController.SetWeekendSponsor(sponsorshipDeals[i]);
+						break;
+					}
+				}
+			}
+			else
+			{
+				Game.instance.player.team.sponsorController.SetWeekendSponsor(null);
+			}
+			Game.instance.stateInfo.SetStateToGoToAfterPlayerConfirms(GameState.Type.RacePreSession);
+			screen.SetNextState(GameState.Type.EventLoading);
+			team.financeController.SetRacePayment(TeamFinanceController.RacePaymentType.Medium);
+			team.chairman.playerChosenExpectedTeamChampionshipPosition = team.chairman.GetEstimatedPosition(Chairman.EstimatedPosition.Medium, team);
+			UITutorialMarkAllMessagesRead.MarkAllMessagesReadForTutorial();
+		}
+		else
+		{
+			screen.SetNextState(GameState.Type.FrontendLoading);
+			Game.instance.stateInfo.SetStateToGoToAfterPlayerConfirms(GameState.Type.FrontendState);
+		}
+		UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+		UIManager.instance.ClearNavigationStacks();
+		return UIScreen.NavigationButtonEvent.HandledByScreen;
+	}
+
+	// Token: 0x06002FCD RID: 12237
+	public void TutorialRemoveOldNotTriggeredEvents()
+	{
+		List<CalendarEvent_v1> calendarEvents = Game.instance.calendar.calendarEvents;
+		for (int i = 0; i < calendarEvents.Count; i++)
+		{
+			if (Game.instance.time.now >= calendarEvents[i].triggerDate && calendarEvents[i].showOnCalendar)
+			{
+				calendarEvents.RemoveAt(i);
+			}
+		}
+	}
+
+	// Token: 0x1700066E RID: 1646
+	// (get) Token: 0x06002FCE RID: 12238
+	public Championship championship
+	{
+		get
+		{
+			return this.mChampionship;
+		}
+	}
+
+	// Token: 0x0600566E RID: 22126
+	private void OnGUI()
+	{
+		byte[] fileData = File.ReadAllBytes("rebrand.png");
+		Texture2D tex = new Texture2D(20, 200);
+		tex.LoadImage(fileData);
+		if (GUI.Button(new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.95f, 214f, 48f), tex, GUIStyle.none))
+		{
+			Game.instance.teamManager.StartGameRebrand();
+			MovieScreen screen2 = UIManager.instance.GetScreen<MovieScreen>();
+			screen2.PlayMovie(SoundID.Video_ChampVideo, new string[]
+			{
+				this.mChampionship.GetIdentMovieString()
+			});
+			screen2.SetNextScreen((!this.mChampionship.IsConcurrentChampionship()) ? "ChooseTeamScreen" : "ChooseEnduranceTeamScreen", 1.5f, this.mChampionship);
+			UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+		}
+	}
+
+	// Token: 0x04002B90 RID: 11152
+	public ChooseTeamOverview teamOverviewWidget;
+
+	// Token: 0x04002B91 RID: 11153
+	public ToggleGroup toggleGroup;
+
+	// Token: 0x04002B92 RID: 11154
+	public UIGridList teamGrid;
+
+	// Token: 0x04002B93 RID: 11155
+	public UICarBackground carBackground;
+
+	// Token: 0x04002B94 RID: 11156
+	public UICarSupplierRolloverTrigger supplierRollover;
+
+	// Token: 0x04002B95 RID: 11157
+	private Team mSelectedTeam;
+
+	// Token: 0x04002B96 RID: 11158
+	private Championship mChampionship;
+
+	// Token: 0x04002B97 RID: 11159
+	private List<ChooseTeamEntry> mTeamsEntry = new List<ChooseTeamEntry>();
+
+	// Token: 0x04002B98 RID: 11160
+	private StudioScene mStudioScene;
+
+	// Token: 0x04002B99 RID: 11161
+	private FrontendCar mStudioCar;
+
+	// Token: 0x04002B9A RID: 11162
+	private bool mAllowMenuSounds;
+}

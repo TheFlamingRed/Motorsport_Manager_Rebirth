@@ -1,0 +1,80 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine.UI;
+
+// Token: 0x020001E5 RID: 485
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class DriverForm
+{
+	// Token: 0x06000D0C RID: 3340
+	public void PrepareForSession(SessionDetails.SessionType inSessionType)
+	{
+		this.mFormDesignData = DesignDataManager.instance.GetDesignData().carPerformance.driverForm;
+		this.mHasCrashed = false;
+		bool flag = false;
+		if (Game.instance.player.reduceFormUpdates == 1 && Game.instance.gameType == Game.GameType.Career)
+		{
+			flag = true;
+		}
+		switch (inSessionType)
+		{
+		case SessionDetails.SessionType.Practice:
+			this.mFormChunks = this.mFormDesignData.totalUpdateChunksQualifying;
+			if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 3)
+			{
+				this.mFormChunks = Game.instance.player.formUpdateSS;
+			}
+			else if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 5)
+			{
+				this.mFormChunks = Game.instance.player.formUpdateGT;
+			}
+			else if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 7)
+			{
+				this.mFormChunks = Game.instance.player.formUpdateE;
+			}
+			this.CalculateInitialForm(this.mDriver.GetMorale());
+			break;
+		case SessionDetails.SessionType.Qualifying:
+			this.mInitialForm = this.GetCurrentForm(1f);
+			this.mFormChunks = this.mFormDesignData.totalUpdateChunksQualifying;
+			if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 5)
+			{
+				if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 3)
+				{
+					this.mFormChunks = Game.instance.player.formUpdateSS;
+				}
+				else if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 5)
+				{
+					this.mFormChunks = Game.instance.player.formUpdateGT;
+				}
+				else if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 7)
+				{
+					this.mFormChunks = Game.instance.player.formUpdateE;
+				}
+			}
+			break;
+		case SessionDetails.SessionType.Race:
+			this.ResetStintData();
+			this.mInitialForm = this.GetCurrentForm(1f);
+			this.mFormChunks = this.mFormDesignData.totalUpdateChunks;
+			if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 5)
+			{
+				if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 3)
+				{
+					this.mFormChunks = Game.instance.player.formUpdateSS;
+				}
+				else if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 5)
+				{
+					this.mFormChunks = Game.instance.player.formUpdateGT;
+				}
+				else if (flag && this.mDriver.GetChampionshipEntry().championship.championshipID < 7)
+				{
+					this.mFormChunks = Game.instance.player.formUpdateE;
+				}
+			}
+			break;
+		}
+		this.CalculateFormForSession();
+	}
+}

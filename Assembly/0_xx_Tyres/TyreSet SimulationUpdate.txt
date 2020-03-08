@@ -1,0 +1,63 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x0200042A RID: 1066
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TyreSet
+{
+	// Token: 0x06001E05 RID: 7685
+	public void SimulationUpdate()
+	{
+		float num = this.mTemperature;
+		this.UpdateTyreDrivingStyleTemperature();
+		this.UpdateWeatherImpactOnTyreTemperature();
+		if (Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race && this.mVehicle.isPlayerDriver)
+		{
+			if (num < 1f && this.mTemperature >= 1f)
+			{
+				Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.TyresOverheating, this.mVehicle);
+			}
+			if (num > 0f && this.mTemperature <= 0f)
+			{
+				Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.TyresUnderheating, this.mVehicle);
+			}
+		}
+		// Lord Primate edit, 
+		if (this.GetCondition() < this.GetCliffCondition() && Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackRubber() > this.mVehicle.driver.GetDriverStats().focus / 20f)
+		{
+			this.mPunctureTimer += GameTimer.simulationDeltaTime;
+			if (this.mPunctureTimer > this.mPunctureDuration)
+			{
+				if (!this.mIsPunctured)
+				{
+					this.mVehicle.timer.currentLap.AddEvent(LapDetailsData.LapEvents.Puncture);
+				}
+				this.mIsPunctured = true;
+			}
+		}
+		if (this.mHasLooseWheel && !this.mWheelLost)
+		{
+			this.mCurrentLooseWheelDetachedTimer += GameTimer.simulationDeltaTime;
+			if (this.mCurrentLooseWheelDetachedTimer >= this.mLooseWheelDetachedTimer && !this.mWheelLost)
+			{
+				this.mWheelLost = true;
+				this.mVehicle.pathController.GetPath(PathController.PathType.RunWideLane).GetClosestPath();
+				this.mVehicle.steeringManager.GetBehaviour<TargetPointSteeringBehaviour>().ClearTarget();
+				this.mVehicle.steeringManager.GetBehaviour<TargetPointSteeringBehaviour>().SetTargetPath(PathController.PathType.RunWideLane, false);
+			}
+		}
+		if (this.mWheelLost && !this.mHasRanWide && this.mVehicle.behaviourManager.currentBehaviour.behaviourType == AIBehaviourStateManager.Behaviour.RuningWide)
+		{
+			this.mHasRanWide = true;
+			this.mVehicle.unityVehicle.ActivateDamagedTyre(this.mTargetLooseTyreSlot);
+			this.mLapWhenLostWheel = this.mVehicle.timer.lap;
+			Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.CatastrophicLooseWheel, this.mVehicle);
+		}
+		if (this.mVehicle.isPlayerDriver && this.mLapWhenLostWheel != -1 && this.mVehicle.timer.lap == this.mLapWhenLostWheel + 1 && !this.mSendLooseWheelReminder)
+		{
+			this.mSendLooseWheelReminder = true;
+			this.mVehicle.teamRadio.GetMessage<RadioMessageRunWide>().SendLooseWheelReminder();
+		}
+	}
+}

@@ -1,0 +1,319 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020002B5 RID: 693
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TeamManager : GenericManager<Team>
+{
+	// Token: 0x06001439 RID: 5177
+	public void TeamRebrand()
+	{
+	
+	/*
+	// I have no idea what I was thinking here... I assume I was making random job offers based on player stats. Nice idea but, redundant. 
+	// This is getting deleted
+		if (Game.instance.time.now.Month > 5)
+		{
+			float t = MathsUtility.Clamp((Game.instance.player.stats.loyalty + Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement - 15f + (float)RandomUtility.GetRandom(0, 10)) / 55f, 0f, 1f);
+			float t2 = MathsUtility.Clamp((Game.instance.player.stats.loyalty + Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement - 15f + (float)RandomUtility.GetRandom(0, 10)) / 15f, 0f, 1f);
+			float t3 = MathsUtility.Clamp((Game.instance.player.stats.loyalty + Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement - 15f + (float)RandomUtility.GetRandom(0, 10)) / 35f, 0f, 1f);
+		}
+
+	*/	
+
+// Setting up the lists. 
+		List<Team> teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
+		EntityManager entityManager = Game.instance.entityManager;
+		List<DatabaseEntry> teamData = App.instance.database.teamData;
+// App.instance.database.teamData.Count     is all the teams in the database (currently 128)
+
+int numberOfTeamEntities = Game.instance.teamManager.count;
+// Game.instance.teamManager.count          is all the teams in the game  // unfortunatly, this raised to 200 in my old rebranding code, inflating save files
+// We need some of these though. as they're useful for mails before that team ceases to exist. 
+
+int num1 = 0;
+num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList().Count;
+num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(1).standings.GetTeamList().Count;
+num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(2).standings.GetTeamList().Count;
+num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(3).standings.GetTeamList().Count;
+num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(4).standings.GetTeamList().Count;
+num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(5).standings.GetTeamList().Count;
+num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings.GetTeamList().Count;  
+// num1 is now the true number of cars in championships.      
+ 
+
+
+
+			for (int i = 0; i < num1 ; i++)
+			{
+		        //for loop for each team 
+ base.GetEntity(i).oldname = base.GetEntity(i).name;
+			    // Alter LiveryID
+				base.GetEntity(i).liveryID = RandomUtility.GetRandomInc(0, 74);
+
+				// Get some random numbers: a% and a random team from our database
+				float random = RandomUtility.GetRandom01();
+				int incomingTeam = RandomUtility.GetRandom(0, teamData.Count);
+				
+				// This is a bool to set to false to ABORT operations if the potential rebrand is to (a) was not going to happen and (b) if it conflicts with set rules 
+				bool accept = true;
+
+                // we're going to ABORT if the team looking for a rebrand is owned by a player
+                if (base.GetEntity(i).isCreatedByPlayer)
+				{
+					accept = false;
+				}
+
+                // We're going to ABORT if we're rebranding the team within the same series
+				bool flag = false;
+				bool flag2 = false;
+				// is the team in SingleSeaters && replace team in singleseaters.... if so, reject
+				for (int j = 0; j <= 2; j++)
+				{
+					teamList = Game.instance.championshipManager.GetChampionshipByID(j).standings.GetTeamList();
+					for (int k = 0; k < teamList.Count; k++)
+					{
+						if (base.GetEntity(i).teamID == teamList[k].teamID)
+						{
+							flag = true;
+						}
+					    if (incomingTeam == teamList[k].teamID)
+						{
+							flag2 = true;
+						}
+					}
+				}
+                if (flag && flag2)
+			 	{
+                    accept = false;
+				}
+
+               // now going to check GT, if both are present, reject
+			   	flag = false;
+				flag2 = false;
+				for (int j = 3; j <= 4; j++)
+				{
+					teamList = Game.instance.championshipManager.GetChampionshipByID(j).standings.GetTeamList();
+					for (int k = 0; k < teamList.Count; k++)
+					{
+						if (base.GetEntity(i).teamID == teamList[k].teamID)
+						{
+							flag = true;
+						}
+					    if (incomingTeam == teamList[k].teamID)
+						{
+							flag2 = true;
+						}
+					}
+				}
+                if (flag && flag2)
+			 	{
+                    accept = false;
+				}
+
+                // Now check Endurance, if both are present, reject
+			   	flag = false;
+				flag2 = false;
+				for (int j = 5; j <= 6; j++)
+				{
+					teamList = Game.instance.championshipManager.GetChampionshipByID(j).standings.GetTeamList();
+					for (int k = 0; k < teamList.Count; k++)
+					{
+						if (base.GetEntity(i).teamID == teamList[k].teamID)
+						{
+							flag = true;
+						}
+					    if (incomingTeam == teamList[k].teamID)
+						{
+							flag2 = true;
+						}
+					}
+				}
+                if (flag && flag2)
+			 	{
+                    accept = false;
+				}
+
+	            // reject the middle portion of the random number generator
+                if (random > 0.2 && random < 0.925)
+				{
+					accept = false;
+				}
+
+
+                // now we're going to extend the Team list to include a dummy for the [extremely likely] rebrand
+       
+                     
+					 //if there is not enough dummies, we will make a new one (this should be rare)
+
+
+
+                
+
+                // note : num2 will only get increased if one of the rebrands are good. 
+				
+
+                // now we are going to do the rebranding by replacing most of the team data info. 
+				// First is the bad rebranding, which only happens if the team is in financial trouble & in 25%
+				if (base.GetEntity(i).financeController.finance.currentBudget < -5000000L && random < 0.2f && accept)
+				{
+					
+					base.GetEntity(i).name = teamData[incomingTeam].GetStringValue("Name");
+					base.GetEntity(i).teamID = incomingTeam;
+					base.GetEntity(i).locationID = teamData[incomingTeam].GetStringValue("Location ID");
+					base.GetEntity(i).colorID = teamData[incomingTeam].GetIntValue("Color");
+					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
+					base.GetEntity(i).aggression = teamData[incomingTeam].GetFloatValue("Aggression");
+					base.GetEntity(i).fanBase = teamData[incomingTeam].GetFloatValue("Fan Base");
+					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[incomingTeam].GetStringValue("Political Attributes"));
+					if (RandomUtility.GetRandom01() < 0.8f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(0), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(1), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(2), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 4f)
+					{
+						base.GetEntity(i).financeController.finance.currentBudget = (long)(teamData[incomingTeam].GetFloatValue("Budget") * 1000000f);
+					}
+					if (RandomUtility.GetRandom01() < 0.8f)
+					{
+						base.GetEntity(i).headquarters.ResetHeadquarters();
+					}
+					if (RandomUtility.GetRandom01() < 0.8f)
+					{
+						base.GetEntity(i).sponsorController.ClearAllSponsors();
+						base.GetEntity(i).sponsorController.ClearAllSponsorOffers();
+					}
+					if (RandomUtility.GetRandom01() < 1f)
+					{
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(0.7f, 1f);
+					}
+					StringVariableParser.promotedTeam = base.GetEntity(i);
+					StringVariableParser.rumourTeam = base.GetEntity(i);
+					Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+					{
+						new DialogCriteria("Who", "MediaPerson"),
+						new DialogCriteria("Source", "FinancialTakeover"),
+						new DialogCriteria("Type", "Header")
+					});
+					accept = false;
+				
+					
+				}
+
+				// This will be either an unhappy chairman rebrand or just a team change rebrand
+				if ((random < 0.075f && accept) || (random < 0.2f && base.GetEntity(i).chairman.happinessNormalized < 0.1f && accept))
+				{
+					
+					base.GetEntity(i).name = teamData[incomingTeam].GetStringValue("Name");
+					base.GetEntity(i).teamID = incomingTeam;
+					base.GetEntity(i).locationID = teamData[incomingTeam].GetStringValue("Location ID");
+					base.GetEntity(i).colorID = teamData[incomingTeam].GetIntValue("Color");
+					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
+					base.GetEntity(i).aggression = teamData[incomingTeam].GetFloatValue("Aggression");
+					base.GetEntity(i).fanBase = teamData[incomingTeam].GetFloatValue("Fan Base");
+					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[incomingTeam].GetStringValue("Political Attributes"));
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(0), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(1), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(2), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 1f)
+					{
+						base.GetEntity(i).financeController.finance.currentBudget -= (long)(teamData[incomingTeam].GetFloatValue("Budget") * 100000f);
+					}
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).headquarters.ResetHeadquarters();
+					}
+					if (RandomUtility.GetRandom01() < 0.5f)
+					{
+						base.GetEntity(i).sponsorController.ClearAllSponsors();
+						base.GetEntity(i).sponsorController.ClearAllSponsorOffers();
+					}
+					if (RandomUtility.GetRandom01() < 0.8f)
+					{
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(0.7f, 1.3f);
+					}
+					StringVariableParser.promotedTeam = base.GetEntity(i);
+					StringVariableParser.rumourTeam = base.GetEntity(i);
+					Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+					{
+						new DialogCriteria("Who", "MediaPerson"),
+						new DialogCriteria("Source", "UnhappyTakeover"),
+						new DialogCriteria("Type", "Header")
+					});
+					accept = false;
+			
+				}
+				// This is a happy rebrand with a 7.5% chance of occuring
+				if (random > 0.925f && accept)
+				{
+					
+					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[incomingTeam].GetStringValue("Political Attributes"));
+					base.GetEntity(i).name = teamData[incomingTeam].GetStringValue("Name");
+					base.GetEntity(i).teamID = incomingTeam;
+					base.GetEntity(i).locationID = teamData[incomingTeam].GetStringValue("Location ID");
+					base.GetEntity(i).colorID = teamData[incomingTeam].GetIntValue("Color");
+					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
+					base.GetEntity(i).aggression = teamData[incomingTeam].GetFloatValue("Aggression");
+					if (RandomUtility.GetRandom01() < 0f)
+					{
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(0), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(1), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+						base.GetEntity(i).contractManager.FireDriver(base.GetEntity(i).GetDriver(2), Contract.ContractTerminationType.FiredByPlayer);
+						base.GetEntity(i).contractManager.HireReplacementDriver();
+					}
+					if (RandomUtility.GetRandom01() < 0.75f)
+					{
+						base.GetEntity(i).financeController.finance.currentBudget += (long)(teamData[incomingTeam].GetFloatValue("Budget") * 100000f);
+					}
+					if (RandomUtility.GetRandom01() < 0f)
+					{
+						base.GetEntity(i).headquarters.ResetHeadquarters();
+					}
+					if (RandomUtility.GetRandom01() < 0.1f)
+					{
+						base.GetEntity(i).sponsorController.ClearAllSponsors();
+						base.GetEntity(i).sponsorController.ClearAllSponsorOffers();
+					}
+					if (RandomUtility.GetRandom01() < 1f)
+					{
+						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(1f, 1.3f);
+					}
+					StringVariableParser.promotedTeam = base.GetEntity(i);
+					StringVariableParser.rumourTeam = base.GetEntity(i);
+					Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+					{
+						new DialogCriteria("Who", "MediaPerson"),
+						new DialogCriteria("Source", "HappyTakeover"),
+						new DialogCriteria("Type", "Header")
+					});
+					accept = false;
+					
+
+				}
+
+		
+		}
+		// Nothing below here, these are the function and class brackets. 
+	}
+}

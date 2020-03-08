@@ -33,8 +33,6 @@ public class PlayerBackStory
 			return Localisation.LocaliseID("PSG_10002342", null);
 		case PlayerBackStory.PlayerBackStoryType.MotorsportLegend:
 			return Localisation.LocaliseID("PSG_10012276", null);
-		case PlayerBackStory.PlayerBackStoryType.UpandComingManager:
-			return Localisation.LocaliseID("PSG_91000000", null);
 		default:
 			return Localisation.LocaliseID("PSG_10005817", null);
 		}
@@ -57,8 +55,6 @@ public class PlayerBackStory
 			return Localisation.LocaliseID("PSG_10007345", null);
 		case PlayerBackStory.PlayerBackStoryType.MotorsportLegend:
 			return Localisation.LocaliseID("PSG_10012277", null);
-		case PlayerBackStory.PlayerBackStoryType.UpandComingManager:
-			return Localisation.LocaliseID("PSG_91000001", null);
 		default:
 			return Localisation.LocaliseID("PSG_10007345", null);
 		}
@@ -189,8 +185,6 @@ public class PlayerBackStory
 		// Token: 0x04000E66 RID: 3686
 		MotorsportLegend,
 		// Token: 0x04000E67 RID: 3687
-		Count = 7,
-		// Token: 0x04004E11 RID: 19985
-		UpandComingManager = 6
+		Count = 6,
 	}
 }

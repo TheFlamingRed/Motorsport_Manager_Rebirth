@@ -1,0 +1,42 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000428 RID: 1064
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TyreSet
+{
+	// Token: 0x06001E04 RID: 7684
+	public float GetTimeCost()
+	{
+		float num;
+		if (this.mCondition >= 0.5f)
+		{
+			num = Mathf.Lerp(this.mMediumPerformanceRange.timeCost, this.mHighPerformanceRange.timeCost, 2f * (this.mCondition - 0.5f));
+		}
+		else
+		{
+			num = Mathf.Lerp(this.mLowPerformanceRange.timeCost, this.mMediumPerformanceRange.timeCost, this.mCondition * 2f);
+		}
+		float num2 = 1f - this.mVehicle.championship.rules.speedBonusNormalized;
+		num += DesignDataManager.instance.tyreData.tyreSupplierSpeedBonusMaxTimeCost * num2;
+		num += Mathf.Lerp(0f, 30f, Mathf.Clamp01(this.mPunctureTimer / this.mPunctureDuration));
+		if (this.hasWrongCompoundFitted)
+		{
+			if (this.mTyreDesignData == null)
+			{
+				this.mTyreDesignData = DesignDataManager.instance.tyreData;
+			}
+			num += this.mTyreDesignData.wrongTyreCompoundTimeCost;
+		}
+		if (this.mWheelLost)
+		{
+			if (this.mTyreDesignData == null)
+			{
+				this.mTyreDesignData = DesignDataManager.instance.tyreData;
+			}
+			num += this.mTyreDesignData.lostTyreTimeCost;
+		}
+		return num;
+	}
+}

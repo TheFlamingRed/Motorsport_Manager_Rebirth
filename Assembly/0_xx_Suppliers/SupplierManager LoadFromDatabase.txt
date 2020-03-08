@@ -1,0 +1,12 @@
+		public void LoadFromDatabase(Database database)
+	{
+		Debug.Assert(this.engineSuppliers.Count == 0 && this.brakesSuppliers.Count == 0 && this.fuelSuppliers.Count == 0, "Loading from database when content is already loaded; this will work but indicates that the game is loading in a strange unintended way.");
+		this.engineSuppliers.Clear();
+		this.brakesSuppliers.Clear();
+		this.materialsSuppliers.Clear();
+		this.fuelSuppliers.Clear();
+		this.batterySuppliers.Clear();
+		this.ersAdvancedSuppliers.Clear();
+		this.mSuppliers.Clear();
+		this.LoadSuppliers(database, new string[0]);
+	}

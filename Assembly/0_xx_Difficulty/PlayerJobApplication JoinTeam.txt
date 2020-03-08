@@ -16,9 +16,5 @@
 			UIManager.instance.ClearNavigationStacks();
 			this.UpdatePlayerJoinedTeamAchievements();
 			Game.instance.dialogSystem.SendPlayerRuleDependentMails();
-			if (Game.instance.player.playerBackStoryType == PlayerBackStory.PlayerBackStoryType.UpandComingManager)
-			{
-				Game.instance.player.stats.raceManagement += 1f + (float)years*3f;
-			}
 		}
 	}

@@ -1,0 +1,28 @@
+using System;
+using UnityEngine;
+
+// Token: 0x02000700 RID: 1792
+public abstract partial class BaseMovieScreen : UIScreen
+{
+	// Token: 0x0600327F RID: 12927
+	public void PlayTeamMovie(SoundID soundID, int inTeamId)
+	{
+		if (this.teamLogo != null)
+		{
+				GameUtility.SetActive(this.teamLogo.gameObject, Game.IsActive() && ((Game.instance.player.hasCreatedTeam && Game.instance.player.createdTeamID == inTeamId) || inTeamId > 61));
+		}
+		if (this.teamLogo != null && this.teamLogo.gameObject.activeSelf)
+		{
+			this.PlayMovie(soundID, new string[]
+			{
+				"TeamIntroMovies/TeamIntroCreateTeam"
+			});
+			this.teamLogo.SetTeam(inTeamId);
+			return;
+		}
+		this.PlayMovie(soundID, new string[]
+		{
+			"TeamIntroMovies/TeamIntro" + (inTeamId + 1).ToString()
+		});
+	}
+}

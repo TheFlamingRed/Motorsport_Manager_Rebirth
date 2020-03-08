@@ -1,3 +1,12 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020002B5 RID: 693
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TeamManager : GenericManager<Team>
+{
+	// Token: 0x06001411 RID: 5137 RVA: 0x000A1490 File Offset: 0x0009F690
 public override void OnStart(Database database)
 {
 	base.OnStart(database);
@@ -6,10 +15,18 @@ public override void OnStart(Database database)
 	List<DatabaseEntry> teamData = App.instance.database.teamData;
 	RandomUtility.GetRandom01();
 	int num = 62;
+	
+	
+	// This is a special grab of a number based on my edited databases vs vanilla databases.... teamdata opinion manager is set to say how many extrea teams are included
+	// this is dirty as all hell. But it works. 
 	if (teamData.Count > 100)
 	{
 		num = 62 + teamData[0].GetIntValue("Opinions - Manager");
 	}
+	
+	//num is now how many extra teams are included
+	// we will fill up these extra teams from rebranding prepared ones. As such, no other rebranding occrurs (keeping it simple)
+	
 	if (teamData[0].GetIntValue("Opinions - Manager") > 0)
 	{
 		for (int i = 62; i < num; i++)
@@ -25,6 +42,7 @@ public override void OnStart(Database database)
 				}
 			}
 			base.GetEntity(i).name = teamData[num3].GetStringValue("Name");
+			base.GetEntity(i).oldname =base.GetEntity(i).name;
 			base.GetEntity(i).locationID = teamData[num3].GetStringValue("Location ID");
 			base.GetEntity(i).colorID = teamData[num3].GetIntValue("Color");
 			base.GetEntity(i).liveryID = teamData[num3].GetIntValue("Livery");
@@ -39,6 +57,8 @@ public override void OnStart(Database database)
 			i = num2;
 		}
 	}
+	// special edit if one is using the base 64 teams.... this prepares rebrand to create new teams
+	// the k-- forces the loop to run again if it failed to have a suitable team inserted (i.e., a team already inserted from base rebrand)
 	if (teamData[0].GetIntValue("Opinions - Manager") == 0)
 	{
 		for (int k = 0; k < 10; k++)
@@ -54,6 +74,7 @@ public override void OnStart(Database database)
 				}
 			}
 			base.GetEntity(l).name = teamData[num4].GetStringValue("Name");
+			base.GetEntity(l).oldname =base.GetEntity(l).name;
 			base.GetEntity(l).locationID = teamData[num4].GetStringValue("Location ID");
 			base.GetEntity(l).colorID = teamData[num4].GetIntValue("Color");
 			base.GetEntity(l).liveryID = teamData[num4].GetIntValue("Livery");
@@ -66,5 +87,7 @@ public override void OnStart(Database database)
 			base.GetEntity(l).customStartDescription = teamData[num4].GetStringValue("Custom Start Description");
 			base.GetEntity(l).SetTeamStartDescriptionID(teamData[num4].GetStringValue("Team Start Description"));
 		}
+	}
+
 	}
 }

@@ -1,0 +1,29 @@
+using System;
+using TMPro;
+using UnityEngine;
+
+// Token: 0x02000ADF RID: 2783
+public partial class UITyreSelectionTyreSet : MonoBehaviour
+{
+	// Token: 0x060047A2 RID: 18338 RVA: 0x001BEAC4 File Offset: 0x001BCCC4
+	public void Setup(RacingVehicle inVehicle, int inCompoundsAvailable, int inMaxTyres)
+	{
+		this.mVehicle = inVehicle;
+		this.mCurrentTyres = this.mVehicle.setup.tyreSet;
+		this.mTyreIndex = 0;
+		this.mTotalIndex = -1;
+		this.mMaxTyres = inMaxTyres;
+		for (int i = 0; i < this.numberContainers.Length; i++)
+		{
+			this.numberContainers[i].transform.SetAsLastSibling();
+		}
+		for (int j = 0; j < this.tyreSets.Length; j++)
+		{
+			GameUtility.SetActive(this.tyreSets[j].gameObject, j < this.mMaxTyres);
+		}
+		this.SetTyreOption(SessionStrategy.TyreOption.First, 0, true);
+		this.SetTyreOption(SessionStrategy.TyreOption.Second, 1, true);
+		this.SetTyreOption(SessionStrategy.TyreOption.Third, 2, inCompoundsAvailable > 2);
+	}
+}
+

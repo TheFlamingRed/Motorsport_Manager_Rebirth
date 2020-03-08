@@ -5,11 +5,6 @@
 		{
 			
 			Game.instance.teamManager.TeamRebrand();
-			if (Game.instance.player.playerBackStoryType == PlayerBackStory.PlayerBackStoryType.UpandComingManager)
-			{
-				Game.instance.player.stats.raceManagement -= 1f;
-				Game.instance.player.stats.raceManagement = Mathf.Max(Game.instance.player.stats.raceManagement, 0f);
-			}
 		}
 
 		int num = Mathf.Min(this.standings.teamEntryCount, this.rules.prizePoolPercentage.Count);

@@ -1,0 +1,139 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020001D4 RID: 468
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class ChairmanManager : PersonManager<Chairman>
+{
+	// Token: 0x06000C3D RID: 3133
+	public ChairmanManager()
+	{
+	}
+
+	// Token: 0x06000C3E RID: 3134
+	protected override void AddPeopleFromDatabase(Database database)
+	{
+		EntityManager entityManager = Game.instance.entityManager;
+		List<DatabaseEntry> chairmanData = database.chairmanData;
+		for (int i = 0; i < chairmanData.Count; i++)
+		{
+			Chairman chairman = entityManager.CreateEntity<Chairman>();
+			DatabaseEntry inData = chairmanData[i];
+			base.SetPersonalDetails(chairman, inData);
+			this.SetChairmanStats(chairman, inData);
+			this.SetContractData(chairman, inData);
+			base.SetPortraitData(chairman, inData);
+			base.AddEntity(chairman);
+		}
+	}
+
+	// Token: 0x06000C3F RID: 3135
+	private void SetChairmanStats(Chairman inChairman, DatabaseEntry inData)
+	{
+		inChairman.costFocus = inData.GetIntValue("Cost Focus");
+		inChairman.patience = inData.GetIntValue("Patience");
+		inChairman.SetHappiness(inData.GetIntValue("Happiness"));
+		inChairman.attitudeTypeA = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeB = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeC = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeD = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeE = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeF = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeG = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeH = RandomUtility.GetRandom01();
+	}
+
+	// Token: 0x06000C40 RID: 3136
+	private void SetContractData(Chairman inChairman, DatabaseEntry inData)
+	{
+		TeamManager teamManager = Game.instance.teamManager;
+		ContractPerson contract = inChairman.contract;
+		int num = inData.GetIntValue("Team") - 2;
+		int intValue = inData.GetIntValue("Investor");
+		if (num >= 0)
+		{
+			contract.employeer = teamManager.GetEntity(num);
+			contract.job = Contract.Job.Chairman;
+			DateTime startDate = new DateTime(Game.instance.time.now.Year, 1, 1);
+			contract.startDate = startDate;
+			DateTime endDate = new DateTime(Game.instance.time.now.Year + 2, 12, 31);
+			contract.endDate = endDate;
+			contract.GetTeam().contractManager.AddEmployeeSlot(Contract.Job.Chairman, inChairman);
+			contract.SetPerson(inChairman);
+			contract.SignContractAndSetContractEndEvents();
+			return;
+		}
+		if (intValue > 0)
+		{
+			Game.instance.entityManager.RemoveEntity(inChairman);
+			Investor entity = Game.instance.investorManager.GetEntity(intValue - 1);
+			entity.chairman = inChairman;
+			contract.job = Contract.Job.InvestorChairman;
+			contract.employeer = entity;
+			contract.SetPerson(inChairman);
+			return;
+		}
+		contract.job = Contract.Job.Unemployed;
+		contract.SetPerson(inChairman);
+	}
+
+	// Token: 0x06000C41 RID: 3137
+	public void PopulateWithRandomData(Chairman inChairman, DatabaseEntry inEntry, RegenManager.RegenType inType)
+	{
+		inChairman.costFocus = RandomUtility.GetRandom(0, inEntry.GetIntValue("Cost Focus"));
+		inChairman.SetPeakDuration(RandomUtility.GetRandom(inEntry.GetIntValue("Peak Duration Min"), inEntry.GetIntValue("Peak Duration Max")));
+		inChairman.peakAge = inChairman.CalculatePeakAge(inEntry.GetIntValue("Peak Age Min"), inEntry.GetIntValue("Peak Age Max"));
+		inChairman.attitudeTypeA = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeB = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeC = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeD = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeE = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeF = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeG = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeH = RandomUtility.GetRandom01();
+		inChairman.contract.job = Contract.Job.Unemployed;
+		
+	}
+
+	// Token: 0x06000C42 RID: 3138
+	public override void OnStartingGame()
+	{
+		this.CreateReplacementChairmanPool();
+	}
+
+	// Token: 0x06000C43 RID: 3139
+	private void CreateReplacementChairmanPool()
+	{
+		for (int i = 0; i < GameStatsConstants.replacementPeopleCount; i++)
+		{
+			Chairman chairman = App.instance.regenManager.CreateChairman(RegenManager.RegenType.Random);
+			chairman.contract.SetPerson(chairman);
+			this.mReplacementPeople.Add(chairman);
+		}
+	}
+
+	// Token: 0x06000C44 RID: 3140
+	public Chairman GetReplacementChairman(bool moveToEndOfList = false)
+	{
+		int i = 0;
+		while (i < this.mReplacementPeople.Count)
+		{
+			if (this.mReplacementPeople[i].IsFreeAgent())
+			{
+				if (moveToEndOfList)
+				{
+					return GameUtility.MoveObjectToEndOfList<Chairman>(ref this.mReplacementPeople, this.mReplacementPeople[i]);
+				}
+				return this.mReplacementPeople[i];
+			}
+			else
+			{
+				i++;
+			}
+		}
+		Chairman chairman = App.instance.regenManager.CreateChairman(RegenManager.RegenType.Random);
+		this.mReplacementPeople.Add(chairman);
+		return chairman;
+	}
+}

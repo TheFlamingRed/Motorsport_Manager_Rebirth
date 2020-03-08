@@ -1,12 +1,22 @@
-public float GetNextConditionLoss(float inCondition, CarPart.PartType inType, RacingVehicle inVehicle)
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020000FB RID: 251
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class CarPartCondition
+{
+	// Token: 0x060005A0 RID: 1440
+	public float GetNextConditionLoss(float inCondition, CarPart.PartType inType, RacingVehicle inVehicle)
 	{
 		if (this.BonusConditionLossPrevented() || inVehicle.timer.hasSeenChequeredFlag || inVehicle.behaviourManager.isOutOfRace)
 		{
 			return 0f;
 		}
 		float num = 0f;
-		float expr_33 = RandomUtility.GetRandom01();
-		if (expr_33 >= 0.0004f)
+		float random = RandomUtility.GetRandom01();
+		if (random >= Game.instance.player.instantCarPartFailure)
 		{
 			if (inCondition > this.redZone)
 			{
@@ -17,7 +27,7 @@ public float GetNextConditionLoss(float inCondition, CarPart.PartType inType, Ra
 				num = RandomUtility.GetRandom(0.05f, 0.15f) + (0.03f - inVehicle.driver.GetDriverStats().smoothness / 500f);
 			}
 		}
-		if (expr_33 < 0.0004f)
+		if (random < Game.instance.player.instantCarPartFailure)
 		{
 			if (inCondition > this.redZone)
 			{
@@ -60,3 +70,4 @@ public float GetNextConditionLoss(float inCondition, CarPart.PartType inType, Ra
 		}
 		return num * this.GetLossBonusForCircuitStatRelevancy(inType, inVehicle);
 	}
+}

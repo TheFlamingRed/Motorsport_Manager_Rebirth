@@ -1,4 +1,13 @@
-	public void OnCollision(CarPart.PartType inPart)
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020000E9 RID: 233
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Car
+{
+	// Token: 0x060004CF RID: 1231 RVA: 0x00049A08 File Offset: 0x00047C08
+		public void OnCollision(CarPart.PartType inPart)
 	{
 		for (int i = 0; i < this.mCurrentPart.Length; i++)
 		{
@@ -17,4 +26,5 @@ if (inPart == this.mCurrentPart[i].GetPartType())
 				}
 			}
 		}
+}
 }

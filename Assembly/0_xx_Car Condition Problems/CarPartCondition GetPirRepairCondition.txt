@@ -1,6 +1,17 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020000FB RID: 251
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class CarPartCondition
+{
+	// Token: 0x060005A7 RID: 1447 RVA: 0x000056E8 File Offset: 0x000038E8
 	private float GetPitRepairCondition()
 	{
 		Driver driver = Game.instance.vehicleManager.GetVehicle(this.mPart.fittedCar).driver;
 		float t = driver.contract.GetTeam().GetMechanicOfDriver(driver).stats.leadership / 20f;
 		return Mathf.Min(CarPartCondition.pitRepairPartConditionMin[this.mPart.GetPartType()] + RandomUtility.GetRandom(0f, t), 1f);
 	}
+}

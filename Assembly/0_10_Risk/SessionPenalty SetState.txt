@@ -1,3 +1,12 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x02000499 RID: 1177
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class SessionPenalty : InstanceCounter
+{
+	// Token: 0x06002297 RID: 8855 RVA: 0x000EE3AC File Offset: 0x000EC5AC
 	public void SetState(SessionPenalty.State inState)
 	{
 		this.mState = inState;
@@ -19,3 +28,4 @@
 			return;
 		}
 	}
+}

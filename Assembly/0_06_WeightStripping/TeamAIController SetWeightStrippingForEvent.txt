@@ -1,6 +1,16 @@
-public void SetWeightStrippingForEvent(RaceEventDetails inDetails)
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020002A7 RID: 679
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TeamAIController
+{
+	// Token: 0x06001397 RID: 5015
+	public void SetWeightStrippingForEvent(RaceEventDetails inDetails)
 	{
-		if ((!this.mTeam.championship.rules.isWeightStrippingEnabled && this.mTeam.championship.GetCurrentEventDetails().eventDate.Month <= 8) || this.mTeam.championship.rules.weightStrippingRatio <= 0f)
+		if ((!this.mTeam.championship.rules.isWeightStrippingEnabled && this.mTeam.championship.GetCurrentEventDetails().eventDate.Month <= Game.instance.player.weightStrippingMonthStart) || this.mTeam.championship.rules.weightStrippingRatio <= 0f)
 		{
 			return;
 		}
@@ -43,3 +53,5 @@ public void SetWeightStrippingForEvent(RaceEventDetails inDetails)
 				}
 			}
 		}
+	}
+}

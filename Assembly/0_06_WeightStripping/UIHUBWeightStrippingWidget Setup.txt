@@ -1,6 +1,15 @@
+using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+// Token: 0x02000A2F RID: 2607
+public partial class UIHUBWeightStrippingWidget : MonoBehaviour
+{
+	// Token: 0x060043BF RID: 17343
 	public void Setup()
 	{
-		GameUtility.SetActive(this, Game.instance.sessionManager.GetPlayerChampionship().rules.isWeightStrippingEnabled && Game.instance.sessionManager.GetPlayerChampionship().GetCurrentEventDetails().eventDate.Month >= 8);
+		GameUtility.SetActive(this, Game.instance.sessionManager.GetPlayerChampionship().rules.isWeightStrippingEnabled && Game.instance.sessionManager.GetPlayerChampionship().GetCurrentEventDetails().eventDate.Month >= Game.instance.player.weightStrippingMonthStart);
 		for (int i = 0; i < CarManager.carCount; i++)
 		{
 			float num = 0f;
@@ -18,3 +27,4 @@
 			this.totalPerformanceGained[i].text = Localisation.LocaliseID("PSG_10012371", null);
 		}
 	}
+}

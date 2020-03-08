@@ -165,6 +165,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					base.GetEntity(i).locationID = teamData[incomingTeam].GetStringValue("Location ID");
 					base.GetEntity(i).colorID = teamData[incomingTeam].GetIntValue("Color");
 					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
+					base.GetEntity(i).headquarters.nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
 					base.GetEntity(i).aggression = teamData[incomingTeam].GetFloatValue("Aggression");
 					base.GetEntity(i).fanBase = teamData[incomingTeam].GetFloatValue("Fan Base");
 					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[incomingTeam].GetStringValue("Political Attributes"));
@@ -216,6 +217,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					base.GetEntity(i).locationID = teamData[incomingTeam].GetStringValue("Location ID");
 					base.GetEntity(i).colorID = teamData[incomingTeam].GetIntValue("Color");
 					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
+					base.GetEntity(i).headquarters.nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
 					base.GetEntity(i).aggression = teamData[incomingTeam].GetFloatValue("Aggression");
 					base.GetEntity(i).fanBase = teamData[incomingTeam].GetFloatValue("Fan Base");
 					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[incomingTeam].GetStringValue("Political Attributes"));
@@ -272,6 +274,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					base.GetEntity(i).locationID = teamData[incomingTeam].GetStringValue("Location ID");
 					base.GetEntity(i).colorID = teamData[incomingTeam].GetIntValue("Color");
 					base.GetEntity(i).nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
+					base.GetEntity(i).headquarters.nationality = Nationality.GetNationalityByName(teamData[incomingTeam].GetStringValue("Location"));
 					base.GetEntity(i).aggression = teamData[incomingTeam].GetFloatValue("Aggression");
 					if (RandomUtility.GetRandom01() < 0f)
 					{

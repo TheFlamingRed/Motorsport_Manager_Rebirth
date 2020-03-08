@@ -2,11 +2,11 @@ using System;
 using FullSerializer;
 using UnityEngine;
 
-// Token: 0x0200040A RID: 1034
+// Token: 0x02000474 RID: 1140
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public partial class DriverPerformance : PerformanceImpact
 {
-	// Token: 0x06001FC5 RID: 8133 RVA: 0x000CA13C File Offset: 0x000C833C
+	// Token: 0x0600212B RID: 8491 RVA: 0x000E6C78 File Offset: 0x000E4E78
 	public override void SimulationUpdate(float inDeltaTime)
 	{
 		base.SimulationUpdate(inDeltaTime);
@@ -17,8 +17,9 @@ public partial class DriverPerformance : PerformanceImpact
 			driverStats += this.mStatsPartBonuses;
 		}
 		float num = 1f - driverStats.GetUnitAverage();
-		float num2 = (1f - Mathf.Clamp01(driverStats.experience)) * 2f;
-		if (this.mVehicle.championship.rules.driverAidsOn)
+			float num2 = (1f - Mathf.Clamp01(driverStats.experience)) * 2f;
+		ChampionshipRules rules = this.mVehicle.championship.rules;
+		if (rules.driverAidsOn)
 		{
 			base.IncreaseTimeCost(this.mCarPerformance.driverPerformance.maxDriverTimeCostWithDriverAidsOn * num + num2);
 		}

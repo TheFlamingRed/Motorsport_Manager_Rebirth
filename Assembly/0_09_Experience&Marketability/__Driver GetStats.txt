@@ -1,3 +1,12 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020001E1 RID: 481
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Driver : Person
+{
+	// Token: 0x06000C93 RID: 3219 RVA: 0x00073F3C File Offset: 0x0007213C
 	public override PersonStats GetStats()
 	{
 		DriverStats driverStats = null;
@@ -7,7 +16,7 @@
 		}
 		else
 		{
-			global::Debug.LogErrorFormat("{0} does not have  personality trait controller", new object[]
+			Debug.LogErrorFormat("{0} does not have  personality trait controller", new object[]
 			{
 				this.name
 			});
@@ -28,3 +37,4 @@
 		this.mModifiedStats.ClampStats();
 		return this.mModifiedStats;
 	}
+}

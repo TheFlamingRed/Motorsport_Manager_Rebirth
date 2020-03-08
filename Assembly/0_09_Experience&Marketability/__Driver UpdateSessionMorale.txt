@@ -1,4 +1,14 @@
-public void UpdateSessionMorale(string inUpdateHistoryEntryName, float inOverallWeight, int inPosition, int inNumEntries, SessionDetails.SessionType inSessionType)
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001E1 RID: 481
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Driver : Person
+{
+	// Token: 0x06000CE7 RID: 3303 RVA: 0x000757D0 File Offset: 0x000739D0
+	public void UpdateSessionMorale(string inUpdateHistoryEntryName, float inOverallWeight, int inPosition, int inNumEntries, SessionDetails.SessionType inSessionType)
 	{
 		bool flag = inSessionType == SessionDetails.SessionType.Race;
 		float num = 0f;
@@ -33,4 +43,6 @@ public void UpdateSessionMorale(string inUpdateHistoryEntryName, float inOverall
 		this.ModifyMorale(Mathf.Clamp((num9 + num4) * inOverallWeight, this.moraleMinSessionChange, this.moraleMaxSessionChange), inUpdateHistoryEntryName, true);
 		this.mStats.marketability += (11f - inPosition)/1000f;
 		this.mStats.experience += 3f / 100f;
+		
 	}
+}

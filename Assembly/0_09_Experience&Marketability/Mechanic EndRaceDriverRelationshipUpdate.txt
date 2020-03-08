@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using FullSerializer;
 using UnityEngine;
 
-// Token: 0x020001F4 RID: 500
+// Token: 0x020001FC RID: 508
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public partial class Mechanic : Person
 {
-	// Token: 0x06000DD9 RID: 3545
+	// Token: 0x06000E05 RID: 3589
 	public void EndRaceDriverRelationshipUpdate(Driver inDriver, int inRacePosition)
 	{
 		Mechanic.DriverRelationship relationshipWithDriver = this.GetRelationshipWithDriver(inDriver);

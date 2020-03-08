@@ -1,0 +1,29 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020000F2 RID: 242
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class CarOpinion
+{
+	// Token: 0x0600055C RID: 1372 RVA: 0x0004D18C File Offset: 0x0004B38C
+	
+	private float GetMoraleHit(CarOpinion.Happiness inHappiness)
+	{
+		switch (inHappiness)
+		{
+		case CarOpinion.Happiness.Angry:
+			return -0.25f;
+		case CarOpinion.Happiness.Unhappy:
+			return -0.1f;
+		case CarOpinion.Happiness.Content:
+			return 0.05f;
+		case CarOpinion.Happiness.Happy:
+			return 0f;
+		case CarOpinion.Happiness.Delighted:
+			return 0.1f;
+		default:
+			return 0f;
+		}
+	}
+}

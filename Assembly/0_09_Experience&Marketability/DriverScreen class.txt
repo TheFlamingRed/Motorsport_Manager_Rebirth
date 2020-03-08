@@ -1,0 +1,99 @@
+using System;
+using System.IO;
+using UnityEngine;
+
+// Token: 0x020006FD RID: 1789
+public class DriverScreen : UIScreen
+{
+	// Token: 0x06003284 RID: 12932
+	public DriverScreen()
+	{
+	}
+
+	// Token: 0x06003285 RID: 12933
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		base.showNavigationBars = true;
+		this.mDriver = (Driver)base.data;
+		this.driverInfoWidget.Setup(this.mDriver);
+		this.driverStatsWidget.Setup(this.mDriver);
+		this.marketabilityWidget.Setup(this.mDriver);
+		this.careerFormWidget.SetDriver(this.mDriver);
+		this.careerWidget.Setup(this.mDriver);
+		this.chemistryWithMech.SetupForMechanic(this.mDriver, this.mDriver.contract.GetTeam().GetMechanicOfDriver(this.mDriver));
+		this.championshipFormWidget.Setup(this.mDriver);
+		this.traitsWidget.SetupDriverTraits(this.mDriver);
+		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionHome, 0f);
+	}
+
+	// Token: 0x06003286 RID: 12934
+	public override void OnExit()
+	{
+		base.OnExit();
+	}
+
+	// Token: 0x17000692 RID: 1682
+	// (get) Token: 0x06003287 RID: 12935
+	public Driver driver
+	{
+		get
+		{
+			return this.mDriver;
+		}
+	}
+
+	// Token: 0x06004B95 RID: 19349
+	public void OnGUI()
+	{
+		byte[] fileData = File.ReadAllBytes("driverExperiencey.png");
+		Texture2D tex = new Texture2D(200, 90);
+		tex.LoadImage(fileData);
+		GUIStyle style = new GUIStyle();
+		style.normal.textColor = Color.white;
+		if (this.mDriver.GetDriverStats().experience > 0.9f)
+		{
+			fileData = File.ReadAllBytes("driverExperienceg.png");
+		}
+		if (this.mDriver.GetDriverStats().experience < 0.3f)
+		{
+			fileData = File.ReadAllBytes("driverExperiencer.png");
+		}
+		tex.LoadImage(fileData);
+		style.alignment = TextAnchor.MiddleCenter;
+		style.fontSize = 30;
+		GUI.Button(new Rect((float)Screen.width * 0.27f, (float)Screen.height * 0.651f, 160f, 90f), tex, GUIStyle.none);
+		GUI.Button(new Rect((float)Screen.width * 0.275f, (float)Screen.height * 0.662f, 160f, 90f), string.Concat(new string[]
+		{
+			(this.mDriver.GetDriverStats().experience * 100f).ToString(),
+			"%"
+		}), style);
+	}
+
+	// Token: 0x04002EBE RID: 11966
+	public UIDriverScreenInfoWidget driverInfoWidget;
+
+	// Token: 0x04002EBF RID: 11967
+	public UIDriverScreenStatsWidget driverStatsWidget;
+
+	// Token: 0x04002EC0 RID: 11968
+	public UIChemistryWithMech chemistryWithMech;
+
+	// Token: 0x04002EC1 RID: 11969
+	public UIDriverScreenMarketabilityWidget marketabilityWidget;
+
+	// Token: 0x04002EC2 RID: 11970
+	public DriverCareerFormWidget careerFormWidget;
+
+	// Token: 0x04002EC3 RID: 11971
+	public UIDriverScreenChampionshipFormWidget championshipFormWidget;
+
+	// Token: 0x04002EC4 RID: 11972
+	public PersonCareerWidget careerWidget;
+
+	// Token: 0x04002EC5 RID: 11973
+	public UIDriverScreenTraitsWidget traitsWidget;
+
+	// Token: 0x04002EC6 RID: 11974
+	private Driver mDriver;
+}

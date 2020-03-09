@@ -1,0 +1,805 @@
+using System;
+using System.Text;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000428 RID: 1064
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class TyreSet
+{
+	// Token: 0x06001DFC RID: 7676 RVA: 0x000DA8D0 File Offset: 0x000D8AD0
+	public TyreSet()
+	{
+	}
+
+	// Token: 0x06001DFD RID: 7677 RVA: 0x00012086 File Offset: 0x00010286
+	static TyreSet()
+	{
+	}
+
+	// Token: 0x06001DFE RID: 7678 RVA: 0x0001208E File Offset: 0x0001028E
+	public void Start(RacingVehicle inVehicle)
+	{
+		this.mVehicle = inVehicle;
+		this.mCondition = 1f;
+		this.SetToTyreBlanketTemperature();
+		this.SetTyreDesignData();
+	}
+
+	// Token: 0x06001DFF RID: 7679 RVA: 0x000DA938 File Offset: 0x000D8B38
+	public void SetTyreDesignData()
+	{
+		CarManager carManager = this.mVehicle.driver.contract.GetTeam().carManager;
+		float carChassisStatValueOnGrid = carManager.GetCarChassisStatValueOnGrid(CarChassisStats.Stats.TyreHeating, CarManager.MedianTypes.Highest);
+		float carChassisStatValueOnGrid2 = carManager.GetCarChassisStatValueOnGrid(CarChassisStats.Stats.TyreHeating, CarManager.MedianTypes.Lowest);
+		float stat = this.mVehicle.car.ChassisStats.GetStat(CarChassisStats.Stats.TyreHeating, true, this.mVehicle.car);
+		float num = Mathf.Clamp01((stat - carChassisStatValueOnGrid2) / (carChassisStatValueOnGrid - carChassisStatValueOnGrid2));
+		this.mTyreHeatingChassisStatImpact = 0f;
+		if (num < 0.33f)
+		{
+			this.mTyreHeatingChassisStatImpact = (float)(-(float)DesignDataManager.instance.GetDesignData().carChassis.tyreHeatingTimeBonusInMinutes);
+		}
+		else if (num > 0.66f)
+		{
+			this.mTyreHeatingChassisStatImpact = (float)DesignDataManager.instance.GetDesignData().carChassis.tyreHeatingTimeBonusInMinutes;
+		}
+		this.mCompoundDesignData = DesignDataManager.instance.tyreData.GetCompoundData(this.GetCompound());
+		this.mTyreDesignData = DesignDataManager.instance.tyreData;
+	}
+
+	// Token: 0x06001E00 RID: 7680
+	public void SimulationUpdate()
+	{
+		float num = this.mTemperature;
+		this.UpdateTyreDrivingStyleTemperature();
+		this.UpdateWeatherImpactOnTyreTemperature();
+		if (Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race && this.mVehicle.isPlayerDriver)
+		{
+			if (num < 1f && this.mTemperature >= 1f)
+			{
+				Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.TyresOverheating, this.mVehicle);
+			}
+			if (num > 0f && this.mTemperature <= 0f)
+			{
+				Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.TyresUnderheating, this.mVehicle);
+			}
+		}
+		if (this.GetCondition() < this.GetCliffCondition() && Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackRubber() > this.mVehicle.driver.GetDriverStats().focus / 20f)
+		{
+			this.mPunctureTimer += GameTimer.simulationDeltaTime;
+			if (this.mPunctureTimer > this.mPunctureDuration)
+			{
+				if (!this.mIsPunctured)
+				{
+					this.mVehicle.timer.currentLap.AddEvent(LapDetailsData.LapEvents.Puncture);
+				}
+				this.mIsPunctured = true;
+			}
+		}
+		if (this.mHasLooseWheel && !this.mWheelLost)
+		{
+			this.mCurrentLooseWheelDetachedTimer += GameTimer.simulationDeltaTime;
+			if (this.mCurrentLooseWheelDetachedTimer >= this.mLooseWheelDetachedTimer && !this.mWheelLost)
+			{
+				this.mWheelLost = true;
+				this.mVehicle.pathController.GetPath(PathController.PathType.RunWideLane).GetClosestPath();
+				this.mVehicle.steeringManager.GetBehaviour<TargetPointSteeringBehaviour>().ClearTarget();
+				this.mVehicle.steeringManager.GetBehaviour<TargetPointSteeringBehaviour>().SetTargetPath(PathController.PathType.RunWideLane, false);
+			}
+		}
+		if (this.mWheelLost && !this.mHasRanWide && this.mVehicle.behaviourManager.currentBehaviour.behaviourType == AIBehaviourStateManager.Behaviour.RuningWide)
+		{
+			this.mHasRanWide = true;
+			this.mVehicle.unityVehicle.ActivateDamagedTyre(this.mTargetLooseTyreSlot);
+			this.mLapWhenLostWheel = this.mVehicle.timer.lap;
+			Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.CatastrophicLooseWheel, this.mVehicle);
+		}
+		if (this.mVehicle.isPlayerDriver && this.mLapWhenLostWheel != -1 && this.mVehicle.timer.lap == this.mLapWhenLostWheel + 1 && !this.mSendLooseWheelReminder)
+		{
+			this.mSendLooseWheelReminder = true;
+			this.mVehicle.teamRadio.GetMessage<RadioMessageRunWide>().SendLooseWheelReminder();
+		}
+	}
+
+	// Token: 0x06001E01 RID: 7681 RVA: 0x000DACC0 File Offset: 0x000D8EC0
+	public void ApplyTyreWear(float inWearDistance)
+	{
+		inWearDistance = RandomUtility.GetRandom(0.99f, 1.01f) * inWearDistance;
+		if (this.mHasWrongCompoundFitted)
+		{
+			if (this.mTyreDesignData == null)
+			{
+				this.mTyreDesignData = DesignDataManager.instance.tyreData;
+			}
+			inWearDistance += this.mTyreDesignData.wrongTyreCompoundTyreWearCost;
+		}
+		float num = this.mCondition - inWearDistance / this.GetMaxDistance();
+		this.SetCondition(num);
+		if (num <= 0f)
+		{
+			this.mVehicle.sessionData.tyresRunOut = true;
+		}
+	}
+
+	// Token: 0x06001E02 RID: 7682 RVA: 0x000DAD48 File Offset: 0x000D8F48
+	public void ApplyTyreWearFromLockUp(float inWear)
+	{
+		float condition = this.mCondition - inWear;
+		this.SetCondition(condition);
+	}
+
+	// Token: 0x06001E03 RID: 7683 RVA: 0x000DAD68 File Offset: 0x000D8F68
+	public void SetCondition(float inCondition)
+	{
+		float num = this.mCondition;
+		this.mCondition = Mathf.Clamp01(inCondition);
+		if (this.mVehicle != null && this.mVehicle.isPlayerDriver)
+		{
+			float num2 = App.instance.preferencesManager.superSpeedPreferences.TyreWearThreshold();
+			if (num > num2 && this.mCondition <= num2)
+			{
+				Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.TyreWearLow, this.mVehicle);
+			}
+		}
+	}
+
+	// Token: 0x06001E04 RID: 7684 RVA: 0x000DADEC File Offset: 0x000D8FEC
+	public float GetTimeCost()
+	{
+		float num;
+		if (this.mCondition >= 0.5f)
+		{
+			num = Mathf.Lerp(this.mMediumPerformanceRange.timeCost, this.mHighPerformanceRange.timeCost, 2f * (this.mCondition - 0.5f));
+		}
+		else
+		{
+			num = Mathf.Lerp(this.mLowPerformanceRange.timeCost, this.mMediumPerformanceRange.timeCost, this.mCondition * 2f);
+		}
+		float num2 = 1f - this.mVehicle.championship.rules.speedBonusNormalized;
+		num += DesignDataManager.instance.tyreData.tyreSupplierSpeedBonusMaxTimeCost * num2;
+		num += Mathf.Lerp(0f, 30f, Mathf.Clamp01(this.mPunctureTimer / this.mPunctureDuration));
+		if (this.hasWrongCompoundFitted)
+		{
+			if (this.mTyreDesignData == null)
+			{
+				this.mTyreDesignData = DesignDataManager.instance.tyreData;
+			}
+			num += this.mTyreDesignData.wrongTyreCompoundTimeCost;
+		}
+		if (this.mWheelLost)
+		{
+			if (this.mTyreDesignData == null)
+			{
+				this.mTyreDesignData = DesignDataManager.instance.tyreData;
+			}
+			num += this.mTyreDesignData.lostTyreTimeCost;
+		}
+		return num;
+	}
+
+	// Token: 0x06001E05 RID: 7685 RVA: 0x000DAF10 File Offset: 0x000D9110
+	public float GetEstimatedTimeCostForDistance(float inDistance)
+	{
+		float num = 0f;
+		float num2 = GameUtility.MilesToMeters(Game.instance.sessionManager.eventDetails.circuit.trackLengthMiles);
+		int num3 = Mathf.CeilToInt(inDistance / num2);
+		float num4 = this.mCondition;
+		for (int i = 0; i < num3; i++)
+		{
+			num4 = Mathf.Clamp01(num4 - num2 / this.GetMaxDistance());
+			float num5 = this.GetMaxDistance() * (1f - num4);
+			if (num5 < this.mHighPerformanceRange.maxDistance)
+			{
+				num += this.mHighPerformanceRange.timeCost;
+			}
+			else if (num5 < this.mHighPerformanceRange.maxDistance + this.mMediumPerformanceRange.maxDistance)
+			{
+				num += this.mMediumPerformanceRange.timeCost;
+			}
+			else
+			{
+				num += this.mLowPerformanceRange.timeCost;
+			}
+			if (MathsUtility.ApproximatelyZero(num4) || num4 <= this.GetCliffCondition())
+			{
+				num += this.GetCliffConditionTimeCost();
+			}
+		}
+		return num;
+	}
+
+	// Token: 0x06001E06 RID: 7686 RVA: 0x000120AE File Offset: 0x000102AE
+	public float GetMaxDistance()
+	{
+		return this.mLowPerformanceRange.maxDistance + this.mMediumPerformanceRange.maxDistance + this.mHighPerformanceRange.maxDistance;
+	}
+
+	// Token: 0x06001E07 RID: 7687 RVA: 0x000DB010 File Offset: 0x000D9210
+	private void UpdateTyreDrivingStyleTemperature()
+	{
+		float num = 0f;
+		switch (this.mVehicle.performance.drivingStyleMode)
+		{
+		case DrivingStyle.Mode.Attack:
+			num = this.GetIncreaseTemperatureChangeRate();
+			break;
+		case DrivingStyle.Mode.Push:
+			num = this.GetIncreaseTemperatureChangeRate() * 0.5f;
+			break;
+		case DrivingStyle.Mode.Neutral:
+			num = 0f;
+			break;
+		case DrivingStyle.Mode.Conserve:
+			num = this.GetDecreaseTemperatureChangeRate() * 0.5f;
+			break;
+		case DrivingStyle.Mode.BackUp:
+			num = this.GetDecreaseTemperatureChangeRate();
+			break;
+		}
+		bool flag = this.mTyreHeatingChassisStatImpact > 0f;
+		float num2 = 0.4f;
+		float num3 = 0.6f;
+		if (num > 0f)
+		{
+			if (this.mTemperature < num2 && flag)
+			{
+				num *= 1.3f;
+			}
+		}
+		else if (num < 0f && this.mTemperature > num3 && flag)
+		{
+			num *= 1.3f;
+		}
+		this.SetTemperature(this.mTemperature + num * GameTimer.simulationDeltaTime);
+	}
+
+	// Token: 0x06001E08 RID: 7688
+	private void UpdateWeatherImpactOnTyreTemperature()
+	{
+		if (!this.mVehicle.HasStopped())
+		{
+			Weather currentWeather = Game.instance.sessionManager.currentSessionWeather.GetCurrentWeather();
+			float num = 0f;
+			int weatherTemperatureGainStart = this.mCompoundDesignData.weatherTemperatureGainStart;
+			int weatherTemperatureLossStart = this.mCompoundDesignData.weatherTemperatureLossStart;
+			float weatherMinTempDelta = this.mCompoundDesignData.weatherMinTempDelta;
+			float weatherUnitChangePerDegree = this.mCompoundDesignData.weatherUnitChangePerDegree;
+			float minMaxWeatherTemperatureRateChangeClamp = DesignDataManager.instance.tyreData.minMaxWeatherTemperatureRateChangeClamp;
+			if (currentWeather.airTemperature >= weatherTemperatureGainStart)
+			{
+				num = weatherMinTempDelta;
+				num += (float)(currentWeather.airTemperature - weatherTemperatureGainStart) * weatherUnitChangePerDegree;
+			}
+			else if (currentWeather.airTemperature <= weatherTemperatureLossStart)
+			{
+				num = -weatherMinTempDelta;
+				num -= (float)(weatherTemperatureLossStart - currentWeather.airTemperature) * weatherUnitChangePerDegree;
+			}
+			num = Mathf.Clamp(num, -minMaxWeatherTemperatureRateChangeClamp, minMaxWeatherTemperatureRateChangeClamp);
+			float num2 = 1f;
+			if (this.mVehicle.championship.rules.tyreType == ChampionshipRules.TyreType.Grooved)
+			{
+				num2 = 1f;
+			}
+			if (this.mVehicle.championship.rules.tyreType == ChampionshipRules.TyreType.Low)
+			{
+				num2 = 1.25f;
+			}
+			if (this.mVehicle.championship.rules.tyreType == ChampionshipRules.TyreType.Normal)
+			{
+				num2 = 1.5f;
+			}
+			if (this.mVehicle.championship.rules.tyreType == ChampionshipRules.TyreType.Road)
+			{
+				num2 = 0.75f;
+			}
+			if (this.mVehicle.championship.rules.tyreType == ChampionshipRules.TyreType.Wide)
+			{
+				num2 = 1.75f;
+			}
+			num *= num2;
+			num = num / 60f * GameTimer.simulationDeltaTime;
+			this.mAirTempRateChange = num;
+			this.SetTemperature(this.mTemperature + num);
+		}
+	}
+
+	// Token: 0x06001E09 RID: 7689 RVA: 0x000120D3 File Offset: 0x000102D3
+	public void SetTemperature(float inTemperature)
+	{
+		this.mTemperature = Mathf.Clamp(inTemperature, 0f, 1f);
+	}
+
+	// Token: 0x06001E0A RID: 7690
+	public void SetToTyreBlanketTemperature()
+	{
+		if (Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race && this.mVehicle.pathState.stateType == PathStateManager.StateType.Grid)
+		{
+			this.SetTemperature(RandomUtility.GetRandom(0.15f, 0.3f));
+			return;
+		}
+		this.SetTemperature(RandomUtility.GetRandom(0.2f, 0.4f));
+	}
+
+	// Token: 0x06001E0B RID: 7691 RVA: 0x000120EB File Offset: 0x000102EB
+	private float GetIncreaseTemperatureChangeRate()
+	{
+		return 1f / GameUtility.MinutesToSeconds(this.mCompoundDesignData.temperatureIncreaseTime + this.mTyreHeatingChassisStatImpact);
+	}
+
+	// Token: 0x06001E0C RID: 7692 RVA: 0x0001210A File Offset: 0x0001030A
+	private float GetDecreaseTemperatureChangeRate()
+	{
+		return -(1f / GameUtility.MinutesToSeconds(this.mCompoundDesignData.temperatureDecreaseTime + this.mTyreHeatingChassisStatImpact));
+	}
+
+	// Token: 0x06001E0D RID: 7693 RVA: 0x0001212A File Offset: 0x0001032A
+	public float GetCliffCondition()
+	{
+		return this.mCompoundDesignData.cliffCondition;
+	}
+
+	// Token: 0x06001E0E RID: 7694 RVA: 0x00012137 File Offset: 0x00010337
+	public float GetCliffConditionTimeCost()
+	{
+		return this.mCompoundDesignData.cliffConditionTimeCost;
+	}
+
+	// Token: 0x06001E0F RID: 7695 RVA: 0x00012144 File Offset: 0x00010344
+	public float GetTyreDistance()
+	{
+		return this.GetMaxDistance() * this.GetCondition();
+	}
+
+	// Token: 0x06001E10 RID: 7696 RVA: 0x000DB2FC File Offset: 0x000D94FC
+	public float GetOptimalTyreDistance()
+	{
+		float num = 0.12f;
+		return this.GetMaxDistance() * Mathf.Max(0f, this.GetCondition() - num);
+	}
+
+	// Token: 0x06001E11 RID: 7697 RVA: 0x00012153 File Offset: 0x00010353
+	public float GetWrongTreadForWaterLevelTimeCost()
+	{
+		return this.mCompoundDesignData.wrongTreadForWaterLevelTimeCost;
+	}
+
+	// Token: 0x06001E12 RID: 7698 RVA: 0x00012160 File Offset: 0x00010360
+	public virtual Color GetColor()
+	{
+		return Color.white;
+	}
+
+	// Token: 0x06001E13 RID: 7699 RVA: 0x00002C49 File Offset: 0x00000E49
+	public virtual TyreSet.Compound GetCompound()
+	{
+		return TyreSet.Compound.SuperSoft;
+	}
+
+	// Token: 0x06001E14 RID: 7700 RVA: 0x00002C49 File Offset: 0x00000E49
+	public virtual TyreSet.Tread GetTread()
+	{
+		return TyreSet.Tread.Slick;
+	}
+
+	// Token: 0x06001E15 RID: 7701 RVA: 0x0000352B File Offset: 0x0000172B
+	public virtual string GetName()
+	{
+		return string.Empty;
+	}
+
+	// Token: 0x06001E16 RID: 7702 RVA: 0x0000352B File Offset: 0x0000172B
+	public virtual string GetShortName()
+	{
+		return string.Empty;
+	}
+
+	// Token: 0x06001E17 RID: 7703 RVA: 0x00012167 File Offset: 0x00010367
+	public float GetCondition()
+	{
+		return this.mCondition;
+	}
+
+	// Token: 0x06001E18 RID: 7704 RVA: 0x000DB328 File Offset: 0x000D9528
+	public string GetConditionText()
+	{
+		int value = (int)(this.GetCondition() * 100f + 0.5f);
+		string result;
+		using (GameUtility.StringBuilderWrapper builderSafe = GameUtility.GlobalStringBuilderPool.GetBuilderSafe())
+		{
+			StringBuilder stringBuilder = builderSafe.stringBuilder;
+			GameUtility.Append(stringBuilder, value, 1);
+			stringBuilder.Append('%');
+			result = stringBuilder.ToString();
+		}
+		return result;
+	}
+
+	// Token: 0x06001E19 RID: 7705 RVA: 0x0001216F File Offset: 0x0001036F
+	public float GetTemperature()
+	{
+		return this.mTemperature;
+	}
+
+	// Token: 0x06001E1A RID: 7706 RVA: 0x00012177 File Offset: 0x00010377
+	public Color GetTemperatureColor(Gradient inGradient)
+	{
+		return inGradient.Evaluate(this.GetTemperature());
+	}
+
+	// Token: 0x06001E1B RID: 7707 RVA: 0x000DB39C File Offset: 0x000D959C
+	public float GetPerformanceForUI(TyreSet.Tread inDesiredTread)
+	{
+		switch (inDesiredTread)
+		{
+		case TyreSet.Tread.Slick:
+			switch (this.GetCompound())
+			{
+			case TyreSet.Compound.SuperSoft:
+				return 0.74f;
+			case TyreSet.Compound.Soft:
+				return 0.68f;
+			case TyreSet.Compound.Medium:
+				return 0.5f;
+			case TyreSet.Compound.Hard:
+				return 0.4f;
+			case TyreSet.Compound.Intermediate:
+				return 0.1f;
+			case TyreSet.Compound.Wet:
+				return 0.01f;
+			case TyreSet.Compound.UltraSoft:
+				return 0.9f;
+			}
+			break;
+		case TyreSet.Tread.LightTread:
+		{
+			TyreSet.Compound compound = this.GetCompound();
+			if (compound == TyreSet.Compound.Intermediate)
+			{
+				return 0.9f;
+			}
+			if (compound != TyreSet.Compound.Wet)
+			{
+				return 0.05f;
+			}
+			return 0.5f;
+		}
+		case TyreSet.Tread.HeavyTread:
+		{
+			TyreSet.Compound compound = this.GetCompound();
+			if (compound == TyreSet.Compound.Intermediate)
+			{
+				return 0.4f;
+			}
+			if (compound != TyreSet.Compound.Wet)
+			{
+				return 0.05f;
+			}
+			return 0.9f;
+		}
+		}
+		return 0f;
+	}
+
+	// Token: 0x06001E1C RID: 7708 RVA: 0x00009D1D File Offset: 0x00007F1D
+	public virtual float GetDurabilityForUI()
+	{
+		return 0f;
+	}
+
+	// Token: 0x06001E1D RID: 7709 RVA: 0x00012185 File Offset: 0x00010385
+	public virtual string GetPreferedConditionsText()
+	{
+		return "Dry Track";
+	}
+
+	// Token: 0x06001E1E RID: 7710 RVA: 0x000DB47C File Offset: 0x000D967C
+	public static TyreSet CreateTyreSet(TyreSet.Compound inCompound)
+	{
+		TyreSet result = null;
+		switch (inCompound)
+		{
+		case TyreSet.Compound.SuperSoft:
+			result = new SuperSoftTyreSet();
+			break;
+		case TyreSet.Compound.Soft:
+			result = new SoftTyreSet();
+			break;
+		case TyreSet.Compound.Medium:
+			result = new MediumTyreSet();
+			break;
+		case TyreSet.Compound.Hard:
+			result = new HardTyreSet();
+			break;
+		case TyreSet.Compound.Intermediate:
+			result = new IntermediateTyreSet();
+			break;
+		case TyreSet.Compound.Wet:
+			result = new WetTyreSet();
+			break;
+		case TyreSet.Compound.UltraSoft:
+			result = new UltraSoftTyreSet();
+			break;
+		}
+		return result;
+	}
+
+	// Token: 0x06001E1F RID: 7711 RVA: 0x0001218C File Offset: 0x0001038C
+	public static float CalculateLapRangeOfTyre(TyreSet inTyreSet, float lapLength)
+	{
+		return inTyreSet.GetMaxDistance() / lapLength;
+	}
+
+	// Token: 0x06001E20 RID: 7712 RVA: 0x000DB504 File Offset: 0x000D9704
+	public bool IsInLowPerformanceRange()
+	{
+		float num = this.GetMaxDistance() * (1f - this.mCondition);
+		return num > this.mHighPerformanceRange.maxDistance + this.mMediumPerformanceRange.maxDistance;
+	}
+
+	// Token: 0x06001E21 RID: 7713 RVA: 0x00012196 File Offset: 0x00010396
+	public void SetWrongCompoundFitted(TyreSet.Compound inCompound, SessionSetupChangeEntry.TyreSlot inTyreSlot)
+	{
+		this.mHasWrongCompoundFitted = true;
+		this.mWrongCompoundFitted = inCompound;
+		this.mWrongCompoundTyreSlot = inTyreSlot;
+	}
+
+	// Token: 0x06001E22 RID: 7714 RVA: 0x000DB548 File Offset: 0x000D9748
+	public void SetLooseWheel(SessionSetupChangeEntry.TyreSlot inLooseTyreSlot)
+	{
+		this.mHasLooseWheel = true;
+		this.mWheelLost = false;
+		this.mHasRanWide = false;
+		this.mCurrentLooseWheelDetachedTimer = 0f;
+		this.mTargetLooseTyreSlot = inLooseTyreSlot;
+		if (this.mTyreDesignData == null)
+		{
+			this.mTyreDesignData = DesignDataManager.instance.tyreData;
+		}
+		this.mLooseWheelDetachedTimer = RandomUtility.GetRandom(this.mTyreDesignData.minDetachTyreTimer, this.mTyreDesignData.maxDetachTyreTimer);
+	}
+
+	// Token: 0x06001E23 RID: 7715 RVA: 0x000DB5B8 File Offset: 0x000D97B8
+	public void ResetPitstopCompoundMistakes()
+	{
+		this.mHasWrongCompoundFitted = false;
+		if (this.mHasRanWide)
+		{
+			this.mVehicle.unityVehicle.ResetAllDamagedWheelEffects();
+		}
+		if (!this.mVehicle.isPlayerDriver)
+		{
+			this.mHasRanWide = false;
+			this.mHasLooseWheel = false;
+			this.mWheelLost = false;
+			this.mLapWhenLostWheel = -1;
+			this.mSendLooseWheelReminder = false;
+		}
+		this.mCurrentLooseWheelDetachedTimer = 0f;
+	}
+
+	// Token: 0x17000406 RID: 1030
+	// (get) Token: 0x06001E24 RID: 7716 RVA: 0x000121AD File Offset: 0x000103AD
+	public TyreSetPerformanceRange lowPerformanceRange
+	{
+		get
+		{
+			return this.mLowPerformanceRange;
+		}
+	}
+
+	// Token: 0x17000407 RID: 1031
+	// (get) Token: 0x06001E25 RID: 7717 RVA: 0x000121B5 File Offset: 0x000103B5
+	public TyreSetPerformanceRange mediumPerformanceRange
+	{
+		get
+		{
+			return this.mMediumPerformanceRange;
+		}
+	}
+
+	// Token: 0x17000408 RID: 1032
+	// (get) Token: 0x06001E26 RID: 7718 RVA: 0x000121BD File Offset: 0x000103BD
+	public TyreSetPerformanceRange highPerformanceRange
+	{
+		get
+		{
+			return this.mHighPerformanceRange;
+		}
+	}
+
+	// Token: 0x17000409 RID: 1033
+	// (get) Token: 0x06001E27 RID: 7719 RVA: 0x000121C5 File Offset: 0x000103C5
+	public bool isPunctured
+	{
+		get
+		{
+			return this.mIsPunctured;
+		}
+	}
+
+	// Token: 0x1700040A RID: 1034
+	// (get) Token: 0x06001E28 RID: 7720 RVA: 0x000121CD File Offset: 0x000103CD
+	public float airTempRateChange
+	{
+		get
+		{
+			return this.mAirTempRateChange;
+		}
+	}
+
+	// Token: 0x1700040B RID: 1035
+	// (get) Token: 0x06001E29 RID: 7721 RVA: 0x000121D5 File Offset: 0x000103D5
+	public RacingVehicle vehicle
+	{
+		get
+		{
+			return this.mVehicle;
+		}
+	}
+
+	// Token: 0x1700040C RID: 1036
+	// (get) Token: 0x06001E2A RID: 7722 RVA: 0x000121DD File Offset: 0x000103DD
+	public TyreSet.Compound wrongCompoundFitted
+	{
+		get
+		{
+			return this.mWrongCompoundFitted;
+		}
+	}
+
+	// Token: 0x1700040D RID: 1037
+	// (get) Token: 0x06001E2B RID: 7723 RVA: 0x000121E5 File Offset: 0x000103E5
+	public bool hasWrongCompoundFitted
+	{
+		get
+		{
+			return this.mHasWrongCompoundFitted;
+		}
+	}
+
+	// Token: 0x1700040E RID: 1038
+	// (get) Token: 0x06001E2C RID: 7724 RVA: 0x000121ED File Offset: 0x000103ED
+	public bool hasLostWheel
+	{
+		get
+		{
+			return this.mWheelLost && this.mHasRanWide;
+		}
+	}
+
+	// Token: 0x1700040F RID: 1039
+	// (get) Token: 0x06001E2D RID: 7725 RVA: 0x00012203 File Offset: 0x00010403
+	public SessionSetupChangeEntry.TyreSlot targetLooseTyreSlot
+	{
+		get
+		{
+			return this.mTargetLooseTyreSlot;
+		}
+	}
+
+	// Token: 0x17000410 RID: 1040
+	// (get) Token: 0x06001E2E RID: 7726 RVA: 0x0001220B File Offset: 0x0001040B
+	public SessionSetupChangeEntry.TyreSlot wrongCompoundTyreSlot
+	{
+		get
+		{
+			return this.mWrongCompoundTyreSlot;
+		}
+	}
+
+	// Token: 0x04001AF2 RID: 6898
+	public static readonly int sTreadCount = 3;
+
+	// Token: 0x04001AF3 RID: 6899
+	private TyreSetPerformanceRange mLowPerformanceRange = new TyreSetPerformanceRange();
+
+	// Token: 0x04001AF4 RID: 6900
+	private TyreSetPerformanceRange mMediumPerformanceRange = new TyreSetPerformanceRange();
+
+	// Token: 0x04001AF5 RID: 6901
+	private TyreSetPerformanceRange mHighPerformanceRange = new TyreSetPerformanceRange();
+
+	// Token: 0x04001AF6 RID: 6902
+	private float mCondition;
+
+	// Token: 0x04001AF7 RID: 6903
+	private float mTemperature;
+
+	// Token: 0x04001AF8 RID: 6904
+	private float mAirTempRateChange;
+
+	// Token: 0x04001AF9 RID: 6905
+	private float mPunctureTimer;
+
+	// Token: 0x04001AFA RID: 6906
+	private float mPunctureDuration = 60f;
+
+	// Token: 0x04001AFB RID: 6907
+	private bool mIsPunctured;
+
+	// Token: 0x04001AFC RID: 6908
+	private float mTyreHeatingChassisStatImpact;
+
+	// Token: 0x04001AFD RID: 6909
+	private RacingVehicle mVehicle;
+
+	// Token: 0x04001AFE RID: 6910
+	private TyreCompoundDesignData mCompoundDesignData;
+
+	// Token: 0x04001AFF RID: 6911
+	private TyreDesignData mTyreDesignData;
+
+	// Token: 0x04001B00 RID: 6912
+	private bool mHasWrongCompoundFitted;
+
+	// Token: 0x04001B01 RID: 6913
+	private TyreSet.Compound mWrongCompoundFitted = TyreSet.Compound.UltraSoft;
+
+	// Token: 0x04001B02 RID: 6914
+	private SessionSetupChangeEntry.TyreSlot mWrongCompoundTyreSlot = SessionSetupChangeEntry.TyreSlot.BackLeft;
+
+	// Token: 0x04001B03 RID: 6915
+	private bool mHasLooseWheel;
+
+	// Token: 0x04001B04 RID: 6916
+	private bool mWheelLost;
+
+	// Token: 0x04001B05 RID: 6917
+	private bool mHasRanWide;
+
+	// Token: 0x04001B06 RID: 6918
+	private float mLooseWheelDetachedTimer = 15f;
+
+	// Token: 0x04001B07 RID: 6919
+	private float mCurrentLooseWheelDetachedTimer;
+
+	// Token: 0x04001B08 RID: 6920
+	private SessionSetupChangeEntry.TyreSlot mTargetLooseTyreSlot = SessionSetupChangeEntry.TyreSlot.BackLeft;
+
+	// Token: 0x04001B09 RID: 6921
+	private int mLapWhenLostWheel = -1;
+
+	// Token: 0x04001B0A RID: 6922
+	private bool mSendLooseWheelReminder;
+
+	// Token: 0x02000429 RID: 1065
+	public enum Compound
+	{
+		// Token: 0x04001B0C RID: 6924
+		[LocalisationID("PSG_10000472")]
+		SuperSoft,
+		// Token: 0x04001B0D RID: 6925
+		[LocalisationID("PSG_10000473")]
+		Soft,
+		// Token: 0x04001B0E RID: 6926
+		[LocalisationID("PSG_10000467")]
+		Medium,
+		// Token: 0x04001B0F RID: 6927
+		[LocalisationID("PSG_10000468")]
+		Hard,
+		// Token: 0x04001B10 RID: 6928
+		[LocalisationID("PSG_10000471")]
+		Intermediate,
+		// Token: 0x04001B11 RID: 6929
+		[LocalisationID("PSG_10000470")]
+		Wet,
+		// Token: 0x04001B12 RID: 6930
+		[LocalisationID("PSG_10007137")]
+		UltraSoft
+	}
+
+	// Token: 0x0200042A RID: 1066
+	public enum Tread
+	{
+		// Token: 0x04001B14 RID: 6932
+		Slick,
+		// Token: 0x04001B15 RID: 6933
+		LightTread,
+		// Token: 0x04001B16 RID: 6934
+		HeavyTread,
+		// Token: 0x04001B17 RID: 6935
+		None
+	}
+}

@@ -1,0 +1,55 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000477 RID: 1143
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class DrivingStyle : PerformanceImpact
+{
+	// Token: 0x0600213C RID: 8508 RVA: 0x000E7408 File Offset: 0x000E5608
+	public override void SimulationUpdate(float inDeltaTime)
+	{
+		base.SimulationUpdate(inDeltaTime);
+		this.mTimerSinceLastTemperatureSwitch += inDeltaTime;
+		float num = Mathf.Abs(this.mVehicle.setup.tyreSet.GetTemperature());
+		float num2 = 0f;
+		float num3 = 0f;
+		this.GetPerformanceForDrivingStyle(this.mMode, out num2, out num3);
+		float tyreTemperaturePerformanceModiffier = DesignDataManager.instance.tyreData.tyreTemperaturePerformanceModiffier;
+		float tyreTemperatureWearModiffier = DesignDataManager.instance.tyreData.tyreTemperatureWearModiffier;
+		float num4 = 0f;
+		float num5 = 0f;
+		if (num <= 0.2f)
+		{
+			num4 = num2 * tyreTemperaturePerformanceModiffier * (0.2f - num) * 5f ;
+			num5 = num3 * tyreTemperatureWearModiffier * (0.2f - num) * 5f * 2f ;
+		}
+		if (num >= 0.8f)
+		{
+			num4 = num2 * tyreTemperaturePerformanceModiffier * (num - 0.8f) * 5f * 2f;
+			num5 = num3 * tyreTemperatureWearModiffier * (num - 0.8f) * 5f ;
+		}
+		this.ClearTimeCost();
+		this.mFinalTyreWearRate = this.mTyreWearRate + num5;
+		float num6 = 1f - Mathf.Clamp01(this.mDriverStylePerformance - num4);
+		base.IncreaseTimeCost(this.mCarPerformance.drivingStyle.maxDrivingStyleTimeCost * num6);
+		if (!Game.instance.challengeManager.IsAttemptingChallenge())
+		{
+			int num7 = App.instance.preferencesManager.gamePreferences.GetAIDriverLevel() - 10;
+			float num8 = (float)Mathf.Abs(num7) / 10f;
+			float num9 = 35f;
+			float num10 = num9 / (float)Game.instance.sessionManager.lapCount;
+			if (num7 < 0)
+			{
+				if (!this.mVehicle.driver.IsPlayersDriver())
+				{
+					base.IncreaseTimeCost(num10 * num8);
+				}
+			}
+			else if (num7 > 0 && this.mVehicle.driver.IsPlayersDriver())
+			{
+				base.IncreaseTimeCost(num10 * num8);
+			}
+		}
+	}
+}

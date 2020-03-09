@@ -1,18 +1,22 @@
-// Token: 0x060007F6 RID: 2038
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000156 RID: 342
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Championship : Entity
+{
+	// Token: 0x06000825 RID: 2085 RVA: 0x0005B3C8 File Offset: 0x000595C8
 	private void HandoutPrizeMoney()
 	{
-		if (this.championshipID == 1)
-		{
-			
-			Game.instance.teamManager.TeamRebrand();
-		}
-
 		int num = Mathf.Min(this.standings.teamEntryCount, this.rules.prizePoolPercentage.Count);
 		for (int i = 0; i < num; i++)
 		{
-			Team arg_2B3_0 = this.standings.GetTeamEntry(i).GetEntity<Team>();
+			Team entity = this.standings.GetTeamEntry(i).GetEntity<Team>();
 			StringVariableParser.ordinalNumberString = GameUtility.FormatForPosition(i + 1, null);
 			Transaction item = new Transaction(Transaction.Group.PrizeMoney, Transaction.Type.Credit, this.rules.GetPrizeMoney(i, this.prizeFund), Localisation.LocaliseID("PSG_10010556", null));
-			arg_2B3_0.financeController.unnallocatedTransactions.Add(item);
+			entity.financeController.unnallocatedTransactions.Add(item);
 		}
 	}
+}

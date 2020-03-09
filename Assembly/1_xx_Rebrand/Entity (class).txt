@@ -9,7 +9,6 @@ public class Entity : InstanceCounter
 	public Entity()
 	{
 		this.id = Guid.NewGuid();
-		base..ctor();
 	}
 
 	// Token: 0x06000ACF RID: 2767

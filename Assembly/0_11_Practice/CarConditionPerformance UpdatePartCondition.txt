@@ -1,0 +1,22 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000472 RID: 1138
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class CarConditionPerformance : PerformanceImpact
+{
+	// Token: 0x06002123 RID: 8483
+	private void UpdatePartCondition()
+	{
+		SessionDetails.SessionType sessionType = this.mSessionType;
+		this.mDistance += this.mVehicle.pathController.distanceSinceLastGate;
+		if (!this.mVehicle.pathState.IsInPitlaneArea() && this.mDistance >= this.mNextUpdateDistance)
+		{
+			this.mNextUpdateDistance += this.mSegmentDistance;
+			for (int i = 0; i < this.mCar.seriesCurrentParts.Length; i++)
+			{
+				this.mCar.seriesCurrentParts[i].partCondition.DecrementCondition(this.mCar.seriesCurrentParts[i].GetPartType(), this.mVehicle);
+			}
+		}
+	}
+}

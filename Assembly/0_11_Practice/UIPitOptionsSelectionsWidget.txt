@@ -1,0 +1,56 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+// Token: 0x020009D3 RID: 2515
+public partial class UIPitOptionsSelectionWidget : MonoBehaviour
+{
+	// Token: 0x060041D8 RID: 16856
+	private void SetActiveOptionsObjects(PitScreen.Mode inMode)
+	{
+		bool inIsActive = Game.instance.sessionManager.championship.series == Championship.Series.EnduranceSeries && Game.instance.player.team.GetSelectedDriversForCar(this.mVehicle.carID).Length != 0;
+		switch (inMode)
+		{
+		case PitScreen.Mode.PreSession:
+			GameUtility.SetActive(this.driver.gameObject, inIsActive);
+			GameUtility.SetActive(this.carSetup.gameObject, true);
+			GameUtility.SetActive(this.fuelOptions.gameObject, Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Race);
+			GameUtility.SetActive(this.partCondition.gameObject, false);
+			GameUtility.SetActive(this.pitStrategy.gameObject, false);
+			GameUtility.SetActive(this.stintType.gameObject, false);
+			GameUtility.SetActive(this.tyreChoice.gameObject, true);
+			GameUtility.SetActive(this.batteryCharge.gameObject, false);
+			break;
+		case PitScreen.Mode.SendOut:
+			GameUtility.SetActive(this.driver.gameObject, inIsActive);
+			GameUtility.SetActive(this.carSetup.gameObject, true);
+			GameUtility.SetActive(this.fuelOptions.gameObject, false);
+			GameUtility.SetActive(this.partCondition.gameObject, Game.instance.sessionManager.sessionType != SessionDetails.SessionType.Qualifying);
+			GameUtility.SetActive(this.pitStrategy.gameObject, false);
+			GameUtility.SetActive(this.stintType.gameObject, Game.instance.sessionManager.sessionType == SessionDetails.SessionType.Practice);
+			GameUtility.SetActive(this.tyreChoice.gameObject, true);
+			GameUtility.SetActive(this.batteryCharge.gameObject, false);
+			break;
+		case PitScreen.Mode.Pitting:
+			GameUtility.SetActive(this.driver.gameObject, inIsActive);
+			GameUtility.SetActive(this.carSetup.gameObject, true);
+			GameUtility.SetActive(this.fuelOptions.gameObject, this.mIsRefuelingEnabled);
+			GameUtility.SetActive(this.partCondition.gameObject, true);
+			GameUtility.SetActive(this.pitStrategy.gameObject, true);
+			GameUtility.SetActive(this.stintType.gameObject, false);
+			GameUtility.SetActive(this.tyreChoice.gameObject, true);
+			GameUtility.SetActive(this.batteryCharge.gameObject, this.mIsERSActive && this.mVehicle.ERSController.state != ERSController.ERSState.Broken);
+			break;
+		}
+		bool inShow = inMode > PitScreen.Mode.PreSession;
+		this.driversWidget.ShowTimeWidget(inShow);
+		this.practiceStintTypeWidget.ShowTimeWidget(inShow);
+		this.fuelWidget.ShowTimeWidget(inShow);
+		this.setupInputWidget.ShowTimeWidget(inShow);
+		this.tyreSelectionWidget.ShowTimeWidget(inShow);
+		this.pitStrategyWidget.ShowTimeWidget(inShow);
+		this.pitConditionWidget.ShowTimeWidget(inShow);
+		this.batteryChargeWidget.ShowTimeWidget(inShow);
+		this.RefreshActiveSteps();
+	}
+}

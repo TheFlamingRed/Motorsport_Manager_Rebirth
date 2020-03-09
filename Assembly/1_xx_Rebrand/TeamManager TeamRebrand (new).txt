@@ -11,26 +11,11 @@ public partial class TeamManager : GenericManager<Team>
 	public void TeamRebrand()
 	{
 	
-	/*
-	// I have no idea what I was thinking here... I assume I was making random job offers based on player stats. Nice idea but, redundant. 
-	// This is getting deleted
-		if (Game.instance.time.now.Month > 5)
-		{
-			float t = MathsUtility.Clamp((Game.instance.player.stats.loyalty + Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement - 15f + (float)RandomUtility.GetRandom(0, 10)) / 55f, 0f, 1f);
-			float t2 = MathsUtility.Clamp((Game.instance.player.stats.loyalty + Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement - 15f + (float)RandomUtility.GetRandom(0, 10)) / 15f, 0f, 1f);
-			float t3 = MathsUtility.Clamp((Game.instance.player.stats.loyalty + Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement - 15f + (float)RandomUtility.GetRandom(0, 10)) / 35f, 0f, 1f);
-		}
-
-	*/	
-
 // Setting up the lists. 
 		List<Team> teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
 		EntityManager entityManager = Game.instance.entityManager;
 		List<DatabaseEntry> teamData = App.instance.database.teamData;
 // App.instance.database.teamData.Count     is all the teams in the database (currently 128)
-
-// Game.instance.teamManager.count          is all the teams in the game  // unfortunatly, this raised to 200 in my old rebranding code, inflating save files
-// We need some of these though. as they're useful for mails before that team ceases to exist. 
 
 int num1 = 0;
 num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList().Count;
@@ -42,17 +27,21 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(5).standings
 num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings.GetTeamList().Count;  
 // num1 is now the true number of cars in championships.      
  
-
-
-
-			for (int i = 0; i < num1 ; i++)
+			for (int p = 0; p < num1 ; p++)
 			{
-		        //for loop for each team 
- base.GetEntity(i).oldname = base.GetEntity(i).name;
-			    // Alter LiveryID
-				base.GetEntity(i).liveryID = RandomUtility.GetRandomInc(0, 74);
+				// Alter LiveryID
+				// Done for each team, this is a bit redundant and can be moved elsewhere, but this works well.
+				base.GetEntity(p).liveryID = RandomUtility.GetRandomInc(0, 74);
+			}
 
+				// Pick team to rebrand check. 
+				int i = RandomUtility.GetRandomInc(0, num1 - 1);
+
+		        //for loop for each team 
+ 				base.GetEntity(i).oldname = base.GetEntity(i).name;
+			    
 				// Get some random numbers: a% and a random team from our database
+				float randomCheck =  RandomUtility.GetRandom01();
 				float random = RandomUtility.GetRandom01();
 				int incomingTeam = RandomUtility.GetRandom(0, teamData.Count);
 				
@@ -135,28 +124,14 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
                     accept = false;
 				}
 
-	            // reject the middle portion of the random number generator
-                if (random > 0.2f && random < 0.925f)
+				// reject if % on rebrand today is not met. 
+				 if (randomCheck >  Game.instance.player.careerRebrandNumber)
 				{
 					accept = false;
 				}
-
-
-                // now we're going to extend the Team list to include a dummy for the [extremely likely] rebrand
-       
-                     
-					 //if there is not enough dummies, we will make a new one (this should be rare)
-
-
-
-                
-
-                // note : num2 will only get increased if one of the rebrands are good. 
-				
-
                 // now we are going to do the rebranding by replacing most of the team data info. 
 				// First is the bad rebranding, which only happens if the team is in financial trouble & in 25%
-				if (base.GetEntity(i).financeController.finance.currentBudget < -5000000L && random < 0.2f && accept)
+				if (base.GetEntity(i).financeController.finance.currentBudget < -5000000L && random < 0.5f && accept)
 				{
 					
 					base.GetEntity(i).name = teamData[incomingTeam].GetStringValue("Name");
@@ -208,7 +183,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 				}
 
 				// This will be either an unhappy chairman rebrand or just a team change rebrand
-				if ((random < 0.075f && accept) || (random < 0.2f && base.GetEntity(i).chairman.happinessNormalized < 0.1f && accept))
+				if ((random < 0.5f && accept) || (random > 0.5f && base.GetEntity(i).chairman.happinessNormalized < 0.1f && accept))
 				{
 					
 					base.GetEntity(i).name = teamData[incomingTeam].GetStringValue("Name");
@@ -264,7 +239,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 			
 				}
 				// This is a happy rebrand with a 7.5% chance of occuring
-				if (random > 0.925f && accept)
+				if (random > 0.5f && accept)
 				{
 					
 					base.GetEntity(i).votingCharacteristics = this.GetCharacteristics(teamData[incomingTeam].GetStringValue("Political Attributes"));
@@ -315,7 +290,6 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 				}
 
 		
-		}
 		// Nothing below here, these are the function and class brackets. 
 	}
 }

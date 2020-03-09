@@ -1,11 +1,11 @@
 using System;
 using FullSerializer;
 
-// Token: 0x02000305 RID: 773
+// Token: 0x02000308 RID: 776
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public partial class GameTimer : InstanceCounter
 {
-	// Token: 0x06001653 RID: 5715
+	// Token: 0x0600165D RID: 5725
 	private void TriggerActions(DateTime inTime)
 	{
 		DateTime dateTime = inTime;
@@ -24,12 +24,10 @@ public partial class GameTimer : InstanceCounter
 		if (dateTime.Day != this.mNow.Day && this.OnDayEnd != null)
 		{
 			this.OnDayEnd();
-			Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+			if (dateTime.CompareTo(Game.instance.player.team.championship.preSeasonStartDate.AddYears(-1)) > 0 && dateTime.CompareTo(Game.instance.player.team.championship.preSeasonEndDate.AddYears(-1)) < 0)
 			{
-				new DialogCriteria("Who", "Engineer"),
-				new DialogCriteria("Source", "PreSeasonTestingSoon"),
-				new DialogCriteria("Type", "Header")
-			});
+				Game.instance.teamManager.TeamRebrand();
+			}
 		}
 		if (dateTime.DayOfWeek == DayOfWeek.Sunday && this.mNow.DayOfWeek == DayOfWeek.Monday && this.OnWeekEnd != null)
 		{

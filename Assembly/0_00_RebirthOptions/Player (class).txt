@@ -450,7 +450,7 @@ public class Player : TeamPrincipal
 	}
 
 	// Token: 0x060010C5 RID: 4293
-	public void LoadOptions()
+public void LoadOptions()
 	{
 		this.rebirthDebug = true;
 		string[] array = File.ReadAllText("RebirthOptions.txt").Split(new char[]
@@ -468,6 +468,18 @@ public class Player : TeamPrincipal
 		this.lockupSensitivity = float.Parse(array[36]);
 		this.crashSensitivity = float.Parse(array[37]);
 		this.spinOutSensitivity = float.Parse(array[38]);
+		this.reduceFormUpdates = int.Parse(array[41]);
+		this.formUpdateSS = int.Parse(array[44]);
+		this.formUpdateGT = int.Parse(array[45]);
+		this.formUpdateE = int.Parse(array[46]);
+		this.weightStrippingMonthStart = int.Parse(array[49]);
+		this.scoutingSlots = int.Parse(array[52]);
+		this.mechanicBonusHide = int.Parse(array[55]);
+		this.weatherReportMod = int.Parse(array[58]);
+		this.harderChairmanObjectives = int.Parse(array[61]);
+		this.instantCarPartFailure = float.Parse(array[64]) * 0.1f / 6f;
+		this.startRebrandNumber = int.Parse(array[71]);
+		this.careerRebrandNumber = float.Parse(array[74]);
 	}
 
 	// Token: 0x04000E88 RID: 3720
@@ -560,24 +572,60 @@ public class Player : TeamPrincipal
 	// Token: 0x04000EA5 RID: 3749
 	public float jumpStartPercentage;
 
-	// Token: 0x04004F26 RID: 20262
+	// Token: 0x04000EA6 RID: 3750
 	public int debugValue;
 
-	// Token: 0x040054F9 RID: 21753
+	// Token: 0x04000EA7 RID: 3751
 	public float lockupSensitivity;
 
-	// Token: 0x04005545 RID: 21829
+	// Token: 0x04000EA8 RID: 3752
 	public float crashSensitivity;
 
-	// Token: 0x04005546 RID: 21830
+	// Token: 0x04000EA9 RID: 3753
 	public float spinOutSensitivity;
+
+	// Token: 0x04000EAA RID: 3754
+	public int reduceFormUpdates;
+
+	// Token: 0x04000EAB RID: 3755
+	public int formUpdateSS;
+
+	// Token: 0x04000EAC RID: 3756
+	public int formUpdateGT;
+
+	// Token: 0x04000EAD RID: 3757
+	public int formUpdateE;
+
+	// Token: 0x04000EAE RID: 3758
+	public int weightStrippingMonthStart;
+
+	// Token: 0x04000EAF RID: 3759
+	public int scoutingSlots;
+
+	// Token: 0x04000EB0 RID: 3760
+	public int mechanicBonusHide;
+
+	// Token: 0x04000EB1 RID: 3761
+	public int weatherReportMod;
+
+	// Token: 0x04000EB2 RID: 3762
+	public int harderChairmanObjectives;
+
+	// Token: 0x04000EB3 RID: 3763
+	public float instantCarPartFailure;
+
+	// Token: 0x04004FD5 RID: 20437
+	public int startRebrandNumber;
+
+	// Token: 0x04004FD6 RID: 20438
+	public float careerRebrandNumber;
 
 	// Token: 0x0200023B RID: 571
 	public enum LoyaltyChange
 	{
-		// Token: 0x04000EA7 RID: 3751
+		// Token: 0x04000EB5 RID: 3765
 		FiringTeamMember,
-		// Token: 0x04000EA8 RID: 3752
+		// Token: 0x04000EB6 RID: 3766
 		ApplyingOtherTeam
 	}
 }

@@ -29,7 +29,6 @@ public partial class TeamManager : GenericManager<Team>
 		List<DatabaseEntry> teamData = App.instance.database.teamData;
 // App.instance.database.teamData.Count     is all the teams in the database (currently 128)
 
-int numberOfTeamEntities = Game.instance.teamManager.count;
 // Game.instance.teamManager.count          is all the teams in the game  // unfortunatly, this raised to 200 in my old rebranding code, inflating save files
 // We need some of these though. as they're useful for mails before that team ceases to exist. 
 
@@ -137,7 +136,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 				}
 
 	            // reject the middle portion of the random number generator
-                if (random > 0.2 && random < 0.925)
+                if (random > 0.2f && random < 0.925f)
 				{
 					accept = false;
 				}
@@ -193,7 +192,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					}
 					if (RandomUtility.GetRandom01() < 1f)
 					{
-						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(0.7f, 1f);
+						this.AdaptPartsForNewSeasonsRebrand(0.7f, 1f,base.GetEntity(i));
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i);
 					StringVariableParser.rumourTeam = base.GetEntity(i);
@@ -251,7 +250,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					}
 					if (RandomUtility.GetRandom01() < 0.8f)
 					{
-						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(0.7f, 1.3f);
+						this.AdaptPartsForNewSeasonsRebrand(0.7f, 1.3f,base.GetEntity(i));
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i);
 					StringVariableParser.rumourTeam = base.GetEntity(i);
@@ -300,7 +299,7 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					}
 					if (RandomUtility.GetRandom01() < 1f)
 					{
-						base.GetEntity(i).carManager.AdaptPartsForNewSeason2(1f, 1.3f);
+						this.AdaptPartsForNewSeasonsRebrand(1f, 1.3f,base.GetEntity(i));
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i);
 					StringVariableParser.rumourTeam = base.GetEntity(i);

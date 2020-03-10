@@ -1,0 +1,75 @@
+::::::::::::::::::::::::::::::::::::::::::
+::: Management Buyout of Currrent Team :::
+::::::::::::::::::::::::::::::::::::::::::
+
+--- Feature On / Off --- (On = 1; Off = 0;)
+1
+
+--- Main Text --- 
+Flaming Red
+
+--- Sub Text ---
+Racing
+
+--- Full Text ---
+Flaming Red Racing
+
+--- Logo Style --- (Integer; 1 to 14)
+12
+
+--- Primary Colour --- (HexColor; 6 characters)
+CC1111
+
+--- Secondary Colour --- (HexColor; 6 characters)
+BF5205
+
+--- Notes: Make sure you are happy with your chosen team. 
+--- You can use New Game -> Create Team to get the information you need to fill this in.
+
+::::::::::::::::::::::::::::::::::::::::::
+:::             Preferences            :::
+::::::::::::::::::::::::::::::::::::::::::
+
+--- Jump Start Percentage --- (Any Value 0-100; Default = 1) 
+5
+
+--- Lockup : Crash : Spin Sensitivity --- (In That Order; 0 to 10; Defaults (5,3,1), Lower values will increase the chances of event. Values over 10 will completely disable event)
+5
+3
+1
+
+--- Reduce Form Updates for SS and GT ---  (On = 1; Off = 0;)
+1
+
+--- SingleSeater, GT and Endurance form update occurances (if above option == 1) --- (integers, 1+, only enabled for career)
+10
+10
+30
+
+--- Month to enabled Weight Stripping --- (integers, 0-12, setting this to 1 enables weight stripping for whole season, 12+ will disable this rule always. default 8)
+8
+
+---   --- 
+1
+
+--- Unknown Mechanic Bonus Hide --- (On = 1; Off = 0;)
+1
+
+--- Weather Report debuff --- (On = 1; Off = 0;)
+1
+
+--- Harder Chairman Objectives --- (On = 1; Off = 0;)
+1
+
+--- Instant Failure Chance per car per race --- ( 0 to 1, set to 0 to disable. Default 0.02. Don't recommend making this much bigger)
+1.02
+
+::::::::::::::::::::::::::::::::::::::::::
+:::             Preferences            :::
+::::::::::::::::::::::::::::::::::::::::::
+
+--- Number of teams to rebrand on Game Start Rebrand Button --- (integer, 0 - 50ish)
+32
+
+--- Estimated number of teams to try to rebrand each year --- (integer, 0 - 20, expect less then this number on average as code is designed to "abort" a rebrand if some conditions are not met)
+5

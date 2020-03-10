@@ -12,13 +12,13 @@ public partial class TeamManager : GenericManager<Team>
 		EntityManager entityManager = Game.instance.entityManager;
 		List<DatabaseEntry> teamData = App.instance.database.teamData;
 		RandomUtility.GetRandom01();
-		if (teamData[0].GetIntValue("Opinions - Manager") == 0)
-		{
+		int otherTeams = (teamData[0].GetIntValue("Opinions - Manager")); 
+		
 			for (int i = 0; i < Game.instance.player.startRebrandNumber; i++)
 			{
-				int randomInc = RandomUtility.GetRandomInc(0, 61);
+				int randomInc = RandomUtility.GetRandomInc(0, 61 + otherTeams);
 				int num = RandomUtility.GetRandom(0, teamData.Count);
-				for (int j = 0; j < 62; j++)
+				for (int j = 0; j < 62 + otherTeams; j++)
 				{
 					if (num == base.GetEntity(j).teamID)
 					{
@@ -41,6 +41,6 @@ public partial class TeamManager : GenericManager<Team>
 				base.GetEntity(randomInc).customStartDescription = teamData[num].GetStringValue("Custom Start Description");
 				base.GetEntity(randomInc).SetTeamStartDescriptionID(teamData[num].GetStringValue("Team Start Description"));
 			}
-		}
+		
 	}
 }

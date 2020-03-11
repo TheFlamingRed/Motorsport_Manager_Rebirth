@@ -2,15 +2,15 @@ using System;
 using System.IO;
 using UnityEngine;
 
-// Token: 0x020006FD RID: 1789
+// Token: 0x02000701 RID: 1793
 public class DriverScreen : UIScreen
 {
-	// Token: 0x06003284 RID: 12932
+	// Token: 0x06003292 RID: 12946 RVA: 0x0001C4C6 File Offset: 0x0001A6C6
 	public DriverScreen()
 	{
 	}
 
-	// Token: 0x06003285 RID: 12933
+	// Token: 0x06003293 RID: 12947 RVA: 0x00146FBC File Offset: 0x001451BC
 	public override void OnEnter()
 	{
 		base.OnEnter();
@@ -27,14 +27,14 @@ public class DriverScreen : UIScreen
 		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionHome, 0f);
 	}
 
-	// Token: 0x06003286 RID: 12934
+	// Token: 0x06003294 RID: 12948 RVA: 0x0001C8D8 File Offset: 0x0001AAD8
 	public override void OnExit()
 	{
 		base.OnExit();
 	}
 
 	// Token: 0x17000692 RID: 1682
-	// (get) Token: 0x06003287 RID: 12935
+	// (get) Token: 0x06003295 RID: 12949 RVA: 0x0001EA26 File Offset: 0x0001CC26
 	public Driver driver
 	{
 		get
@@ -43,57 +43,57 @@ public class DriverScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06004B95 RID: 19349
+	// Token: 0x06003296 RID: 12950
 	public void OnGUI()
 	{
-		byte[] fileData = File.ReadAllBytes("driverExperiencey.png");
-		Texture2D tex = new Texture2D(200, 90);
-		tex.LoadImage(fileData);
-		GUIStyle style = new GUIStyle();
-		style.normal.textColor = Color.white;
-		if (this.mDriver.GetDriverStats().experience > 0.9f)
+		byte[] data = File.ReadAllBytes("driverExperiencey.png");
+		Texture2D texture2D = new Texture2D(200, 90);
+		texture2D.LoadImage(data);
+		GUIStyle guistyle = new GUIStyle();
+		guistyle.normal.textColor = Color.white;
+		if (this.mDriver.GetDriverStats().experience > 0.85f)
 		{
-			fileData = File.ReadAllBytes("driverExperienceg.png");
+			data = File.ReadAllBytes("driverExperienceg.png");
 		}
 		if (this.mDriver.GetDriverStats().experience < 0.3f)
 		{
-			fileData = File.ReadAllBytes("driverExperiencer.png");
+			data = File.ReadAllBytes("driverExperiencer.png");
 		}
-		tex.LoadImage(fileData);
-		style.alignment = TextAnchor.MiddleCenter;
-		style.fontSize = 30;
-		GUI.Button(new Rect((float)Screen.width * 0.27f, (float)Screen.height * 0.651f, 160f, 90f), tex, GUIStyle.none);
-		GUI.Button(new Rect((float)Screen.width * 0.275f, (float)Screen.height * 0.662f, 160f, 90f), string.Concat(new string[]
+		texture2D.LoadImage(data);
+		guistyle.alignment = TextAnchor.MiddleCenter;
+		guistyle.fontSize = 30;
+		GUI.Button(new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.451f, (float)Screen.width * 160f / 1920f, (float)Screen.height * 90f / 1080f), texture2D, GUIStyle.none);
+		GUI.Button(new Rect((float)Screen.width * 0.71f, (float)Screen.height * 0.462f, (float)Screen.width * 160f / 1920f, (float)Screen.height * 90f / 1080f), string.Concat(new string[]
 		{
 			(this.mDriver.GetDriverStats().experience * 100f).ToString(),
 			"%"
-		}), style);
+		}), guistyle);
 	}
 
-	// Token: 0x04002EBE RID: 11966
+	// Token: 0x04002EC9 RID: 11977
 	public UIDriverScreenInfoWidget driverInfoWidget;
 
-	// Token: 0x04002EBF RID: 11967
+	// Token: 0x04002ECA RID: 11978
 	public UIDriverScreenStatsWidget driverStatsWidget;
 
-	// Token: 0x04002EC0 RID: 11968
+	// Token: 0x04002ECB RID: 11979
 	public UIChemistryWithMech chemistryWithMech;
 
-	// Token: 0x04002EC1 RID: 11969
+	// Token: 0x04002ECC RID: 11980
 	public UIDriverScreenMarketabilityWidget marketabilityWidget;
 
-	// Token: 0x04002EC2 RID: 11970
+	// Token: 0x04002ECD RID: 11981
 	public DriverCareerFormWidget careerFormWidget;
 
-	// Token: 0x04002EC3 RID: 11971
+	// Token: 0x04002ECE RID: 11982
 	public UIDriverScreenChampionshipFormWidget championshipFormWidget;
 
-	// Token: 0x04002EC4 RID: 11972
+	// Token: 0x04002ECF RID: 11983
 	public PersonCareerWidget careerWidget;
 
-	// Token: 0x04002EC5 RID: 11973
+	// Token: 0x04002ED0 RID: 11984
 	public UIDriverScreenTraitsWidget traitsWidget;
 
-	// Token: 0x04002EC6 RID: 11974
+	// Token: 0x04002ED1 RID: 11985
 	private Driver mDriver;
 }

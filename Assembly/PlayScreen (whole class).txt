@@ -1,22 +1,22 @@
 using System;
 using UnityEngine;
 
-// Token: 0x020006C2 RID: 1730
+// Token: 0x020006C6 RID: 1734
 public class PlayerScreen : UIScreen
 {
-	// Token: 0x060030DA RID: 12506 RVA: 0x0001C45B File Offset: 0x0001A65B
+	// Token: 0x060030E8 RID: 12520 RVA: 0x0001C4C6 File Offset: 0x0001A6C6
 	public PlayerScreen()
 	{
 	}
 
-	// Token: 0x060030DB RID: 12507 RVA: 0x0001D4AA File Offset: 0x0001B6AA
+	// Token: 0x060030E9 RID: 12521 RVA: 0x0001D51B File Offset: 0x0001B71B
 	public override void OnStart()
 	{
 		base.OnStart();
 		this.playerWidget.OnStart();
 	}
 
-	// Token: 0x060030DC RID: 12508 RVA: 0x0013A414 File Offset: 0x00138614
+	// Token: 0x060030EA RID: 12522 RVA: 0x0013C0C4 File Offset: 0x0013A2C4
 	public override void OnEnter()
 	{
 		base.OnEnter();
@@ -48,7 +48,7 @@ public class PlayerScreen : UIScreen
 		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionHome, 0f);
 	}
 
-	// Token: 0x060030DD RID: 12509 RVA: 0x0013A564 File Offset: 0x00138764
+	// Token: 0x060030EB RID: 12523 RVA: 0x0013C214 File Offset: 0x0013A414
 	public override void OnExit()
 	{
 		base.OnExit();
@@ -57,7 +57,7 @@ public class PlayerScreen : UIScreen
 		dlcManager.OnOwnedDlcChanged = (Action)Delegate.Remove(dlcManager.OnOwnedDlcChanged, new Action(this.jobsWidget.Setup));
 	}
 
-	// Token: 0x060030DE RID: 12510
+	// Token: 0x060030EC RID: 12524 RVA: 0x0013C264 File Offset: 0x0013A464
 	public void OnGUI()
 	{
 		if (Game.instance.player.rebirthDebug)
@@ -110,37 +110,47 @@ public class PlayerScreen : UIScreen
 			{
 				Game.instance.player.skipraceweekends = !Game.instance.player.skipraceweekends;
 			}
-			if (GUI.Button(new Rect((float)Screen.width * 0.6f, (float)Screen.height * 0.1f, 200f, 100f), "Team Rebrand"))
+			if (GUI.Button(new Rect((float)Screen.width * 0.6f, (float)Screen.height * 0.1f, 200f, 100f), string.Concat(new string[]
+			{
+				"Team Rebrand : \n",
+				Game.instance.player.team.championship.preSeasonStartDate.ToString(),
+				"\n",
+				Game.instance.player.team.championship.preSeasonEndDate.ToString(),
+				"\n",
+				Game.instance.player.team.championship.preSeasonStartDate.CompareTo(Game.instance.player.team.championship.preSeasonEndDate).ToString(),
+				"\n",
+				Game.instance.player.team.championship.preSeasonEndDate.CompareTo(Game.instance.player.team.championship.preSeasonStartDate).ToString()
+			})))
 			{
 				Game.instance.teamManager.TeamRebrand();
 			}
 		}
 	}
 
-	// Token: 0x04002CB3 RID: 11443
+	// Token: 0x04002CBE RID: 11454
 	public UIPlayerWidget playerWidget;
 
-	// Token: 0x04002CB4 RID: 11444
+	// Token: 0x04002CBF RID: 11455
 	public UIPlayerStatsWidget statsWidget;
 
-	// Token: 0x04002CB5 RID: 11445
+	// Token: 0x04002CC0 RID: 11456
 	public UIPlayerNotificationsWidget notificationsWidget;
 
-	// Token: 0x04002CB6 RID: 11446
+	// Token: 0x04002CC1 RID: 11457
 	public UIPlayerHappinessWidget chairmanWidget;
 
-	// Token: 0x04002CB7 RID: 11447
+	// Token: 0x04002CC2 RID: 11458
 	public UIPlayerAvailableJobsWidget jobsWidget;
 
-	// Token: 0x04002CB8 RID: 11448
+	// Token: 0x04002CC3 RID: 11459
 	public UIPlayerJobApplicationsWidget applicationsWidget;
 
-	// Token: 0x04002CB9 RID: 11449
+	// Token: 0x04002CC4 RID: 11460
 	public PersonCareerWidget careerWidget;
 
-	// Token: 0x04002CBA RID: 11450
+	// Token: 0x04002CC5 RID: 11461
 	public UIPlayerTrophiesWidget trophiesWidget;
 
-	// Token: 0x04002CBB RID: 11451
+	// Token: 0x04002CC6 RID: 11462
 	private Player mPlayer;
 }

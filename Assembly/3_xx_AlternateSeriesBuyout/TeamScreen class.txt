@@ -1,13 +1,156 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using MM2;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Token: 0x02000710 RID: 1808
-public partial class TeamScreen : UIScreen
+// Token: 0x02000714 RID: 1812
+public class TeamScreen : UIScreen
 {
-	// Token: 0x060032F7 RID: 13047
+	// Token: 0x060032FD RID: 13053 RVA: 0x0001EE77 File Offset: 0x0001D077
+	public TeamScreen()
+	{
+	}
+
+	// Token: 0x060032FE RID: 13054 RVA: 0x001485F4 File Offset: 0x001467F4
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		this.mTeam = (Team)base.data;
+		if (this.mTeam == null)
+		{
+			this.mTeam = Game.instance.player.team;
+		}
+		this.supplierRollover.Setup(this.mTeam, false);
+		this.SetupStaff(this.mTeam);
+		this.chairmanWidget.Setup(this.mTeam);
+		this.teamWidget.Setup(this.mTeam);
+		this.HQwidget.Setup(this.mTeam.headquarters);
+		this.historyWidget.Setup(this.mTeam);
+		float inMarketability = MathsUtility.RoundToDecimal(this.mTeam.GetTeamTotalMarketability() * 100f);
+		this.marketabilityText.text = inMarketability.ToString(Localisation.numberFormatter) + "%";
+		this.marketabilitySlider.value = this.mTeam.GetTeamTotalMarketability();
+		this.UpdateMarketabilityAchievements(inMarketability);
+		base.showNavigationBars = true;
+		if (App.instance.gameStateManager.currentState is FrontendState)
+		{
+			this.LoadScene();
+		}
+		GameUtility.SetActive(this.carBackgroundParent, base.screenMode == UIScreen.ScreenMode.Mode2D);
+		if (base.screenMode == UIScreen.ScreenMode.Mode2D)
+		{
+			this.carBackground.SetCar(this.mTeam);
+		}
+		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionHome, 0f);
+	}
+
+	// Token: 0x060032FF RID: 13055 RVA: 0x00148754 File Offset: 0x00146954
+	private void LoadScene()
+	{
+		GameUtility.SetActive(this.carCamera, base.screenMode == UIScreen.ScreenMode.Mode3D);
+		if (base.screenMode == UIScreen.ScreenMode.Mode3D)
+		{
+			if (!SceneManager.instance.GetSceneGameObject("TrackFrontEnd").activeSelf)
+			{
+				SceneManager.instance.SwitchScene("TrackFrontEnd");
+				GameObject sceneGameObject = SceneManager.instance.GetSceneGameObject("TrackFrontEnd");
+				this.mStudioScene = sceneGameObject.GetComponent<StudioScene>();
+				this.mStudioScene.SetCarType(StudioScene.Car.CurrentCar);
+				this.mStudioScene.EnableCamera("ToTextureProfileCamera");
+			}
+			this.mStudioScene.ResetMode();
+			this.mStudioScene.SetSeries(this.mTeam.championship.series);
+			this.mStudioScene.SetSavedCarVisuals(this.mTeam.teamID, this.mTeam.championship.championshipID, new FrontendCarData[]
+			{
+				this.mTeam.carManager.frontendCar.data,
+				this.mTeam.carManager.nextFrontendCar.data
+			});
+		}
+	}
+
+	// Token: 0x06003300 RID: 13056 RVA: 0x00148864 File Offset: 0x00146A64
+	private void SetupStaff(Team inTeam)
+	{
+		int num = 0;
+		for (int i = 0; i < Team.maxDriverCount; i++)
+		{
+			if (num >= this.drivers.Length)
+			{
+				GameUtility.SetActive(this.drivers[num], false);
+			}
+			else
+			{
+				Driver driver = inTeam.GetDriver(i);
+				GameUtility.SetActive(this.drivers[num], driver != null);
+				if (driver != null)
+				{
+					this.drivers[num].Setup(driver);
+				}
+				num++;
+			}
+		}
+		List<Person> allPeopleOnJob = inTeam.contractManager.GetAllPeopleOnJob(Contract.Job.Mechanic);
+		for (int j = 0; j < allPeopleOnJob.Count; j++)
+		{
+			this.mechanics[j].Setup(allPeopleOnJob[j]);
+		}
+		this.teamPrinciple.Setup(inTeam.contractManager.GetPersonOnJob(Contract.Job.TeamPrincipal));
+		this.chiefEngineer.Setup(inTeam.contractManager.GetPersonOnJob(Contract.Job.EngineerLead));
+	}
+
+	// Token: 0x06003301 RID: 13057 RVA: 0x00148934 File Offset: 0x00146B34
+	public void UpdateAbility()
+	{
+		for (int i = 0; i < this.drivers.Length; i++)
+		{
+			this.drivers[i].UpdateAbility();
+		}
+	}
+
+	// Token: 0x06003302 RID: 13058 RVA: 0x0001EE97 File Offset: 0x0001D097
+	public override void OnExit()
+	{
+		base.OnExit();
+		if (App.instance.gameStateManager.currentState is FrontendState)
+		{
+			this.UnloadScene();
+		}
+	}
+
+	// Token: 0x06003303 RID: 13059 RVA: 0x00148964 File Offset: 0x00146B64
+	private void UnloadScene()
+	{
+		if (base.screenMode == UIScreen.ScreenMode.Mode3D && this.mStudioScene != null && !Game.instance.player.IsUnemployed())
+		{
+			this.mStudioScene.TuneSpotlight(true);
+			this.mStudioScene.SetCameraTargetToTrackAlongCar(false);
+			this.mStudioScene.SetCarVisualsToCurrentGame();
+			SceneManager.instance.LeaveCurrentScene();
+		}
+	}
+
+	// Token: 0x06003304 RID: 13060 RVA: 0x0001EEBB File Offset: 0x0001D0BB
+	private void UpdateMarketabilityAchievements(float inMarketability)
+	{
+		if (MathsUtility.Approximately(inMarketability, 100f, 0.05f))
+		{
+			App.instance.steamAchievementsManager.UnlockAchievement(Achievements.AchievementEnum.Reach_Max_Marketability);
+		}
+	}
+
+	// Token: 0x1700069C RID: 1692
+	// (get) Token: 0x06003305 RID: 13061 RVA: 0x0001EEE0 File Offset: 0x0001D0E0
+	public Team team
+	{
+		get
+		{
+			return this.mTeam;
+		}
+	}
+
+	// Token: 0x06003306 RID: 13062
 	private void OnGUI()
 	{
 		List<Team> teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
@@ -17,9 +160,9 @@ public partial class TeamScreen : UIScreen
 		bool flag2 = false;
 		bool flag3 = false;
 		bool flag4 = false;
-		Team teamSS = Game.instance.player.team;
-		Team teamGT = Game.instance.player.team;
-		Team teamEN = Game.instance.player.team;
+		Team team = Game.instance.player.team;
+		Team team2 = Game.instance.player.team;
+		Team team3 = Game.instance.player.team;
 		string text = string.Concat(new string[]
 		{
 			this.mTeam.financeController.availableFunds.ToString(),
@@ -41,7 +184,7 @@ public partial class TeamScreen : UIScreen
 			if (teamList[i].teamID == Game.instance.player.team.teamID)
 			{
 				flag = true;
-				teamSS = teamList[i];
+				Team team4 = teamList[i];
 			}
 		}
 		teamList = Game.instance.championshipManager.GetChampionshipByID(1).standings.GetTeamList();
@@ -50,7 +193,7 @@ public partial class TeamScreen : UIScreen
 			if (teamList[j].teamID == Game.instance.player.team.teamID)
 			{
 				flag = true;
-				teamSS = teamList[j];
+				Team team5 = teamList[j];
 			}
 		}
 		teamList = Game.instance.championshipManager.GetChampionshipByID(2).standings.GetTeamList();
@@ -59,7 +202,7 @@ public partial class TeamScreen : UIScreen
 			if (teamList[k].teamID == Game.instance.player.team.teamID)
 			{
 				flag = true;
-				teamSS = teamList[k];
+				Team team6 = teamList[k];
 			}
 		}
 		teamList = Game.instance.championshipManager.GetChampionshipByID(3).standings.GetTeamList();
@@ -68,7 +211,7 @@ public partial class TeamScreen : UIScreen
 			if (teamList[l].teamID == Game.instance.player.team.teamID)
 			{
 				flag2 = true;
-				teamGT = teamList[l];
+				Team team7 = teamList[l];
 			}
 		}
 		teamList = Game.instance.championshipManager.GetChampionshipByID(4).standings.GetTeamList();
@@ -77,7 +220,7 @@ public partial class TeamScreen : UIScreen
 			if (teamList[m].teamID == Game.instance.player.team.teamID)
 			{
 				flag2 = true;
-				teamGT = teamList[m];
+				Team team8 = teamList[m];
 			}
 		}
 		teamList = Game.instance.championshipManager.GetChampionshipByID(5).standings.GetTeamList();
@@ -86,7 +229,7 @@ public partial class TeamScreen : UIScreen
 			if (teamList[n].teamID == Game.instance.player.team.teamID)
 			{
 				flag3 = true;
-				teamEN = teamList[n];
+				Team team9 = teamList[n];
 			}
 		}
 		teamList = Game.instance.championshipManager.GetChampionshipByID(6).standings.GetTeamList();
@@ -95,7 +238,7 @@ public partial class TeamScreen : UIScreen
 			if (teamList[num].teamID == Game.instance.player.team.teamID)
 			{
 				flag3 = true;
-				teamEN = teamList[num];
+				Team team10 = teamList[num];
 			}
 		}
 		if ((this.mTeam.championship.championshipID == 0 || this.mTeam.championship.championshipID == 1 || this.mTeam.championship.championshipID == 2) && !flag && Game.instance.player.team.financeController.availableFunds > 10000L && this.mTeam.financeController.availableFunds < 200000L)
@@ -129,39 +272,87 @@ public partial class TeamScreen : UIScreen
 				10000L.ToString(),
 				" to Purchase"
 			});
-		}
-		if (Game.instance.player.rebirthDebug && (GUI.Button(new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.9f, (float)Screen.width * 0.2f, (float)Screen.height * 0.049074f), text.ToString()) && flag4))
-		{
-			Transaction transaction = new Transaction(Transaction.Group.GlobalMotorsport, Transaction.Type.Debit, 10000L, "Team Purchase");
-			Game.instance.player.team.financeController.finance.ProcessTransactions(null, null, true, new Transaction[]
+			byte[] data = File.ReadAllBytes("PurchaseTeam.png");
+			Texture2D texture2D = new Texture2D(250, 29);
+			texture2D.LoadImage(data);
+			data = File.ReadAllBytes("PurchaseTeamh.png");
+			Texture2D texture2D2 = new Texture2D(250, 29);
+			texture2D2.LoadImage(data);
+			GUIStyle guistyle = new GUIStyle();
+			guistyle.alignment = TextAnchor.MiddleCenter;
+			guistyle.normal.background = texture2D;
+			guistyle.hover.background = texture2D2;
+			if (GUI.Button(new Rect((float)Screen.width * 0.105f, (float)Screen.height * 0.905f, (float)Screen.width * 250f / 1920f, (float)Screen.height * 29f / 1080f), "", guistyle) && flag4)
 			{
-				transaction
-			});
-			this.mTeam.teamID = Game.instance.player.team.teamID;
-			this.mTeam.name = Game.instance.player.team.name;
-			this.mTeam.locationID = Game.instance.player.team.locationID;
-			this.mTeam.colorID = Game.instance.player.team.colorID;
-			this.mTeam.liveryID = Game.instance.player.team.liveryID;
-			this.mTeam.nationality = Game.instance.player.team.nationality;
-			MovieScreen screen = UIManager.instance.GetScreen<MovieScreen>();
-			screen.PlayTeamMovie(SoundID.Video_TeamLogo, Game.instance.player.team.teamID);
-			screen.SetNextScreen("PlayerScreen", 1.5f, null);
-			UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+				Transaction transaction = new Transaction(Transaction.Group.GlobalMotorsport, Transaction.Type.Debit, 10000L, "Team Purchase");
+				Game.instance.player.team.financeController.finance.ProcessTransactions(null, null, true, new Transaction[]
+				{
+					transaction
+				});
+				this.mTeam.teamID = Game.instance.player.team.teamID;
+				this.mTeam.name = Game.instance.player.team.name;
+				this.mTeam.locationID = Game.instance.player.team.locationID;
+				this.mTeam.colorID = Game.instance.player.team.colorID;
+				this.mTeam.liveryID = Game.instance.player.team.liveryID;
+				this.mTeam.nationality = Game.instance.player.team.nationality;
+				this.mTeam.headquarters.nationality = Game.instance.player.team.nationality;
+				MovieScreen screen = UIManager.instance.GetScreen<MovieScreen>();
+				screen.PlayTeamMovie(SoundID.Video_TeamLogo, Game.instance.player.team.teamID);
+				screen.SetNextScreen("PlayerScreen", 1.5f, null);
+				UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+			}
 		}
-		if (Game.instance.player.team.championship.championshipID != 0 && Game.instance.player.team.championship.championshipID != 1 && Game.instance.player.team.championship.championshipID != 2 && flag && this.mTeam.teamID == Game.instance.player.team.teamID && GUI.Button(new Rect((float)Screen.width * 0.3f, (float)Screen.height * 0.9f, (float)Screen.width * 0.2f, (float)Screen.height * 0.049074f), "Switch to Single Seater"))
+		if (Game.instance.player.rebirthDebug)
 		{
-			Game.instance.MakePlayerUnemployed();
-			Game.instance.MakePlayerEmployed(teamSS);
-		}
-		if (Game.instance.player.team.championship.championshipID != 3 && Game.instance.player.team.championship.championshipID != 4 && flag2 && this.mTeam.teamID == Game.instance.player.team.teamID && GUI.Button(new Rect((float)Screen.width * 0.4f, (float)Screen.height * 0.9f, (float)Screen.width * 0.2f, (float)Screen.height * 0.049074f), "Switch to GT"))
-		{
-			Game.instance.MakePlayerUnemployed();
-			Game.instance.MakePlayerEmployed(teamGT);
-		}
-		if (Game.instance.player.team.championship.championshipID != 5 && Game.instance.player.team.championship.championshipID != 6 && flag3 && this.mTeam.teamID == Game.instance.player.team.teamID && GUI.Button(new Rect((float)Screen.width * 0.5f, (float)Screen.height * 0.9f, (float)Screen.width * 0.2f, (float)Screen.height * 0.049074f), "Switch to Endurance"))
-		{
-			Game.instance.MakePlayerUnemployed();
-			Game.instance.MakePlayerEmployed(teamEN);
+			GUI.Button(new Rect((float)Screen.width * 0.3f, (float)Screen.height * 0.905f, (float)Screen.width * 0.2f, (float)Screen.height * 0.049074f), text.ToString());
 		}
 	}
+
+	// Token: 0x04002F27 RID: 12071
+	public UITeamScreenKeyStaffEntry[] drivers = new UITeamScreenKeyStaffEntry[0];
+
+	// Token: 0x04002F28 RID: 12072
+	public UITeamScreenKeyStaffEntry teamPrinciple;
+
+	// Token: 0x04002F29 RID: 12073
+	public UITeamScreenKeyStaffEntry chiefEngineer;
+
+	// Token: 0x04002F2A RID: 12074
+	public UITeamScreenKeyStaffEntry[] mechanics = new UITeamScreenKeyStaffEntry[0];
+
+	// Token: 0x04002F2B RID: 12075
+	public UITeamScreenHistoryWidget historyWidget;
+
+	// Token: 0x04002F2C RID: 12076
+	public UITeamScreenHeadquartersWidget HQwidget;
+
+	// Token: 0x04002F2D RID: 12077
+	public UITeamScreenChairmanWidget chairmanWidget;
+
+	// Token: 0x04002F2E RID: 12078
+	public UITeamScreenTeamInfoWidget teamWidget;
+
+	// Token: 0x04002F2F RID: 12079
+	public UICarSupplierRolloverTrigger supplierRollover;
+
+	// Token: 0x04002F30 RID: 12080
+	public UIGenericCarBackground carBackground;
+
+	// Token: 0x04002F31 RID: 12081
+	public GameObject carBackgroundParent;
+
+	// Token: 0x04002F32 RID: 12082
+	public GameObject carCamera;
+
+	// Token: 0x04002F33 RID: 12083
+	public TextMeshProUGUI marketabilityText;
+
+	// Token: 0x04002F34 RID: 12084
+	public Slider marketabilitySlider;
+
+	// Token: 0x04002F35 RID: 12085
+	private Team mTeam;
+
+	// Token: 0x04002F36 RID: 12086
+	private StudioScene mStudioScene;
 }

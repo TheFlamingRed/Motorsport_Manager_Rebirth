@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001E2 RID: 482
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Driver : Person
+{
+	// Token: 0x06000CDE RID: 3294
+	public void OnSessionEnd()
+	{
+		RaceEventDetails eventDetails = Game.instance.sessionManager.eventDetails;
+		SessionDetails.SessionType sessionType = eventDetails.currentSession.sessionType;
+		if (sessionType == SessionDetails.SessionType.Race && this.IsMainDriver())
+		{
+			this.mDriverRivalries.UpdateRivalries();
+			this.personalityTraitController.CheckPersonalityTraitEventTrigger(PersonalityTraitData.EventTriggerType.PostRace);
+			this.personalityTraitController.CheckIfCarPartPromiseIsFulfilled();
+		}
+		this.UpdateStatsForAge(this.accumulatedStats, PersonConstants.statIncreaseTimePerDay);
+		this.AddTraitsImprovementBonus(this.accumulatedStats, PersonConstants.statIncreaseTimePerDay);
+		if (Game.instance.driverManager.maxDriverStatProgressionPerDay != null)
+		{
+			this.accumulatedStats.LimitToDailyMax(Game.instance.driverManager.maxDriverStatProgressionPerDay);
+		}
+		if (this == this.contract.GetTeam().GetReserveDriver() && eventDetails.results.GetResultsForSession(SessionDetails.SessionType.Practice).GetResultForDriver(this) != null)
+		{
+			this.accumulatedStats += this.accumulatedStats;
+		}
+		float total = this.accumulatedStats.GetTotal();
+		if (total < 0f || (total > 0f && this.mStats.GetPotential() > 0f))
+		{
+			this.mStats += this.accumulatedStats;
+			this.mStats.braking = Mathf.Clamp(this.mStats.braking, 0f, 20f);
+			this.mStats.cornering = Mathf.Clamp(this.mStats.cornering, 0f, 20f);
+			this.mStats.smoothness = Mathf.Clamp(this.mStats.smoothness, 0f, 20f);
+			this.mStats.overtaking = Mathf.Clamp(this.mStats.overtaking, 0f, 20f);
+			this.mStats.consistency = Mathf.Clamp(this.mStats.consistency, 0f, 20f);
+			this.mStats.adaptability = Mathf.Clamp(this.mStats.adaptability, 0f, 20f);
+			this.mStats.fitness = Mathf.Clamp(this.mStats.fitness, 0f, 20f);
+			this.mStats.feedback = Mathf.Clamp(this.mStats.feedback, 0f, 20f);
+			this.mStats.focus = Mathf.Clamp(this.mStats.focus, 0f, 20f);
+			this.mPotential -= total;
+			this.mPotential = Mathf.Max(0f, this.mPotential);
+			this.mModifiedPotential -= total;
+		}
+		this.accumulatedStats.Clear();
+		ChampionshipRules rules = this.contract.GetTeam().championship.rules;
+		if (sessionType == SessionDetails.SessionType.Qualifying && (!rules.qualifyingBasedActive || (rules.gridSetup == ChampionshipRules.GridSetup.QualifyingBased3Sessions && !eventDetails.IsLastSessionOfType())))
+		{
+			return;
+		}
+		float inOverallWeight = 1f;
+		switch (sessionType)
+		{
+		case SessionDetails.SessionType.Practice:
+			inOverallWeight = this.moralePracticeWeight;
+			break;
+		case SessionDetails.SessionType.Qualifying:
+			inOverallWeight = this.moraleQualifyingWeight;
+			break;
+		case SessionDetails.SessionType.Race:
+			inOverallWeight = this.moraleRaceWeight;
+			break;
+		}
+		RaceEventResults.SessonResultData resultsForSession = Game.instance.sessionManager.eventDetails.results.GetResultsForSession(sessionType);
+		RaceEventResults.ResultData resultForDriver2 = resultsForSession.GetResultForDriver(this);
+		bool flag = this.contract.GetTeam().championship.series == Championship.Series.EnduranceSeries;
+		if (resultForDriver2 != null)
+		{
+			string locationNameID = Game.instance.sessionManager.eventDetails.circuit.locationNameID;
+			int inPosition = resultForDriver2.position;
+			if (flag)
+			{
+				int num = 1;
+				for (int i = 0; i < resultsForSession.resultData.Count; i++)
+				{
+					if (resultsForSession.resultData[i].team.championship == resultForDriver2.team.championship)
+					{
+						if (resultsForSession.resultData[i] == resultForDriver2)
+						{
+							break;
+						}
+						num++;
+					}
+				}
+				inPosition = num;
+			}
+			this.UpdateSessionMorale(locationNameID, inOverallWeight, inPosition, resultsForSession.resultData.Count, sessionType);
+		}
+		else if (flag && sessionType == SessionDetails.SessionType.Qualifying)
+		{
+			this.ModifyMorale(-0.05f, Localisation.LocaliseID("PSG_10013878", null), true);
+		}
+		if (sessionType == SessionDetails.SessionType.Race)
+		{
+			this.UpdateContractMoralePerRace();
+		}
+	}
+}

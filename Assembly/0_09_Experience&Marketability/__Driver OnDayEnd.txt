@@ -1,0 +1,38 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001E2 RID: 482
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Driver : Person
+{
+	// Token: 0x06000CE2 RID: 3298
+	public void OnDayEnd()
+	{
+		this.personalityTraitController.UpdatePersonalityTraits();
+		this.accumulatedStats.CopyImprovementRates(this.mStats);
+		this.CalculateAccumulatedStatsForDay(this.accumulatedStats);
+		this.AddTraitsImprovementBonus(this.accumulatedStats, PersonConstants.statIncreaseTimePerDay);
+		float total = this.accumulatedStats.GetTotal();
+		if (total < 0f || (total > 0f && this.mStats.GetPotential() > 0f))
+		{
+			this.mStats += this.accumulatedStats;
+			this.mStats.braking = Mathf.Clamp(this.mStats.braking, 0f, 20f);
+			this.mStats.cornering = Mathf.Clamp(this.mStats.cornering, 0f, 20f);
+			this.mStats.smoothness = Mathf.Clamp(this.mStats.smoothness, 0f, 20f);
+			this.mStats.overtaking = Mathf.Clamp(this.mStats.overtaking, 0f, 20f);
+			this.mStats.consistency = Mathf.Clamp(this.mStats.consistency, 0f, 20f);
+			this.mStats.adaptability = Mathf.Clamp(this.mStats.adaptability, 0f, 20f);
+			this.mStats.fitness = Mathf.Clamp(this.mStats.fitness, 0f, 20f);
+			this.mStats.feedback = Mathf.Clamp(this.mStats.feedback, 0f, 20f);
+			this.mStats.focus = Mathf.Clamp(this.mStats.focus, 0f, 20f);
+			this.mPotential -= total;
+			this.mPotential = Mathf.Max(0f, this.mPotential);
+			this.mModifiedPotential -= total;
+		}
+		this.mStats.UpdatePotentialWithPeakAge(this.peakAge);
+		this.lastAccumulatedStats = new DriverStats(this.accumulatedStats);
+		this.accumulatedStats.Clear();
+	}
+}

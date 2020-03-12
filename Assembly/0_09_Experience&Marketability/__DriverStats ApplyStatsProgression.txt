@@ -1,0 +1,43 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001EF RID: 495
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class DriverStats : PersonStats
+{
+	// Token: 0x06000D74 RID: 3444
+	public void ApplyStatsProgression(DriverStatsProgression inProgression, float inAmount)
+	{
+		int num = (int)this.GetTotal();
+		float totalProgressionToApply = this.GetTotalProgressionToApply(inProgression, inAmount);
+		if (num + (int)totalProgressionToApply > this.totalStatsMax)
+		{
+			int num2 = this.totalStatsMax - num;
+			if (num2 <= 0)
+			{
+				return;
+			}
+			inAmount *= (float)num2 / totalProgressionToApply;
+		}
+		this.braking += inProgression.braking * this.mBrakingImprovementRate * inAmount;
+		this.cornering += inProgression.cornering * this.mCorneringImprovementRate * inAmount;
+		this.smoothness += inProgression.smoothness * this.mSmoothnessImprovementRate * inAmount;
+		this.overtaking += inProgression.overtaking * this.mOvertakingImprovementRate * inAmount;
+		this.consistency += inProgression.consistency * this.mConsistencyImprovementRate * inAmount;
+		this.adaptability += inProgression.adaptability * this.mAdaptabilityImprovementRate * inAmount;
+		this.fitness += inProgression.fitness * this.mFitnessImprovementRate * inAmount;
+		this.feedback += inProgression.feedback * this.mFeedbackImprovementRate * inAmount;
+		this.focus += inProgression.focus * this.mFocusImprovementRate * inAmount;
+		this.braking = Mathf.Clamp(this.braking, 0f, 20f);
+		this.cornering = Mathf.Clamp(this.cornering, 0f, 20f);
+		this.smoothness = Mathf.Clamp(this.smoothness, 0f, 20f);
+		this.overtaking = Mathf.Clamp(this.overtaking, 0f, 20f);
+		this.consistency = Mathf.Clamp(this.consistency, 0f, 20f);
+		this.adaptability = Mathf.Clamp(this.adaptability, 0f, 20f);
+		this.fitness = Mathf.Clamp(this.fitness, 0f, 20f);
+		this.feedback = Mathf.Clamp(this.feedback, 0f, 20f);
+		this.focus = Mathf.Clamp(this.focus, 0f, 20f);
+	}
+}

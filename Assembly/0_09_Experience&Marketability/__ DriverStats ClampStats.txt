@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001EF RID: 495
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class DriverStats : PersonStats
+{
+	// Token: 0x06000D75 RID: 3445
+	public void ClampStats()
+	{
+		this.experience = Mathf.Clamp01(this.experience);
+		this.marketability = Mathf.Clamp01(this.marketability);
+		this.balance = Mathf.Clamp01(this.balance);
+	}
+}

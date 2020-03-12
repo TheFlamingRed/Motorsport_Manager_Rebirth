@@ -1,0 +1,777 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using FullSerializer;
+using MM2;
+using ModdingSystem;
+
+// Token: 0x020002CA RID: 714
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class Game : InstanceCounter
+{
+	// Token: 0x06001476 RID: 5238
+	public Game()
+	{
+	}
+
+	// Token: 0x06001477 RID: 5239
+	static Game()
+	{
+	}
+
+	// Token: 0x06001478 RID: 5240
+	public void Destroy()
+	{
+		if (this.tutorialSystem != null)
+		{
+			this.tutorialSystem.Destroy();
+			this.tutorialSystem = null;
+		}
+		App.instance.cameraManager.ClearReferences();
+		UIManager.instance.OnAboutToBeDestroyed();
+		StringVariableParser.ResetAllStaticReferences();
+		CreateTeamManager.ResetAllStaticReferences();
+		if (UIManager.instance != null)
+		{
+			UIManager.instance.navigationBars.ResetReferences();
+		}
+		if (this.entityManager != null)
+		{
+			this.entityManager.Destroy();
+			this.entityManager = null;
+		}
+		if (this.vehicleManager != null)
+		{
+			this.vehicleManager.Destroy();
+			this.vehicleManager = null;
+		}
+		if (this.sessionManager != null)
+		{
+			this.sessionManager.Destroy();
+			this.sessionManager = null;
+		}
+		if (this.notificationManager != null)
+		{
+			this.notificationManager.Destroy();
+			this.notificationManager = null;
+		}
+		if (this.messageManager != null)
+		{
+			this.messageManager.Destroy();
+			this.messageManager = null;
+		}
+		if (this.liveryManager != null)
+		{
+			this.liveryManager.OnDestroy();
+			this.liveryManager = null;
+		}
+		if (this.dialogSystem != null)
+		{
+			this.dialogSystem.OnDestroy();
+			this.dialogSystem = null;
+		}
+		if (this.scoutingManager != null)
+		{
+			this.scoutingManager.OnUnload();
+			this.scoutingManager = null;
+		}
+		if (this.calendar != null)
+		{
+			this.calendar.OnUnload();
+			this.calendar = null;
+		}
+		if (this.time != null)
+		{
+			this.time.OnDestroy();
+			this.time = null;
+		}
+		if (this.headquartersManager != null)
+		{
+			this.headquartersManager.OnDestroy();
+			this.headquartersManager = null;
+		}
+		BinkWrapper.instance.OnUnload();
+		App.instance.ResetReferences();
+	}
+
+	// Token: 0x06001479 RID: 5241
+	public void SetupNewGame()
+	{
+		this.time = new GameTimer();
+		this.stateInfo = new GameStateInfo();
+		this.calendar = new Calendar();
+		this.entityManager = new EntityManager();
+		this.player = this.entityManager.CreateEntity<Player>();
+		this.player.LoadDefaultsFromDatabase(App.instance.database);
+		this.player.SetToDefault();
+		this.messageManager = this.CreateManager<MessageManager>();
+		this.challengeManager = new ChallengeManager();
+		this.challengeManager.OnStartingGame();
+		this.tutorialSystem = new TutorialSystem_v1();
+	}
+
+	// Token: 0x0600147A RID: 5242
+	public void StartNewGame()
+	{
+		this.localisationGroupManager = new LocalisationGroupManager();
+		App.instance.teamColorManager.ResetTeamColour();
+		App.instance.LoadCarPartComponentsAndTeamColors();
+		this.persistentEventData = new PersistentEventData();
+		this.persistentEventData.Start();
+		this.tutorialInfo = new TutorialInfo();
+		this.LoadGameData();
+		this.chassisManager = new CarChassisManager();
+		this.climateManager = new ClimateManager();
+		this.circuitManager = new CircuitManager();
+		this.buildingManager = new HQsBuildingManager();
+		this.headquartersManager = new HQsManager();
+		this.supplierManager = new SupplierManager();
+		this.partSettingsManager = new PartTypeSlotSettingsManager();
+		this.simulationSettingsManager = new SimulationSettingsManager();
+		this.personalityTraitManager = new PersonalityTraitDataManager();
+		this.mechanicBonusManager = new MechanicBonusManager();
+		this.driverStatsProgressionManager = new DriverStatsProgressionManager();
+		this.engineerStatsProgressionManager = new EngineerStatsProgressionManager();
+		this.mechanicStatsProgressionManager = new MechanicStatsProgressionManager();
+		this.driverStatsProgressionManager.LoadDriverProgressionFromDatabase(App.instance.database);
+		this.engineerStatsProgressionManager.LoadEngineerProgressionFromDatabase(App.instance.database);
+		this.mechanicStatsProgressionManager.LoadMechanicProgressionFromDatabase(App.instance.database);
+		this.mechanicBonusManager.LoadMechanicBonusesFromDatabase(App.instance.database);
+		this.personalityTraitManager.LoadPersonalityTraitsFromDatabase(App.instance.database);
+		this.partSettingsManager.LoadSettingsFromDatabase(App.instance.database);
+		this.climateManager.LoadClimatesFromDatabase(App.instance.database);
+		this.circuitManager.LoadCircuitsFromDatabase(App.instance.database, this.climateManager);
+		this.supplierManager.LoadFromDatabase(App.instance.database);
+		this.simulationSettingsManager.LoadSettingsFromDatabase(App.instance.database);
+		this.chassisManager.LoadChassisFromDatabase(App.instance.database, this.supplierManager);
+		this.buildingManager.LoadBuildingsFromDatabase(App.instance.database, this.partSettingsManager, App.instance.componentsManager);
+		this.headquartersManager.LoadHeadquartersFromDatabase(App.instance.database, this.buildingManager);
+		this.teamManager = this.CreateManager<TeamManager>();
+		this.mediaManager = this.CreateManager<MediaManager>();
+		this.sponsorManager = this.CreateManager<SponsorManager>();
+		this.investorManager = this.CreateManager<InvestorManager>();
+		this.notificationManager = this.CreateManager<NotificationManager>();
+		this.championshipManager = this.CreateManager<ChampionshipManager>();
+		this.driverManager = this.CreateManager<DriverManager>();
+		this.celebrityManager = this.CreateManager<CelebrityManager>();
+		this.engineerManager = this.CreateManager<EngineerManager>();
+		this.mechanicManager = this.CreateManager<MechanicManager>();
+		this.scoutManager = this.CreateManager<ScoutManager>();
+		this.chairmanManager = this.CreateManager<ChairmanManager>();
+		this.assistantManager = this.CreateManager<AssistantManager>();
+		this.teamPrincipalManager = this.CreateManager<TeamPrincipalManager>();
+		this.pitCrewManager = this.CreateManager<PitCrewManager>();
+		this.scoutingManager = new ScoutingManager();
+		this.vehicleManager = new VehicleManager();
+		this.vehicleManager.Start();
+		this.sessionManager = new SessionManager();
+		this.liveryManager = new LiveryManager();
+		this.liveryManager.LoadFromDatabase(App.instance.database);
+		this.dilemmaSystem = new DilemmaSystem();
+		this.mSerializedPreferences = new SerializedPreferences();
+		this.teamManager.OnStartingGame();
+		this.mediaManager.OnStartingGame();
+		this.sponsorManager.OnStartingGame();
+		this.notificationManager.OnStartingGame();
+		this.championshipManager.OnStartingGame();
+		this.driverManager.OnStartingGame();
+		this.celebrityManager.OnStartingGame();
+		this.engineerManager.OnStartingGame();
+		this.messageManager.OnStartingGame();
+		this.mechanicManager.OnStartingGame();
+		this.scoutManager.OnStartingGame();
+		this.chairmanManager.OnStartingGame();
+		this.assistantManager.OnStartingGame();
+		this.teamPrincipalManager.OnStartingGame();
+		this.scoutingManager.OnStartingGame();
+		this.dilemmaSystem.OnStartingGame();
+		this.pitCrewManager.OnStartingGame();
+		this.circuitManager.SetLapRecords(App.instance.database);
+		PartsDatabase.SetCarPartsFromDatabase(App.instance.database);
+		this.savedSubscribedModsInfo = App.instance.modManager.NewGameSaveSubscribedModsInfo();
+		StringVariableParser.OnStart();
+		if (Game.OnGameDataChanged != null)
+		{
+			Game.OnGameDataChanged();
+		}
+		UIManager.instance.OnGameDataChanged();
+		if (this.isCareer)
+		{
+			this.sponsorManager.StartSponsors();
+			this.dialogSystem.OnStart();
+			this.championshipManager.OnSeasonStart();
+		}
+		this.championshipManager.UpdateAllStandings();
+		this.player.OnStartingGame();
+		this.teamManager.GenerateInitialAIPitCrewStats();
+		CreateTeamManager.OnGameStart();
+	}
+
+	// Token: 0x0600147B RID: 5243
+	private void DemoSetup()
+	{
+		Game.instance.championshipManager.GetChampionshipByID(1).isChoosable = false;
+		Game.instance.championshipManager.GetChampionshipByID(2).isChoosable = false;
+	}
+
+	// Token: 0x0600147C RID: 5244
+	public void OnSave()
+	{
+		if (this.entityManager != null)
+		{
+			this.entityManager.OnSave();
+		}
+		if (this.challengeManager != null)
+		{
+			this.challengeManager.OnSave();
+		}
+	}
+
+	// Token: 0x0600147D RID: 5245
+	public void OnLoad()
+	{
+		App.instance.StartCoroutine(this.DoLoad());
+	}
+
+	// Token: 0x0600147E RID: 5246
+	private IEnumerator DoLoad()
+	{
+		App.instance.gameStateManager.OnLoad();
+		yield return null;
+		this.LoadGameData();
+		this.LoadDesignDataForSeries(this.player.team.championship.series);
+		App.instance.modManager.ReviseSubscribedModsInfo(ref this.savedSubscribedModsInfo);
+		App.instance.LoadCarPartComponentsAndTeamColors();
+		if (this.driverStatsProgressionManager == null)
+		{
+			this.driverStatsProgressionManager = new DriverStatsProgressionManager();
+			this.driverStatsProgressionManager.LoadDriverProgressionFromDatabase(App.instance.database);
+		}
+		if (this.engineerStatsProgressionManager == null)
+		{
+			this.engineerStatsProgressionManager = new EngineerStatsProgressionManager();
+			this.engineerStatsProgressionManager.LoadEngineerProgressionFromDatabase(App.instance.database);
+		}
+		if (this.mechanicStatsProgressionManager == null)
+		{
+			this.mechanicStatsProgressionManager = new MechanicStatsProgressionManager();
+			this.mechanicStatsProgressionManager.LoadMechanicProgressionFromDatabase(App.instance.database);
+		}
+		this.liveryManager.OnLoad();
+		this.challengeManager.OnLoad();
+		if (this.pitCrewManager == null)
+		{
+			this.pitCrewManager = this.CreateManager<PitCrewManager>();
+		}
+		yield return null;
+		if (this.entityManager != null)
+		{
+			this.entityManager.OnLoad();
+		}
+		this.messageManager.OnLoad();
+		this.notificationManager.OnLoad();
+		this.championshipManager.OnLoad();
+		this.teamManager.OnLoad();
+		this.driverManager.OnLoad();
+		this.engineerManager.OnLoad();
+		this.mechanicManager.OnLoad();
+		this.vehicleManager.OnLoad();
+		this.dilemmaSystem.OnLoad();
+		this.scoutingManager.OnLoad();
+		this.sponsorManager.OnLoad();
+		this.headquartersManager.OnLoad();
+		this.supplierManager.OnLoad();
+		this.tutorialSystem.OnLoad();
+		this.personalityTraitManager.OnLoad();
+		this.pitCrewManager.OnLoad();
+		yield return null;
+		App.instance.uiTeamColourManager.SetToPlayerTeamColour();
+		this.calendar.OnLoad();
+		if (this.circuitManager.GetCircuitByIndex(0).locationName == string.Empty)
+		{
+			List<DatabaseEntry> circuitData = App.instance.database.locationData;
+			for (int dataIndex = 0; dataIndex < circuitData.Count; dataIndex++)
+			{
+				DatabaseEntry databaseEntry = circuitData[dataIndex];
+				int circuitID = databaseEntry.GetIntValue("Circuit ID");
+				string circuitName = databaseEntry.GetStringValue("Location");
+				Circuit targetCircuit = this.circuitManager.GetCircuitByID(circuitID);
+				if (targetCircuit != null)
+				{
+					targetCircuit.locationName = circuitName;
+				}
+			}
+		}
+		yield return null;
+		if (this.mSerializedPreferences == null)
+		{
+			this.mSerializedPreferences = new SerializedPreferences();
+		}
+		yield return null;
+		if (Game.OnGameDataChanged != null)
+		{
+			Game.OnGameDataChanged();
+		}
+		yield return null;
+		UIManager.instance.OnGameDataChanged();
+		this.time.OnLoad();
+		this.dialogSystem.OnLoad();
+		yield return null;
+		this.stateInfo.OnLoadGame();
+		yield break;
+	}
+
+	// Token: 0x0600147F RID: 5247
+	private T CreateManager<T>() where T : BaseManager, new()
+	{
+		T t = Activator.CreateInstance<T>();
+		t.OnStart(App.instance.database);
+		return t;
+	}
+
+	// Token: 0x06001480 RID: 5248
+	public void ManageTeam(Team inTeam)
+	{
+		this.player.team = inTeam;
+		this.LoadDesignDataForSeries(inTeam.championship.series);
+		this.championshipManager.GenerateInitialCareerHistory();
+		App.instance.uiTeamColourManager.SetToPlayerTeamColour();
+		if (this.isCareer)
+		{
+			this.player.team.NotifyIsOwnedByPlayer();
+			this.player.team.sponsorController.SetNotifications();
+			this.SetupPlayerContract(this.player.team);
+			this.calendar.UpdateEventsShownOnCalendar();
+			this.dilemmaSystem.SetFirstDilemmaDateTrigger();
+		}
+		this.scoutingManager.UpdateUnlockedScoutingSlots();
+		this.sessionManager.SetChampionship(this.player.team.championship);
+		this.persistentEventData.OnEventStart();
+		inTeam.pitCrewController.OnPlayerJoinTeam();
+		this.pitCrewManager.OnPlayerJoinTeam();
+		if (Game.OnNewGame != null && !(App.instance.gameStateManager.currentState is QuickRaceSetupState))
+		{
+			Game.OnNewGame();
+			SafeAction.NullAnAction(ref Game.OnNewGame);
+			UIManager.instance.OnNewGame();
+			App.instance.saveSystem.OnStartingNewGame();
+		}
+	}
+
+	// Token: 0x06001481 RID: 5249
+	public void MakePlayerEmployed(Team inTeam)
+	{
+		if (this.player.IsUnemployed())
+		{
+			bool flag = App.instance.gameStateManager.currentState is FrontendState;
+			this.LoadDesignDataForSeries(inTeam.championship.series);
+			if (flag)
+			{
+				this.player.team = inTeam;
+				App.instance.uiTeamColourManager.SetToPlayerTeamColour();
+				this.messageManager.ClearDelayedMessages();
+				this.player.team.NotifyIsOwnedByPlayer();
+				this.player.team.sponsorController.SetNotifications();
+				this.SetupPlayerContract(inTeam);
+				inTeam.chairman.ResetHappiness();
+				inTeam.pitCrewController.OnPlayerJoinTeam();
+				this.pitCrewManager.OnPlayerJoinTeam();
+				this.dialogSystem.OnStartGameMessages();
+				this.calendar.UpdateEventsShownOnCalendar();
+				if (!ConsoleCommands.testSeasons && inTeam.financeController.finance.currentBudget < inTeam.financeController.availableFunds)
+				{
+					long inBudget = inTeam.financeController.availableFunds - inTeam.financeController.finance.currentBudget;
+					inTeam.financeController.AllocateFunds(inBudget, Game.instance.time.now);
+				}
+				UIManager.instance.OnPlayerTeamChanged();
+			}
+			this.scoutingManager.UpdateUnlockedScoutingSlots();
+		}
+	}
+
+	// Token: 0x06001482 RID: 5250
+	public void MakePlayerUnemployed()
+	{
+		if (!this.player.IsUnemployed())
+		{
+			Team team = this.player.team;
+			this.player.playerGameData.UpdateData(team.championship);
+			team.NotifyPlayerLeftTeam();
+			team.contractManager.FirePerson(this.player, Contract.ContractTerminationType.Generic);
+			team.contractManager.HireReplacementTeamPrincipal();
+			if (!ConsoleCommands.testSeasons && team.financeController.finance.currentBudget < team.financeController.availableFunds)
+			{
+				long inBudget = team.financeController.availableFunds - team.financeController.finance.currentBudget;
+				team.financeController.AllocateFunds(inBudget, Game.instance.time.now);
+			}
+			team.pitCrewController.OnPlayerLeaveTeam();
+			this.player.team = this.teamManager.nullTeam;
+			App.instance.uiTeamColourManager.SetToPlayerTeamColour();
+			this.calendar.UpdateEventsShownOnCalendar();
+			this.messageManager.ClearDelayedMessages();
+			List<Message> entityList = this.messageManager.GetEntityList();
+			int count = entityList.Count;
+			for (int i = 0; i < count; i++)
+			{
+				Message message = entityList[i];
+				if (message.mustRespond)
+				{
+					message.SetResponded();
+					message.SetPriorityType(Message.Priority.Normal);
+					message.mustRespond = false;
+					message.interruptGameTime = false;
+				}
+			}
+			List<Notification> entityList2 = this.notificationManager.GetEntityList();
+			count = entityList2.Count;
+			for (int j = 0; j < count; j++)
+			{
+				Notification notification = entityList2[j];
+				if (notification.name != "UnreadMessages" && (notification.count > 0 || notification.progress > 0f))
+				{
+					notification.ResetProgress();
+					notification.ResetCount();
+				}
+			}
+			this.scoutingManager.StopAllScoutingJobs();
+			UIManager.instance.OnPlayerTeamChanged();
+			Game.instance.achievementData.OnPlayerLeftTeamMidSeason();
+			Game.instance.challengeManager.NotifyChallengeManagerOfGameEventAndCheckCompletion(ChallengeManager.ChallengeManagerGameEvents.PlayerLeftTeam);
+		}
+	}
+
+	// Token: 0x06001483 RID: 5251
+	private void LoadGameData()
+	{
+		this.dialogSystem = new DialogSystem();
+		this.helpSystem = new HelpSystem();
+	}
+
+	// Token: 0x06001484 RID: 5252
+	public void LoadDesignDataForPlayerTeam()
+	{
+		if (!this.player.IsUnemployed())
+		{
+			this.LoadDesignDataForSeries(Game.instance.player.team.championship.series);
+		}
+	}
+
+	// Token: 0x06001485 RID: 5253
+	private void LoadDesignDataForSeries(Championship.Series inChampionshipSeries)
+	{
+		switch (inChampionshipSeries)
+		{
+		case Championship.Series.SingleSeaterSeries:
+			DesignDataManager.LoadSingleSeaterDesignData();
+			return;
+		case Championship.Series.GTSeries:
+			DesignDataManager.LoadGTDesignData();
+			return;
+		case Championship.Series.EnduranceSeries:
+			DesignDataManager.LoadEnduranceDesignDataData();
+			return;
+		default:
+			return;
+		}
+	}
+
+	// Token: 0x06001486 RID: 5254
+	private void SetupPlayerContract(Team inTeam)
+	{
+		ContractPerson contract = this.player.contract;
+		contract.employeer = inTeam;
+		contract.SetPerson(this.player);
+		contract.job = Contract.Job.TeamPrincipal;
+		contract.SetContractState(Contract.ContractStatus.OnGoing);
+		DateTime now = this.time.now;
+		DateTime endDate = default(DateTime);
+		endDate = now.AddYears(3);
+		contract.startDate = now;
+		contract.endDate = endDate;
+		contract.optionClauseEndDate = this.time.now.AddHours(1.0);
+		int num = 1000000;
+		contract.yearlyWages = 5 * num;
+		contract.raceBonus = num;
+		contract.championBonus = 2 * num;
+		contract.payDriver = num;
+		contract.GetTeam().contractManager.AddSignedContract(contract);
+		EmployeeSlot slot = inTeam.contractManager.GetSlot(Contract.Job.TeamPrincipal);
+		slot.personHired.contract.SetContractState(Contract.ContractStatus.Terminated);
+		slot.personHired = this.player;
+	}
+
+	// Token: 0x06001487 RID: 5255
+	public static bool IsActive()
+	{
+		return Game.instance != null && Game.instance.player != null && Game.instance.player.team != null;
+	}
+
+	// Token: 0x1700025D RID: 605
+	// (get) Token: 0x06001488 RID: 5256
+	public bool isCareer
+	{
+		get
+		{
+			return this.gameType == Game.GameType.Career;
+		}
+	}
+
+	// Token: 0x1700025E RID: 606
+	// (get) Token: 0x06001489 RID: 5257
+	// (set) Token: 0x0600148A RID: 5258
+	public bool queuedAutosave
+	{
+		get
+		{
+			return this.mQueuedAutosave;
+		}
+		set
+		{
+			this.mQueuedAutosave = value;
+		}
+	}
+
+	// Token: 0x0600508D RID: 20621
+	public void MakePlayerEmployedSwitch(Team inTeam)
+	{
+		if (this.player.IsUnemployed())
+		{
+			bool flag = App.instance.gameStateManager.currentState is FrontendState;
+			this.LoadDesignDataForSeries(inTeam.championship.series);
+			if (flag)
+			{
+				this.player.team = inTeam;
+				App.instance.uiTeamColourManager.SetToPlayerTeamColour();
+				this.messageManager.ClearDelayedMessages();
+				this.player.team.NotifyIsOwnedByPlayer();
+				this.player.team.sponsorController.SetNotifications();
+				this.SetupPlayerContract(inTeam);
+				inTeam.pitCrewController.OnPlayerJoinTeam();
+				this.pitCrewManager.OnPlayerJoinTeam();
+				this.dialogSystem.OnStartGameMessages();
+				this.calendar.UpdateEventsShownOnCalendar();
+				UIManager.instance.OnPlayerTeamChanged();
+			}
+			this.scoutingManager.UpdateUnlockedScoutingSlots();
+		}
+	}
+
+	// Token: 0x0600508F RID: 20623
+	public void MakePlayerUnemployedswitch()
+	{
+		if (!this.player.IsUnemployed())
+		{
+			Team team = this.player.team;
+			this.player.playerGameData.UpdateData(team.championship);
+			team.NotifyPlayerLeftTeam();
+			team.contractManager.FirePerson(this.player, Contract.ContractTerminationType.Generic);
+			team.contractManager.HireReplacementTeamPrincipal();
+			team.pitCrewController.OnPlayerLeaveTeam();
+			this.player.team = this.teamManager.nullTeam;
+			App.instance.uiTeamColourManager.SetToPlayerTeamColour();
+			this.calendar.UpdateEventsShownOnCalendar();
+			this.messageManager.ClearDelayedMessages();
+			List<Message> entityList = this.messageManager.GetEntityList();
+			int count = entityList.Count;
+			for (int i = 0; i < count; i++)
+			{
+				Message message = entityList[i];
+				if (message.mustRespond)
+				{
+					message.SetResponded();
+					message.SetPriorityType(Message.Priority.Normal);
+					message.mustRespond = false;
+					message.interruptGameTime = false;
+				}
+			}
+			List<Notification> entityList2 = this.notificationManager.GetEntityList();
+			count = entityList2.Count;
+			for (int j = 0; j < count; j++)
+			{
+				Notification notification = entityList2[j];
+				if (notification.name != "UnreadMessages" && (notification.count > 0 || notification.progress > 0f))
+				{
+					notification.ResetProgress();
+					notification.ResetCount();
+				}
+			}
+			UIManager.instance.OnPlayerTeamChanged();
+		}
+	}
+
+	// Token: 0x040011F5 RID: 4597
+	public static Game instance;
+
+	// Token: 0x040011F6 RID: 4598
+	public static bool IsSimulatingSeason;
+
+	// Token: 0x040011F7 RID: 4599
+	public static Action OnGameDataChanged;
+
+	// Token: 0x040011F8 RID: 4600
+	public static Action OnNewGame;
+
+	// Token: 0x040011F9 RID: 4601
+	[NonSerialized]
+	public DialogSystem dialogSystem;
+
+	// Token: 0x040011FA RID: 4602
+	[NonSerialized]
+	public HelpSystem helpSystem;
+
+	// Token: 0x040011FB RID: 4603
+	public LocalisationGroupManager localisationGroupManager;
+
+	// Token: 0x040011FC RID: 4604
+	public Player player;
+
+	// Token: 0x040011FD RID: 4605
+	public GameTimer time;
+
+	// Token: 0x040011FE RID: 4606
+	public Calendar calendar;
+
+	// Token: 0x040011FF RID: 4607
+	public EntityManager entityManager;
+
+	// Token: 0x04001200 RID: 4608
+	public CarChassisManager chassisManager;
+
+	// Token: 0x04001201 RID: 4609
+	public ClimateManager climateManager;
+
+	// Token: 0x04001202 RID: 4610
+	public CircuitManager circuitManager;
+
+	// Token: 0x04001203 RID: 4611
+	public SupplierManager supplierManager;
+
+	// Token: 0x04001204 RID: 4612
+	public SimulationSettingsManager simulationSettingsManager;
+
+	// Token: 0x04001205 RID: 4613
+	public TeamManager teamManager;
+
+	// Token: 0x04001206 RID: 4614
+	public HQsBuildingManager buildingManager;
+
+	// Token: 0x04001207 RID: 4615
+	public HQsManager headquartersManager;
+
+	// Token: 0x04001208 RID: 4616
+	public MediaManager mediaManager;
+
+	// Token: 0x04001209 RID: 4617
+	public SponsorManager sponsorManager;
+
+	// Token: 0x0400120A RID: 4618
+	public InvestorManager investorManager;
+
+	// Token: 0x0400120B RID: 4619
+	public DriverManager driverManager;
+
+	// Token: 0x0400120C RID: 4620
+	public EngineerManager engineerManager;
+
+	// Token: 0x0400120D RID: 4621
+	public ChampionshipManager championshipManager;
+
+	// Token: 0x0400120E RID: 4622
+	public MessageManager messageManager;
+
+	// Token: 0x0400120F RID: 4623
+	public NotificationManager notificationManager;
+
+	// Token: 0x04001210 RID: 4624
+	public CelebrityManager celebrityManager;
+
+	// Token: 0x04001211 RID: 4625
+	public MechanicManager mechanicManager;
+
+	// Token: 0x04001212 RID: 4626
+	public ScoutManager scoutManager;
+
+	// Token: 0x04001213 RID: 4627
+	public ChairmanManager chairmanManager;
+
+	// Token: 0x04001214 RID: 4628
+	public AssistantManager assistantManager;
+
+	// Token: 0x04001215 RID: 4629
+	public TeamPrincipalManager teamPrincipalManager;
+
+	// Token: 0x04001216 RID: 4630
+	public ScoutingManager scoutingManager;
+
+	// Token: 0x04001217 RID: 4631
+	public PartTypeSlotSettingsManager partSettingsManager;
+
+	// Token: 0x04001218 RID: 4632
+	public TutorialSystem_v1 tutorialSystem;
+
+	// Token: 0x04001219 RID: 4633
+	public LiveryManager liveryManager;
+
+	// Token: 0x0400121A RID: 4634
+	public PersonalityTraitDataManager personalityTraitManager;
+
+	// Token: 0x0400121B RID: 4635
+	public MechanicBonusManager mechanicBonusManager;
+
+	// Token: 0x0400121C RID: 4636
+	public DilemmaSystem dilemmaSystem;
+
+	// Token: 0x0400121D RID: 4637
+	public ChallengeManager challengeManager;
+
+	// Token: 0x0400121E RID: 4638
+	public DriverStatsProgressionManager driverStatsProgressionManager;
+
+	// Token: 0x0400121F RID: 4639
+	public EngineerStatsProgressionManager engineerStatsProgressionManager;
+
+	// Token: 0x04001220 RID: 4640
+	public MechanicStatsProgressionManager mechanicStatsProgressionManager;
+
+	// Token: 0x04001221 RID: 4641
+	public PitCrewManager pitCrewManager;
+
+	// Token: 0x04001222 RID: 4642
+	public VehicleManager vehicleManager;
+
+	// Token: 0x04001223 RID: 4643
+	public SessionManager sessionManager;
+
+	// Token: 0x04001224 RID: 4644
+	public TutorialInfo tutorialInfo;
+
+	// Token: 0x04001225 RID: 4645
+	public PersistentEventData persistentEventData;
+
+	// Token: 0x04001226 RID: 4646
+	public GameStateInfo stateInfo;
+
+	// Token: 0x04001227 RID: 4647
+	public Game.GameType gameType;
+
+	// Token: 0x04001228 RID: 4648
+	private bool mQueuedAutosave;
+
+	// Token: 0x04001229 RID: 4649
+	public List<SavedSubscribedModInfo> savedSubscribedModsInfo = new List<SavedSubscribedModInfo>();
+
+	// Token: 0x0400122A RID: 4650
+	public GameAchievementDataStorage achievementData = new GameAchievementDataStorage();
+
+	// Token: 0x0400122B RID: 4651
+	public SerializedPreferences mSerializedPreferences;
+
+	// Token: 0x020002CB RID: 715
+	public enum GameType
+	{
+		// Token: 0x0400122D RID: 4653
+		Career,
+		// Token: 0x0400122E RID: 4654
+		SingleEvent
+	}
+}

@@ -4,19 +4,19 @@ using UnityEngine;
 // Token: 0x020006C6 RID: 1734
 public class PlayerScreen : UIScreen
 {
-	// Token: 0x060030E8 RID: 12520 RVA: 0x0001C4C6 File Offset: 0x0001A6C6
+	// Token: 0x060030E8 RID: 12520
 	public PlayerScreen()
 	{
 	}
 
-	// Token: 0x060030E9 RID: 12521 RVA: 0x0001D51B File Offset: 0x0001B71B
+	// Token: 0x060030E9 RID: 12521
 	public override void OnStart()
 	{
 		base.OnStart();
 		this.playerWidget.OnStart();
 	}
 
-	// Token: 0x060030EA RID: 12522 RVA: 0x0013C0C4 File Offset: 0x0013A2C4
+	// Token: 0x060030EA RID: 12522
 	public override void OnEnter()
 	{
 		base.OnEnter();
@@ -48,7 +48,7 @@ public class PlayerScreen : UIScreen
 		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionHome, 0f);
 	}
 
-	// Token: 0x060030EB RID: 12523 RVA: 0x0013C214 File Offset: 0x0013A414
+	// Token: 0x060030EB RID: 12523
 	public override void OnExit()
 	{
 		base.OnExit();
@@ -57,9 +57,21 @@ public class PlayerScreen : UIScreen
 		dlcManager.OnOwnedDlcChanged = (Action)Delegate.Remove(dlcManager.OnOwnedDlcChanged, new Action(this.jobsWidget.Setup));
 	}
 
-	// Token: 0x060030EC RID: 12524 RVA: 0x0013C264 File Offset: 0x0013A464
+	// Token: 0x060030EC RID: 12524
 	public void OnGUI()
 	{
+		GUIStyle guistyle = new GUIStyle();
+		guistyle.alignment = TextAnchor.MiddleCenter;
+		guistyle.normal.textColor = Color.grey;
+		guistyle.fontSize = 14;
+		GUIStyle guistyle2 = new GUIStyle();
+		guistyle2.alignment = TextAnchor.MiddleCenter;
+		guistyle2.normal.textColor = Color.white;
+		guistyle2.fontSize = 15;
+		GUI.Button(new Rect((float)Screen.width * 0.07f, (float)Screen.height * 0.375f, 100f, 100f), "Player Salary ", guistyle);
+		GUI.Button(new Rect((float)Screen.width * 0.25f, (float)Screen.height * 0.375f, 100f, 100f), "Player Networth", guistyle);
+		GUI.Button(new Rect((float)Screen.width * 0.07f, (float)Screen.height * 0.395f, 100f, 100f), "£" + Game.instance.player.playerSalary.ToString(), guistyle2);
+		GUI.Button(new Rect((float)Screen.width * 0.25f, (float)Screen.height * 0.395f, 100f, 100f), "£" + Game.instance.player.playerMoney.ToString(), guistyle2);
 		if (Game.instance.player.rebirthDebug)
 		{
 			GUI.Button(new Rect((float)Screen.width * 0.05f, (float)Screen.height * 0.1f, 200f, 900f), string.Concat(new string[]
@@ -75,7 +87,13 @@ public class PlayerScreen : UIScreen
 				"\n",
 				Game.instance.player.managementBuyoutPrimaryColour,
 				"\n",
-				Game.instance.player.managementBuyoutSecondaryColour
+				Game.instance.player.managementBuyoutSecondaryColour,
+				"\n Player Net Worth ",
+				Game.instance.player.playerMoney.ToString(),
+				"\n Player Salary ",
+				Game.instance.player.playerSalary.ToString(),
+				"\n Current Team Net Worth \n",
+				(Game.instance.player.team.GetStarsStat() * Game.instance.player.team.GetStarsStat() * 2000000f).ToString()
 			}));
 			if (GUI.Button(new Rect((float)Screen.width * 0.16f, (float)Screen.height * 0.1f, 200f, 100f), "Fire Player"))
 			{
@@ -123,6 +141,22 @@ public class PlayerScreen : UIScreen
 			})))
 			{
 				Game.instance.teamManager.TeamRebrand();
+			}
+			if (GUI.Button(new Rect((float)Screen.width * 0.71f, (float)Screen.height * 0.1f, 200f, 100f), "Add Money To Player"))
+			{
+				Game.instance.player.playerMoney += 1000000L;
+			}
+			if (GUI.Button(new Rect((float)Screen.width * 0.82f, (float)Screen.height * 0.1f, 200f, 100f), "Invest in Team"))
+			{
+				long num = (long)Mathf.FloorToInt((float)Game.instance.player.playerMoney * 0.5f);
+				float num2 = Mathf.Max(20f, Mathf.Floor((float)Game.instance.player.playerMoney * 0.5f) / 1000000f);
+				Game.instance.player.team.chairman.ModifyHappiness(num2, "Pleased you invested in the team");
+				Transaction transaction = new Transaction(Transaction.Group.GlobalMotorsport, Transaction.Type.Credit, num, "Investment from " + Game.instance.player.firstName + " " + Game.instance.player.lastName);
+				Game.instance.player.team.financeController.finance.ProcessTransactions(null, null, true, new Transaction[]
+				{
+					transaction
+				});
+				Game.instance.player.playerMoney -= num;
 			}
 		}
 	}

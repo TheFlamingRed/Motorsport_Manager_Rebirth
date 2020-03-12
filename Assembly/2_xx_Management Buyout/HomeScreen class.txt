@@ -1,0 +1,389 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+
+// Token: 0x020006BA RID: 1722
+public class HomeScreen : UIScreen
+{
+	// Token: 0x0600306E RID: 12398 RVA: 0x0001C4C6 File Offset: 0x0001A6C6
+	public HomeScreen()
+	{
+	}
+
+	// Token: 0x0600306F RID: 12399 RVA: 0x0001CFEA File Offset: 0x0001B1EA
+	public override void OnStart()
+	{
+		base.OnStart();
+		this.nextRaceWidget.OnStart();
+		this.infoPanelWidget.OnStart();
+	}
+
+	// Token: 0x06003070 RID: 12400 RVA: 0x00138DDC File Offset: 0x00136FDC
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		scSoundManager.BlockSoundEvents = true;
+		base.SetBottomBarMode(UIBottomBar.Mode.Frontend);
+		base.SetTopBarMode(UITopBar.Mode.Frontend);
+		base.showNavigationBars = true;
+		if (!Game.instance.player.IsUnemployed())
+		{
+			this.teamInfoWidget.Setup();
+			this.infoPanelWidget.Setup();
+			this.teamStatsWidget.Setup();
+			this.chairmanWidget.Setup();
+			this.wipWidget.Setup();
+			this.nextRaceWidget.Setup();
+			this.mChampionship = Game.instance.player.team.championship;
+			this.miniStandingsWidget.OnEnter(this.mChampionship);
+		}
+		scSoundManager.BlockSoundEvents = false;
+		this.LoadScene();
+	}
+
+	// Token: 0x06003071 RID: 12401 RVA: 0x00138E94 File Offset: 0x00137094
+	private void CheckDemoFinished()
+	{
+		if (Game.instance.championshipManager.GetChampionshipByID(0).eventNumberForUI > 3)
+		{
+			GenericConfirmation dialog = UIManager.instance.dialogBoxManager.GetDialog<GenericConfirmation>();
+			UIManager.instance.blur.Show(dialog.gameObject, new Canvas[]
+			{
+				UIManager.instance.dialogBoxManager.canvas
+			});
+			Action quitToMainMenuAction = MMDropdown.GetQuitToMainMenuAction();
+			string inTitle = "Thank You For Playing!";
+			string inText = "You have reached the end of the demo!\nThank you for playing!\nWe hope you had fun!";
+			string inConfirmString = Localisation.LocaliseID("PSG_10009081", null);
+			dialog.Show(null, string.Empty, quitToMainMenuAction, inConfirmString, inText, inTitle);
+		}
+	}
+
+	// Token: 0x06003072 RID: 12402 RVA: 0x00138F28 File Offset: 0x00137128
+	private void LoadScene()
+	{
+		GameUtility.SetActive(this.carCamera, base.screenMode == UIScreen.ScreenMode.Mode3D);
+		GameUtility.SetActive(this.carBackgroundParent, base.screenMode == UIScreen.ScreenMode.Mode2D);
+		if (base.screenMode == UIScreen.ScreenMode.Mode3D)
+		{
+			SceneManager.instance.SwitchScene("TrackFrontEnd");
+			GameObject sceneGameObject = SceneManager.instance.GetSceneGameObject("TrackFrontEnd");
+			this.mStudioScene = sceneGameObject.GetComponent<StudioScene>();
+			if (this.mChampionship != null)
+			{
+				this.mStudioScene.SetSeries(this.mChampionship.series);
+			}
+			this.mStudioScene.SetCarType(StudioScene.Car.CurrentCar);
+			this.mStudioScene.SetCarVisualsToCurrentGame();
+			this.mStudioScene.EnableCamera("ToTextureProfileCamera");
+		}
+		else
+		{
+			this.carBackground.SetCar(Game.instance.player.team);
+		}
+		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionHome, 0f);
+	}
+
+	// Token: 0x06003073 RID: 12403 RVA: 0x0001D008 File Offset: 0x0001B208
+	public override void OnExit()
+	{
+		base.OnExit();
+		this.miniStandingsWidget.OnExit();
+		if (App.instance.gameStateManager.currentState is FrontendState)
+		{
+			this.UnloadScene();
+		}
+	}
+
+	// Token: 0x06003074 RID: 12404 RVA: 0x0001D037 File Offset: 0x0001B237
+	private void UnloadScene()
+	{
+		if (base.screenMode == UIScreen.ScreenMode.Mode3D)
+		{
+			this.mStudioScene.TuneSpotlight(true);
+			this.mStudioScene.SetCameraTargetToTrackAlongCar(false);
+			SceneManager.instance.LeaveCurrentScene();
+		}
+	}
+
+	// Token: 0x06003075 RID: 12405
+	private void OnGUI()
+	{
+		List<Team> teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
+		EntityManager entityManager = Game.instance.entityManager;
+		List<DatabaseEntry> teamData = App.instance.database.teamData;
+		bool flag = false;
+		bool flag2 = false;
+		bool flag3 = false;
+		Team inTeam = Game.instance.player.team;
+		Team inTeam2 = Game.instance.player.team;
+		Team inTeam3 = Game.instance.player.team;
+		teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
+		for (int i = 0; i < teamList.Count; i++)
+		{
+			if (teamList[i].teamID == Game.instance.player.team.teamID)
+			{
+				flag = true;
+				inTeam = teamList[i];
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(1).standings.GetTeamList();
+		for (int j = 0; j < teamList.Count; j++)
+		{
+			if (teamList[j].teamID == Game.instance.player.team.teamID)
+			{
+				flag = true;
+				inTeam = teamList[j];
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(2).standings.GetTeamList();
+		for (int k = 0; k < teamList.Count; k++)
+		{
+			if (teamList[k].teamID == Game.instance.player.team.teamID)
+			{
+				flag = true;
+				inTeam = teamList[k];
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(3).standings.GetTeamList();
+		for (int l = 0; l < teamList.Count; l++)
+		{
+			if (teamList[l].teamID == Game.instance.player.team.teamID)
+			{
+				flag2 = true;
+				inTeam2 = teamList[l];
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(4).standings.GetTeamList();
+		for (int m = 0; m < teamList.Count; m++)
+		{
+			if (teamList[m].teamID == Game.instance.player.team.teamID)
+			{
+				flag2 = true;
+				inTeam2 = teamList[m];
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(5).standings.GetTeamList();
+		for (int n = 0; n < teamList.Count; n++)
+		{
+			if (teamList[n].teamID == Game.instance.player.team.teamID)
+			{
+				flag3 = true;
+				inTeam3 = teamList[n];
+			}
+		}
+		teamList = Game.instance.championshipManager.GetChampionshipByID(6).standings.GetTeamList();
+		for (int num = 0; num < teamList.Count; num++)
+		{
+			if (teamList[num].teamID == Game.instance.player.team.teamID)
+			{
+				flag3 = true;
+				inTeam3 = teamList[num];
+			}
+		}
+		if (!Game.instance.player.team.isCreatedByPlayer)
+		{
+			byte[] data = File.ReadAllBytes("TeamBuyout.png");
+			Texture2D texture2D = new Texture2D(180, 33);
+			texture2D.LoadImage(data);
+			data = File.ReadAllBytes("TeamBuyoutg.png");
+			Texture2D texture2D2 = new Texture2D(180, 33);
+			texture2D2.LoadImage(data);
+			data = File.ReadAllBytes("TeamBuyouth.png");
+			Texture2D texture2D3 = new Texture2D(180, 33);
+			texture2D3.LoadImage(data);
+			GUIStyle guistyle = new GUIStyle();
+			guistyle.alignment = TextAnchor.MiddleCenter;
+			guistyle.normal.background = texture2D2;
+			guistyle.hover.background = texture2D2;
+			if ((float)Game.instance.player.playerMoney > Game.instance.player.team.GetStarsStat() * Game.instance.player.team.GetStarsStat() * 2000000f / Game.instance.player.stats.financial)
+			{
+				guistyle.normal.background = texture2D;
+				guistyle.hover.background = texture2D3;
+			}
+			if (GUI.Button(new Rect((float)Screen.width * 0.125f, (float)Screen.height * 0.9055f, (float)Screen.width * 180f / 1920f, (float)Screen.height * 33f / 1080f), "", guistyle) && (float)Game.instance.player.playerMoney > Game.instance.player.team.GetStarsStat() * Game.instance.player.team.GetStarsStat() * 2000000f / Game.instance.player.stats.financial)
+			{
+				Game.instance.player.playerMoney -= (long)Mathf.FloorToInt(Game.instance.player.team.GetStarsStat() * Game.instance.player.team.GetStarsStat() * 2000000f / Game.instance.player.stats.financial);
+				Game.instance.player.team.customLogo.teamFirstName = Game.instance.player.managementBuyoutMainText;
+				Game.instance.player.team.customLogo.teamLasttName = Game.instance.player.managementBuyoutSubtext;
+				Game.instance.player.team.name = Game.instance.player.managementBuyoutFullname;
+				Game.instance.player.team.customLogo.styleID = Game.instance.player.managementBuyoutLogoStyle - 1;
+				Game.instance.player.team.GetTeamColor().customLogoColor.primary = Game.instance.player.team.GetTeamColor().livery.primary;
+				Game.instance.player.team.GetTeamColor().customLogoColor.secondary = Game.instance.player.team.GetTeamColor().livery.secondary;
+				Game.instance.player.hasCreatedTeam = true;
+				Game.instance.player.createdTeamID = Game.instance.player.team.teamID;
+				Game.instance.player.team.isCreatedByPlayer = true;
+				MovieScreen screen = UIManager.instance.GetScreen<MovieScreen>();
+				screen.PlayTeamMovie(SoundID.Video_TeamLogo, Game.instance.player.team.teamID);
+				screen.SetNextScreen("PlayerScreen", 1.5f, null);
+				UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+				Game.instance.player.team.HandleChairmanRetirementRequest(Game.instance.player.team.chairman);
+				UIManager.instance.ClearNavigationStacks();
+				Game.instance.player.team.chairman.ModifyHappiness(100f, "Happy to invest in the team");
+			}
+			data = File.ReadAllBytes("icon.png");
+			Texture2D texture2D4 = new Texture2D(18, 19);
+			texture2D4.LoadImage(data);
+			Texture2D texture2D5 = new Texture2D(18, 19);
+			data = File.ReadAllBytes("iconh.png");
+			texture2D5.LoadImage(data);
+			GUIStyle guistyle2 = new GUIStyle();
+			guistyle2.alignment = TextAnchor.MiddleCenter;
+			guistyle2.normal.background = texture2D4;
+			guistyle2.hover.background = texture2D5;
+			if (GUI.Button(new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.9055f, (float)Screen.width * 18f / 1920f, (float)Screen.height * 19f / 1080f), "", guistyle2))
+			{
+				this.buyoutHelper = !this.buyoutHelper;
+			}
+			if (this.buyoutHelper)
+			{
+				data = File.ReadAllBytes("BuyoutHelper.png");
+				Texture2D texture2D6 = new Texture2D(505, 144);
+				texture2D6.LoadImage(data);
+				GUIStyle guistyle3 = new GUIStyle();
+				guistyle3.alignment = TextAnchor.MiddleCenter;
+				guistyle3.wordWrap = true;
+				guistyle3.padding = new RectOffset(10, 10, 10, 10);
+				guistyle3.normal.background = texture2D6;
+				guistyle3.normal.textColor = Color.white;
+				if (GUI.Button(new Rect((float)Screen.width * 0.5f, (float)Screen.height * 0.5f, (float)Screen.width * 505f / 1920f, (float)Screen.height * 144f / 1080f), "\n You will need £" + (Game.instance.player.team.GetStarsStat() * Game.instance.player.team.GetStarsStat() * 2000000f / Game.instance.player.stats.financial).ToString() + " capital and further investment from some investors to buyout this team. Increase your Finance stat to increase the investor contributions and lower your needed capital", guistyle3))
+				{
+					this.buyoutHelper = !this.buyoutHelper;
+				}
+			}
+		}
+		if (flag)
+		{
+			byte[] data2 = File.ReadAllBytes("SwitchSS.png");
+			Texture2D texture2D7 = new Texture2D(180, 33);
+			texture2D7.LoadImage(data2);
+			data2 = File.ReadAllBytes("SwitchSSh.png");
+			Texture2D texture2D8 = new Texture2D(180, 33);
+			texture2D8.LoadImage(data2);
+			GUIStyle guistyle4 = new GUIStyle();
+			guistyle4.normal.background = texture2D7;
+			guistyle4.hover.background = texture2D8;
+			if (Game.instance.player.team.championship.championshipID != 0 && Game.instance.player.team.championship.championshipID != 1 && Game.instance.player.team.championship.championshipID != 2 && GUI.Button(new Rect((float)Screen.width * 0.25f, (float)Screen.height * 0.9055f, (float)Screen.width * 180f / 1920f, (float)Screen.height * 33f / 1080f), "", guistyle4))
+			{
+				Game.instance.MakePlayerUnemployedswitch();
+				Game.instance.MakePlayerEmployedSwitch(inTeam);
+				MovieScreen screen2 = UIManager.instance.GetScreen<MovieScreen>();
+				screen2.PlayTeamMovie(SoundID.Video_TeamLogo, Game.instance.player.team.teamID);
+				screen2.SetNextScreen("PlayerScreen", 1.5f, null);
+				UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+				Game.instance.player.team.HandleChairmanRetirementRequest(Game.instance.player.team.chairman);
+				UIManager.instance.ClearNavigationStacks();
+			}
+		}
+		if (flag2)
+		{
+			byte[] data3 = File.ReadAllBytes("SwitchGT.png");
+			Texture2D texture2D9 = new Texture2D(180, 33);
+			texture2D9.LoadImage(data3);
+			data3 = File.ReadAllBytes("SwitchGTh.png");
+			Texture2D texture2D10 = new Texture2D(180, 33);
+			texture2D10.LoadImage(data3);
+			GUIStyle guistyle5 = new GUIStyle();
+			guistyle5.normal.background = texture2D9;
+			guistyle5.hover.background = texture2D10;
+			if (Game.instance.player.team.championship.championshipID != 3 && Game.instance.player.team.championship.championshipID != 4 && GUI.Button(new Rect((float)Screen.width * 0.35f, (float)Screen.height * 0.9055f, (float)Screen.width * 180f / 1920f, (float)Screen.height * 33f / 1080f), "", guistyle5))
+			{
+				Game.instance.MakePlayerUnemployedswitch();
+				Game.instance.MakePlayerEmployedSwitch(inTeam2);
+				MovieScreen screen3 = UIManager.instance.GetScreen<MovieScreen>();
+				screen3.PlayTeamMovie(SoundID.Video_TeamLogo, Game.instance.player.team.teamID);
+				screen3.SetNextScreen("PlayerScreen", 1.5f, null);
+				UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+				Game.instance.player.team.HandleChairmanRetirementRequest(Game.instance.player.team.chairman);
+				UIManager.instance.ClearNavigationStacks();
+			}
+		}
+		if (flag3)
+		{
+			byte[] data4 = File.ReadAllBytes("SwitchEN.png");
+			Texture2D texture2D11 = new Texture2D(180, 33);
+			texture2D11.LoadImage(data4);
+			data4 = File.ReadAllBytes("SwitchENh.png");
+			Texture2D texture2D12 = new Texture2D(180, 33);
+			texture2D12.LoadImage(data4);
+			GUIStyle guistyle6 = new GUIStyle();
+			guistyle6.normal.background = texture2D11;
+			guistyle6.hover.background = texture2D12;
+			if (Game.instance.player.team.championship.championshipID != 5 && Game.instance.player.team.championship.championshipID != 6 && GUI.Button(new Rect((float)Screen.width * 0.45f, (float)Screen.height * 0.9055f, (float)Screen.width * 180f / 1920f, (float)Screen.height * 33f / 1080f), "", guistyle6))
+			{
+				Game.instance.MakePlayerUnemployedswitch();
+				Game.instance.MakePlayerEmployedSwitch(inTeam3);
+				MovieScreen screen4 = UIManager.instance.GetScreen<MovieScreen>();
+				screen4.PlayTeamMovie(SoundID.Video_TeamLogo, Game.instance.player.team.teamID);
+				screen4.SetNextScreen("PlayerScreen", 1.5f, null);
+				UIManager.instance.ChangeScreen("MovieScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+				Game.instance.player.team.HandleChairmanRetirementRequest(Game.instance.player.team.chairman);
+				UIManager.instance.ClearNavigationStacks();
+			}
+		}
+		byte[] data5 = File.ReadAllBytes("dark.png");
+		Texture2D texture2D13 = new Texture2D(180, 33);
+		texture2D13.LoadImage(data5);
+		data5 = File.ReadAllBytes("darkh.png");
+		Texture2D texture2D14 = new Texture2D(180, 33);
+		texture2D14.LoadImage(data5);
+		GUIStyle guistyle7 = new GUIStyle();
+		guistyle7.normal.background = texture2D13;
+		guistyle7.hover.background = texture2D14;
+		guistyle7.alignment = TextAnchor.MiddleCenter;
+		guistyle7.normal.textColor = Color.white;
+		guistyle7.fontSize = 14;
+		if (GUI.Button(new Rect((float)Screen.width * 0.6f, (float)Screen.height * 0.9055f, (float)Screen.width * 180f / 1920f, (float)Screen.height * 33f / 1080f), "Invest in the team", guistyle7))
+		{
+			long num2 = (long)Mathf.FloorToInt((float)Game.instance.player.playerMoney * 0.5f);
+			float num3 = Mathf.Max(20f, Mathf.Floor((float)Game.instance.player.playerMoney * 0.5f) / 1000000f);
+			Game.instance.player.team.chairman.ModifyHappiness(num3, "Pleased you invested in the team");
+			Transaction transaction = new Transaction(Transaction.Group.GlobalMotorsport, Transaction.Type.Credit, num2, "Investment from " + Game.instance.player.firstName + " " + Game.instance.player.lastName);
+			Game.instance.player.team.financeController.finance.ProcessTransactions(null, null, true, new Transaction[]
+			{
+				transaction
+			});
+			Game.instance.player.playerMoney -= num2;
+		}
+	}
+
+	// Token: 0x04002C4F RID: 11343
+	public HomeScreenTeamInfoWidget teamInfoWidget;
+
+	// Token: 0x04002C50 RID: 11344
+	public HomeScreenTeamStatsWidget teamStatsWidget;
+
+	// Token: 0x04002C51 RID: 11345
+	public HomeScreenStatsInfoWidget infoPanelWidget;
+
+	// Token: 0x04002C52 RID: 11346
+	public HomeScreenChairmanWidget chairmanWidget;
+
+	// Token: 0x04002C53 RID: 11347
+	public HomeScreenWipWidget wipWidget;
+
+	// Token: 0x04002C54 RID: 11348
+	public HomeScreenNextRaceWidget nextRaceWidget;
+
+	// Token: 0x04002C55 RID: 11349
+	public MiniStandingsWidget miniStandingsWidget;
+
+	// Token: 0x04002C56 RID: 11350
+	public UIGenericCarBackground carBackground;
+
+	// Token: 0x04002C57 RID: 11351
+	public GameObject carBackgroundParent;
+
+	// Token: 0x04002C58 RID: 11352
+	public GameObject carCamera;
+
+	// Token: 0x04002C59 RID: 11353
+	private Championship mChampionship;
+
+	// Token: 0x04002C5A RID: 11354
+	private StudioScene mStudioScene;
+
+	// Token: 0x04002C5B RID: 11355
+	public bool buyoutHelper;
+}

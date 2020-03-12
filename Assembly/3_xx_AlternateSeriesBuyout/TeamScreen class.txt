@@ -163,6 +163,7 @@ public class TeamScreen : UIScreen
 		Team team = Game.instance.player.team;
 		Team team2 = Game.instance.player.team;
 		Team team3 = Game.instance.player.team;
+		long priceToBuy = (long)(this.mTeam.GetStarsStat() * this.mTeam.GetStarsStat() * 2000000f + (float)this.mTeam.financeController.availableFunds);
 		string text = string.Concat(new string[]
 		{
 			this.mTeam.financeController.availableFunds.ToString(),
@@ -176,7 +177,8 @@ public class TeamScreen : UIScreen
 			flag3.ToString(),
 			" : ",
 			flag4.ToString(),
-			"\n You cannot buy this team"
+			"\n You cannot buy this team",
+			priceToBuy.ToString()
 		});
 		teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
 		for (int i = 0; i < teamList.Count; i++)
@@ -241,15 +243,15 @@ public class TeamScreen : UIScreen
 				Team team10 = teamList[num];
 			}
 		}
-		if ((this.mTeam.championship.championshipID == 0 || this.mTeam.championship.championshipID == 1 || this.mTeam.championship.championshipID == 2) && !flag && Game.instance.player.team.financeController.availableFunds > 10000L && this.mTeam.financeController.availableFunds < 200000L)
+		if ((this.mTeam.championship.championshipID == 0 || this.mTeam.championship.championshipID == 1 || this.mTeam.championship.championshipID == 2) && !flag && Game.instance.player.team.financeController.availableFunds > priceToBuy && this.mTeam.financeController.availableFunds < 200000L)
 		{
 			flag4 = true;
 		}
-		if ((this.mTeam.championship.championshipID == 3 || this.mTeam.championship.championshipID == 4) && !flag2 && Game.instance.player.team.financeController.availableFunds > 10000L && this.mTeam.financeController.availableFunds < 200000L)
+		if ((this.mTeam.championship.championshipID == 3 || this.mTeam.championship.championshipID == 4) && !flag2 && Game.instance.player.team.financeController.availableFunds > priceToBuy && this.mTeam.financeController.availableFunds < 200000L)
 		{
 			flag4 = true;
 		}
-		if ((this.mTeam.championship.championshipID == 5 || this.mTeam.championship.championshipID == 6) && !flag3 && Game.instance.player.team.financeController.availableFunds > 10000L && this.mTeam.financeController.availableFunds < 200000L)
+		if ((this.mTeam.championship.championshipID == 5 || this.mTeam.championship.championshipID == 6) && !flag3 && Game.instance.player.team.financeController.availableFunds > priceToBuy && this.mTeam.financeController.availableFunds < 200000L)
 		{
 			flag4 = true;
 		}
@@ -269,7 +271,7 @@ public class TeamScreen : UIScreen
 				" : ",
 				flag4.ToString(),
 				"\n Spend",
-				10000L.ToString(),
+				priceToBuy.ToString(),
 				" to Purchase"
 			});
 			byte[] data = File.ReadAllBytes("PurchaseTeam.png");
@@ -284,7 +286,7 @@ public class TeamScreen : UIScreen
 			guistyle.hover.background = texture2D2;
 			if (GUI.Button(new Rect((float)Screen.width * 0.105f, (float)Screen.height * 0.905f, (float)Screen.width * 250f / 1920f, (float)Screen.height * 29f / 1080f), "", guistyle) && flag4)
 			{
-				Transaction transaction = new Transaction(Transaction.Group.GlobalMotorsport, Transaction.Type.Debit, 10000L, "Team Purchase");
+				Transaction transaction = new Transaction(Transaction.Group.GlobalMotorsport, Transaction.Type.Debit, priceToBuy, "Team Purchase");
 				Game.instance.player.team.financeController.finance.ProcessTransactions(null, null, true, new Transaction[]
 				{
 					transaction

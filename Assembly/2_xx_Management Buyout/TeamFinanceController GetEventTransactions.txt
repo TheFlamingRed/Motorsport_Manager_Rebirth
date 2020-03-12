@@ -1,0 +1,173 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001A1 RID: 417
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TeamFinanceController
+{
+	// Token: 0x06000B05 RID: 2821
+	public List<Transaction> GetEventTransactions(Transaction.Group inGroup)
+	{
+		this.mEventTransactions.Clear();
+		switch (inGroup)
+		{
+		case Transaction.Group.NextYearCar:
+		{
+			long carDevCost = this.GetCarDevCost(this.mInvestement);
+			StringVariableParser.nextYearCarInvestment = this.mInvestement;
+			Transaction item = new Transaction(Transaction.Group.NextYearCar, Transaction.Type.Debit, carDevCost, Localisation.LocaliseID("PSG_10010569", null));
+			this.mEventTransactions.Add(item);
+			return this.mEventTransactions;
+		}
+		case Transaction.Group.Drivers:
+		{
+			List<Driver> allPeopleOnJob = this.mTeam.contractManager.GetAllPeopleOnJob<Driver>(Contract.Job.Driver);
+			for (int i = 0; i < allPeopleOnJob.Count; i++)
+			{
+				Driver driver = allPeopleOnJob[i];
+				long perRaceCost = driver.contract.perRaceCost;
+				StringVariableParser.stringValue1 = driver.shortName;
+				Transaction item2 = new Transaction(driver.GetTransactionType(), Transaction.Type.Debit, perRaceCost, Localisation.LocaliseID("PSG_10010566", null));
+				this.mEventTransactions.Add(item2);
+				bool isDataForUI = App.instance.gameStateManager.currentState.group == GameState.Group.Frontend;
+				this.mEventTransactions.AddRange(driver.personalityTraitController.GetPersonalityTraitTransactions(PersonalityTrait.SpecialCaseType.PayDriver, isDataForUI));
+			}
+			return this.mEventTransactions;
+		}
+		case Transaction.Group.Mechanics:
+		{
+			List<Person> allPeopleOnJob2 = this.mTeam.contractManager.GetAllPeopleOnJob(Contract.Job.Mechanic);
+			for (int j = 0; j < allPeopleOnJob2.Count; j++)
+			{
+				Person person = allPeopleOnJob2[j];
+				long perRaceCost2 = person.contract.perRaceCost;
+				StringVariableParser.stringValue1 = person.shortName;
+				Transaction item3 = new Transaction(person.GetTransactionType(), Transaction.Type.Debit, perRaceCost2, Localisation.LocaliseID("PSG_10010566", null));
+				this.mEventTransactions.Add(item3);
+			}
+			return this.mEventTransactions;
+		}
+		case Transaction.Group.Designer:
+		{
+			List<Person> allPeopleOnJob3 = this.mTeam.contractManager.GetAllPeopleOnJob(Contract.Job.EngineerLead);
+			for (int k = 0; k < allPeopleOnJob3.Count; k++)
+			{
+				Person person2 = allPeopleOnJob3[k];
+				long perRaceCost3 = person2.contract.perRaceCost;
+				StringVariableParser.stringValue1 = person2.shortName;
+				Transaction item4 = new Transaction(person2.GetTransactionType(), Transaction.Type.Debit, perRaceCost3, Localisation.LocaliseID("PSG_10010566", null));
+				this.mEventTransactions.Add(item4);
+			}
+			return this.mEventTransactions;
+		}
+		case Transaction.Group.HQUpkeepAndStaff:
+			for (HQsBuildingInfo.Type type = HQsBuildingInfo.Type.DesignCentre; type < HQsBuildingInfo.Type.Count; type++)
+			{
+				HQsBuilding_v1 building = this.mTeam.headquarters.GetBuilding(type);
+				if (building.isBuilt)
+				{
+					long num = (long)building.costs.GetUpkeepCost(HQsBuildingCosts.TimePeriod.PerRace);
+					long num2 = (long)building.costs.GetStaffCost(HQsBuildingCosts.TimePeriod.PerRace);
+					if (num + num2 != 0L)
+					{
+						StringVariableParser.building = building;
+						Transaction item5 = new Transaction(Transaction.Group.HQUpkeepAndStaff, Transaction.Type.Debit, num + num2, Localisation.LocaliseID("PSG_10010567", null));
+						this.mEventTransactions.Add(item5);
+					}
+				}
+			}
+			return this.mEventTransactions;
+		case Transaction.Group.HQIncome:
+			for (HQsBuildingInfo.Type type2 = HQsBuildingInfo.Type.DesignCentre; type2 < HQsBuildingInfo.Type.Count; type2++)
+			{
+				HQsBuilding_v1 building2 = this.mTeam.headquarters.GetBuilding(type2);
+				if (building2.isBuilt)
+				{
+					long num3 = (long)building2.costs.GetIncome(HQsBuildingCosts.TimePeriod.PerRace);
+					if (num3 != 0L)
+					{
+						StringVariableParser.building = building2;
+						Transaction item6 = new Transaction(Transaction.Group.HQIncome, Transaction.Type.Credit, num3, Localisation.LocaliseID("PSG_10010568", null));
+						this.mEventTransactions.Add(item6);
+					}
+				}
+			}
+			return this.mEventTransactions;
+		case Transaction.Group.TravelCosts:
+		{
+			RaceEventDetails currentEventDetails = this.mTeam.championship.GetCurrentEventDetails();
+			if (currentEventDetails != null)
+			{
+				float num4 = 1f - (float)this.mTeam.championship.championshipID / 5f;
+				StringVariableParser.ordinalNumberString = Localisation.LocaliseID(currentEventDetails.circuit.locationNameID, null);
+				Transaction item7 = new Transaction(Transaction.Group.TravelCosts, Transaction.Type.Debit, (long)((float)currentEventDetails.circuit.travelCost * num4), Localisation.LocaliseID("PSG_10010564", null));
+				if (this.mTeam.championship.rules.isRefuelingOn)
+				{
+					Transaction item8 = new Transaction(Transaction.Group.TravelCosts, Transaction.Type.Debit, GameStatsConstants.refuellingCost, Localisation.LocaliseID("PSG_10010817", null));
+					this.mEventTransactions.Add(item8);
+				}
+				StringVariableParser.longValue = GameUtility.RoundCurrency(GameStatsConstants.tyreSupplierCost[Game.instance.player.team.championship.rules.tyreSupplierID]);
+				Transaction item9 = new Transaction(Transaction.Group.TravelCosts, Transaction.Type.Debit, StringVariableParser.longValue, Localisation.LocaliseID("PSG_10010818", null));
+				StringVariableParser.longValue = GameUtility.RoundCurrency(GameStatsConstants.tyreTypeCost[(int)this.mTeam.championship.rules.tyreType]);
+				Transaction item10 = new Transaction(Transaction.Group.TravelCosts, Transaction.Type.Debit, StringVariableParser.longValue, Localisation.LocaliseID("PSG_10010819", null));
+				this.mEventTransactions.Add(item7);
+				this.mEventTransactions.Add(item9);
+				this.mEventTransactions.Add(item10);
+				if (this.mTeam.championship.rules.pitCrewSize == ChampionshipRules.PitStopCrewSize.Large)
+				{
+					Transaction item11 = new Transaction(Transaction.Group.TravelCosts, Transaction.Type.Debit, GameStatsConstants.largePitCrewCost, Localisation.LocaliseID("PSG_10010820", null));
+					this.mEventTransactions.Add(item11);
+				}
+			}
+			return this.mEventTransactions;
+		}
+		case Transaction.Group.ChairmanPayments:
+			if (!this.mTeam.isCreatedAndManagedByPlayer())
+			{
+				long num5 = this.mTeam.financeController.racePayment;
+								if (this.mTeam.IsPlayersTeam())
+				{
+					Game.instance.player.playerMoney += (long)Mathf.FloorToInt((float)num5 / 1000000f * ((float)num5 / 1000000f) * 1000000f / 1000f);
+					Game.instance.player.playerSalary = (float)Mathf.FloorToInt((float)num5 / 1000000f * ((float)num5 / 1000000f) * 1000000f / 100f);
+				}
+				num5 += this.mTeam.financeController.GetUpkeepBonus();
+				Transaction item12 = new Transaction(Transaction.Group.ChairmanPayments, Transaction.Type.Credit, num5, Localisation.LocaliseID("PSG_10010565", null));
+				this.mEventTransactions.Add(item12);
+	
+			}
+			return this.mEventTransactions;
+		case Transaction.Group.Sponsor:
+		{
+			int count = this.mTeam.sponsorController.sponsorshipDeals.Count;
+			for (int l = 0; l < count; l++)
+			{
+				SponsorshipDeal sponsorshipDeal = this.mTeam.sponsorController.sponsorshipDeals[l];
+				if (sponsorshipDeal.hasPerRacePayment)
+				{
+					StringVariableParser.sponsor = sponsorshipDeal.sponsor;
+					Transaction item13 = new Transaction(Transaction.Group.Sponsor, Transaction.Type.Credit, sponsorshipDeal.contract.perRacePayment, Localisation.LocaliseID("PSG_10010570", null));
+					this.mEventTransactions.Add(item13);
+				}
+			}
+			return this.mEventTransactions;
+		}
+		case Transaction.Group.PitCrew:
+			if (!this.mTeam.HasAIPitcrew)
+			{
+				List<PitCrewMember> pitCrewTeamMembers = this.mTeam.pitCrewController.pitCrewTeamMembers;
+				for (int m = 0; m < pitCrewTeamMembers.Count; m++)
+				{
+					PitCrewMember pitCrewMember = pitCrewTeamMembers[m];
+					long perRaceCost4 = pitCrewMember.contract.perRaceCost;
+					StringVariableParser.stringValue1 = pitCrewMember.shortName;
+					Transaction item14 = new Transaction(pitCrewMember.GetTransactionType(), Transaction.Type.Debit, perRaceCost4, Localisation.LocaliseID("PSG_10010566", null));
+					this.mEventTransactions.Add(item14);
+				}
+			}
+			return this.mEventTransactions;
+		}
+		return this.mEventTransactions;
+	}
+}

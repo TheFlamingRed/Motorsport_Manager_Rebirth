@@ -1,0 +1,192 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x0200043F RID: 1087
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class AILockUpBehaviour : AIBehaviour
+{
+	// Token: 0x06001EFC RID: 7932 RVA: 0x000128F8 File Offset: 0x00010AF8
+	public AILockUpBehaviour()
+	{
+	}
+
+	// Token: 0x06001EFD RID: 7933 RVA: 0x0001290B File Offset: 0x00010B0B
+	static AILockUpBehaviour()
+	{
+	}
+
+	// Token: 0x06001EFE RID: 7934 RVA: 0x00012690 File Offset: 0x00010890
+	public override void Start(Vehicle inVehicle)
+	{
+		base.Start(inVehicle);
+	}
+
+	// Token: 0x06001EFF RID: 7935 RVA: 0x000DF2E4 File Offset: 0x000DD4E4
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		this.mDirection = this.mRacingVehicle.transform.forward;
+		this.SetTarget();
+		this.mRacingVehicle.unityVehicle.ActivateCrashParticleEffect(PathData.GateParticleType.TyreWhiteSmoke, true);
+		this.mLockUpDuration = (float)RandomUtility.GetRandom(2, 3);
+		this.mTimer = 0f;
+		this.mRacingVehicle.behaviourManager.SetCanDefendVehicle(false);
+		this.mRacingVehicle.timer.currentLap.AddEvent(LapDetailsData.LapEvents.LockUp);
+		CommentaryManager.SendComment(this.mRacingVehicle, Comment.CommentType.Lockups, new object[]
+		{
+			this.mRacingVehicle.driver
+		});
+		if (this.mRacingVehicle.isPlayerDriver)
+		{
+			Game.instance.sessionManager.raceDirector.sessionSimSpeedDirector.SlowDownForEvent(SessionSimSpeedDirector.SlowdownEvents.PlayerDriverMistakes, this.mVehicle);
+		}
+	}
+
+	// Token: 0x06001F00 RID: 7936 RVA: 0x000DF3B8 File Offset: 0x000DD5B8
+	private void SetTarget()
+	{
+		PathController.Path currentPath = this.mRacingVehicle.pathController.GetCurrentPath();
+		if (currentPath.pathType == PathController.PathType.Track)
+		{
+			this.mTargetSpace = PathController.ConvertWorldSpaceToPathSpace(currentPath, this.targetPosition);
+			this.mCurrentSpace = PathController.ConvertWorldSpaceToPathSpace(currentPath, this.mRacingVehicle.transform.position);
+			this.mTargetSpace = Mathf.Clamp(this.mTargetSpace, -0.9f, 0.9f);
+			this.mRacingVehicle.steeringManager.GetBehaviour<TyreLockUpSteeringBehaviour>().SetTarget(this.mTargetSpace);
+		}
+	}
+
+	// Token: 0x06001F01 RID: 7937
+	public override void OnExit()
+	{
+		base.OnExit();
+		this.mRacingVehicle.behaviourManager.SetCanDefendVehicle(true);
+		this.mRacingVehicle.unityVehicle.ActivateCrashParticleEffect(PathData.GateParticleType.TyreWhiteSmoke, false);
+		float random = RandomUtility.GetRandom(0.025f, 0.075f);
+		this.mRacingVehicle.setup.tyreSet.ApplyTyreWearFromLockUp(random);
+		this.mRacingVehicle.setup.tyreSet.SetTemperature(this.mRacingVehicle.setup.tyreSet.GetTemperature() + RandomUtility.GetRandom01());
+	}
+
+	// Token: 0x06001F02 RID: 7938 RVA: 0x00012933 File Offset: 0x00010B33
+	public override void Destroy()
+	{
+		SafeAction.NullAnAction(ref this.OnTyreLockUpMessage);
+	}
+
+	// Token: 0x06001F03 RID: 7939 RVA: 0x000DF4A4 File Offset: 0x000DD6A4
+	public override void SimulationUpdate()
+	{
+		this.mTimer += GameTimer.simulationDeltaTime;
+		this.SetTarget();
+		bool flag = this.mTargetSpace == this.mCurrentSpace && (this.mCurrentSpace == 0f || this.mCurrentSpace == 1f);
+		if (this.mLockUpDuration - this.mTimer < 1f)
+		{
+			this.mRacingVehicle.unityVehicle.ActivateCrashParticleEffect(PathData.GateParticleType.TyreWhiteSmoke, false);
+		}
+		if (this.mTimer > this.mLockUpDuration || flag)
+		{
+			if (this.mQueuedBehaviour == null)
+			{
+				this.mRacingVehicle.behaviourManager.ReturnToPreviousBehaviour();
+			}
+			else
+			{
+				this.mRacingVehicle.behaviourManager.ChangeBehaviour(this.mQueuedBehaviour.behaviourType);
+			}
+		}
+	}
+
+	// Token: 0x06001F04 RID: 7940 RVA: 0x00002C49 File Offset: 0x00000E49
+	public override bool HandleMessage(Vehicle inSender, AIMessage.Type inType, object inData)
+	{
+		return false;
+	}
+
+	// Token: 0x06001F05 RID: 7941 RVA: 0x000126B2 File Offset: 0x000108B2
+	public override void OnEnterGate(int inGateID, PathData.GateType inGateType)
+	{
+		base.OnEnterGate(inGateID, inGateType);
+	}
+
+	// Token: 0x06001F06 RID: 7942 RVA: 0x00012940 File Offset: 0x00010B40
+	public override void OnFlagChange(SessionManager.Flag inFlag)
+	{
+		if (this.mRacingVehicle != null && (inFlag == SessionManager.Flag.SafetyCar || inFlag == SessionManager.Flag.VirtualSafetyCar))
+		{
+			this.mQueuedBehaviour = this.mRacingVehicle.behaviourManager.GetBehaviour(AIBehaviourStateManager.Behaviour.SafetyFlag);
+		}
+	}
+
+	// Token: 0x17000438 RID: 1080
+	// (get) Token: 0x06001F07 RID: 7943 RVA: 0x00012973 File Offset: 0x00010B73
+	public Vector3 targetPosition
+	{
+		get
+		{
+			return this.mRacingVehicle.transform.position + this.mDirection;
+		}
+	}
+
+	// Token: 0x17000439 RID: 1081
+	// (get) Token: 0x06001F08 RID: 7944 RVA: 0x00006594 File Offset: 0x00004794
+	public override AIBehaviourStateManager.Behaviour behaviourType
+	{
+		get
+		{
+			return AIBehaviourStateManager.Behaviour.TyreLockUp;
+		}
+	}
+
+	// Token: 0x1700043A RID: 1082
+	// (get) Token: 0x06001F09 RID: 7945 RVA: 0x00012990 File Offset: 0x00010B90
+	public override SpeedManager.Controller[] speedControllers
+	{
+		get
+		{
+			return AILockUpBehaviour.mSpeedControllers;
+		}
+	}
+
+	// Token: 0x1700043B RID: 1083
+	// (get) Token: 0x06001F0A RID: 7946 RVA: 0x00012997 File Offset: 0x00010B97
+	public override SteeringManager.Behaviour[] steeringBehaviours
+	{
+		get
+		{
+			return AILockUpBehaviour.mSteeringBehaviours;
+		}
+	}
+
+	// Token: 0x04001B8F RID: 7055
+	public Action OnTyreLockUpMessage;
+
+	// Token: 0x04001B90 RID: 7056
+	private static readonly SpeedManager.Controller[] mSpeedControllers = new SpeedManager.Controller[]
+	{
+		SpeedManager.Controller.TrackLayout,
+		SpeedManager.Controller.Avoidance,
+		SpeedManager.Controller.PathType,
+		SpeedManager.Controller.TyreLockUp
+	};
+
+	// Token: 0x04001B91 RID: 7057
+	private static readonly SteeringManager.Behaviour[] mSteeringBehaviours = new SteeringManager.Behaviour[]
+	{
+		SteeringManager.Behaviour.TyreLockUp
+	};
+
+	// Token: 0x04001B92 RID: 7058
+	private float mLockUpDuration = 2f;
+
+	// Token: 0x04001B93 RID: 7059
+	private float mTimer;
+
+	// Token: 0x04001B94 RID: 7060
+	private float mTargetSpace;
+
+	// Token: 0x04001B95 RID: 7061
+	private float mCurrentSpace;
+
+	// Token: 0x04001B96 RID: 7062
+	private Vector3 mDirection;
+}

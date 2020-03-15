@@ -6,33 +6,33 @@ using UnityEngine;
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public class AISpinBehaviour : AIRacingBehaviour
 {
-	// Token: 0x06001F8A RID: 8074
+	// Token: 0x06001F8A RID: 8074 RVA: 0x00012761 File Offset: 0x00010961
 	public AISpinBehaviour()
 	{
 	}
 
-	// Token: 0x06001F8B RID: 8075
+	// Token: 0x06001F8B RID: 8075 RVA: 0x00012D11 File Offset: 0x00010F11
 	static AISpinBehaviour()
 	{
 	}
 
-	// Token: 0x06001F8C RID: 8076
+	// Token: 0x06001F8C RID: 8076 RVA: 0x0001279D File Offset: 0x0001099D
 	public override void Start(Vehicle inVehicle)
 	{
 		base.Start(inVehicle);
 	}
 
-	// Token: 0x06001F8D RID: 8077
+	// Token: 0x06001F8D RID: 8077 RVA: 0x000E0D78 File Offset: 0x000DEF78
 	public override void OnEnter()
 	{
 		base.OnEnter();
 		this.SetState(AISpinBehaviour.SpinState.SpiningOut);
 		this.mRacingVehicle.behaviourManager.SetCanDefendVehicle(false);
-		float currentForm = this.mRacingVehicle.driver.driverForm.GetCurrentFormForUI() / 10f;
-		float num = this.mRacingVehicle.driver.GetDriverStats().braking / 20f;
-		this.mInitialBraking = 15f + num * currentForm;
-		float num2 = num / 20f;
-		this.mRecoveryTime = Mathf.Lerp(4f, 1f, currentForm * this.mRacingVehicle.driver.GetDriverStats().focus / 20f);
+		float num = this.mRacingVehicle.driver.driverForm.GetCurrentFormForUI() / 10f;
+		float num2 = this.mRacingVehicle.driver.GetDriverStats().braking / 20f;
+		this.mInitialBraking = 15f + num2 * num;
+		float num3 = num2 / 20f;
+		this.mRecoveryTime = Mathf.Lerp(4f, 1f, num * this.mRacingVehicle.driver.GetDriverStats().focus / 20f);
 		this.mCurrentAngle = 0f;
 		this.mTargetAngle = RandomUtility.GetRandom(0.5f, 2f) * 180f;
 		if (Mathf.Acos(Vector3.Dot((this.mRacingVehicle.pathController.GetPreviousGate().position - this.mRacingVehicle.pathController.GetNextGate().position).normalized, this.mRacingVehicle.transform.forward)) * 57.29578f < 0f)
@@ -47,13 +47,13 @@ public class AISpinBehaviour : AIRacingBehaviour
 		});
 	}
 
-	// Token: 0x06001F8E RID: 8078
+	// Token: 0x06001F8E RID: 8078 RVA: 0x00012D31 File Offset: 0x00010F31
 	public override void Destroy()
 	{
 		SafeAction.NullAnAction(ref this.OnSpinMessage);
 	}
 
-	// Token: 0x06001F8F RID: 8079
+	// Token: 0x06001F8F RID: 8079 RVA: 0x000E0F14 File Offset: 0x000DF114
 	private void SetState(AISpinBehaviour.SpinState inState)
 	{
 		this.mState = inState;
@@ -93,7 +93,7 @@ public class AISpinBehaviour : AIRacingBehaviour
 		}
 	}
 
-	// Token: 0x06001F90 RID: 8080
+	// Token: 0x06001F90 RID: 8080 RVA: 0x000E1044 File Offset: 0x000DF244
 	private void SetTarget()
 	{
 		AISpinBehaviour.SpinState spinState = this.mState;
@@ -116,14 +116,14 @@ public class AISpinBehaviour : AIRacingBehaviour
 		}
 	}
 
-	// Token: 0x06001F91 RID: 8081
+	// Token: 0x06001F91 RID: 8081 RVA: 0x00012D3E File Offset: 0x00010F3E
 	private void SetTarget(Vector3 inVector)
 	{
 		this.mRacingVehicle.unityVehicle.SetRotationTargetType(UnityVehicle.RotationTarget.Target);
 		this.mRacingVehicle.unityVehicle.SetRotationTarget(inVector);
 	}
 
-	// Token: 0x06001F92 RID: 8082
+	// Token: 0x06001F92 RID: 8082 RVA: 0x000E114C File Offset: 0x000DF34C
 	private void SetBraking(float inRotation)
 	{
 		inRotation -= inRotation % 90f;
@@ -132,7 +132,7 @@ public class AISpinBehaviour : AIRacingBehaviour
 		this.mRacingVehicle.SetBraking(num2 + this.mInitialBraking * 0.5f + num2 + this.mInitialBraking * num * 0.5f);
 	}
 
-	// Token: 0x06001F93 RID: 8083
+	// Token: 0x06001F93 RID: 8083 RVA: 0x00012D62 File Offset: 0x00010F62
 	public override void OnExit()
 	{
 		base.OnExit();
@@ -152,6 +152,7 @@ public class AISpinBehaviour : AIRacingBehaviour
 			{
 				this.SetState(AISpinBehaviour.SpinState.Refocus);
 				this.mRacingVehicle.unityVehicle.ActivateCrashParticleEffect(PathData.GateParticleType.TyreWhiteSmoke, false);
+				this.mRacingVehicle.setup.tyreSet.SetTemperature(this.mRacingVehicle.setup.tyreSet.GetTemperature() + RandomUtility.GetRandom01());
 				return;
 			}
 			break;
@@ -171,25 +172,25 @@ public class AISpinBehaviour : AIRacingBehaviour
 		}
 	}
 
-	// Token: 0x06001F95 RID: 8085
+	// Token: 0x06001F95 RID: 8085 RVA: 0x00002C49 File Offset: 0x00000E49
 	public override bool HandleMessage(Vehicle inSender, AIMessage.Type inType, object inData)
 	{
 		return false;
 	}
 
-	// Token: 0x06001F96 RID: 8086
+	// Token: 0x06001F96 RID: 8086 RVA: 0x000127D8 File Offset: 0x000109D8
 	public override void OnEnterGate(int inGateID, PathData.GateType inGateType)
 	{
 		base.OnEnterGate(inGateID, inGateType);
 	}
 
-	// Token: 0x06001F97 RID: 8087
+	// Token: 0x06001F97 RID: 8087 RVA: 0x00002630 File Offset: 0x00000830
 	public override void OnFlagChange(SessionManager.Flag inFlag)
 	{
 	}
 
 	// Token: 0x17000459 RID: 1113
-	// (get) Token: 0x06001F98 RID: 8088
+	// (get) Token: 0x06001F98 RID: 8088 RVA: 0x0000658D File Offset: 0x0000478D
 	public override AIBehaviourStateManager.Behaviour behaviourType
 	{
 		get
@@ -199,7 +200,7 @@ public class AISpinBehaviour : AIRacingBehaviour
 	}
 
 	// Token: 0x1700045A RID: 1114
-	// (get) Token: 0x06001F99 RID: 8089
+	// (get) Token: 0x06001F99 RID: 8089 RVA: 0x00012D8C File Offset: 0x00010F8C
 	public override SteeringManager.Behaviour[] steeringBehaviours
 	{
 		get
@@ -209,7 +210,7 @@ public class AISpinBehaviour : AIRacingBehaviour
 	}
 
 	// Token: 0x1700045B RID: 1115
-	// (get) Token: 0x06001F9A RID: 8090
+	// (get) Token: 0x06001F9A RID: 8090 RVA: 0x00012D93 File Offset: 0x00010F93
 	public override SpeedManager.Controller[] speedControllers
 	{
 		get

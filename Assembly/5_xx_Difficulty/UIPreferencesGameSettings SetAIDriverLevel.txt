@@ -1,6 +1,0 @@
-	void SetAIDriverLevel(float v)
-	{
-		this.aiDriverLevelLabel.text = ((int)v - 0).ToString();
-		this.SetSetting(Preference.pName.Game_AIDriverLevel, this.aiDriverLevel, UIPreferencesGameSettings.SettingType.pInt);
-		scSoundManager.Instance.PlayRoundSlider();
-	}

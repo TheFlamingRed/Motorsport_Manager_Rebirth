@@ -1,4 +1,14 @@
-public override void SimulationUpdate()
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000449 RID: 1097
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class AISpinBehaviour : AIRacingBehaviour
+{
+	// Token: 0x06001F94 RID: 8084 RVA: 0x000E120C File Offset: 0x000DF40C
+	
+		public override void SimulationUpdate()
 	{
 		this.SetTarget();
 		switch (this.mState)
@@ -22,13 +32,12 @@ public override void SimulationUpdate()
 			if (this.mQueuedBehaviour == null)
 			{
 				this.mRacingVehicle.behaviourManager.ReturnToPreviousBehaviour();
-				this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.BlueFlag);
 			}
 			else
 			{
 				this.mRacingVehicle.behaviourManager.ChangeBehaviour(this.mQueuedBehaviour.behaviourType);
-				this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.BlueFlag);
 			}
 			break;
 		}
 	}
+}

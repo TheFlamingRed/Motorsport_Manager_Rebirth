@@ -1,3 +1,11 @@
+Using System;
+using FullSerializer;
+
+// Token: 0x02000443 RID: 1091
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class AIRacingBehaviour : AIBehaviour
+{
+	// Token: 0x06001F3F RID: 7999 RVA: 0x00002630 File Offset: 0x00000830
 	private void CheckForSpinOutOpportunity()
 	{
 		if (this.mRacingVehicle.pathController.GetCurrentPath().pathType == PathController.PathType.Track && Game.instance.sessionManager.raceDirector.spinOutDirector.IsSpinOutViable(this.mRacingVehicle))
@@ -7,3 +15,4 @@
 			Game.instance.sessionManager.raceDirector.spinOutDirector.OnSpinOutIncident(this.mRacingVehicle);
 		}
 	}
+}

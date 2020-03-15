@@ -1,0 +1,204 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020003DD RID: 989
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class RunningWideDirector
+{
+	// Token: 0x06001BA9 RID: 7081
+	public RunningWideDirector()
+	{
+	}
+
+	// Token: 0x06001BAA RID: 7082
+	public void OnSessionStarting()
+	{
+		this.mRunWideCount = new RunningWideDirector.RunWidePerRaceChunk[10];
+		int num = 5;
+		if (Game.instance.sessionManager.championship.GetNextTierChampionship() != null && Game.instance.sessionManager.championship.GetPreviousTierChampionship() != null)
+		{
+			num = 10;
+		}
+		else if (Game.instance.sessionManager.championship.GetNextTierChampionship() != null)
+		{
+			num = 15;
+		}
+		int i = 0;
+		if (Game.instance.sessionManager.circuit.HasPathOfType(PathController.PathType.RunWideLane))
+		{
+			i = RandomUtility.GetRandom(0, 5 + num);
+			this.mRunWidePathUseCount = new int[Game.instance.sessionManager.circuit.runWidePaths.Length];
+		}
+		float normalizedChunkSize = 1f / (float)this.mRunWideCount.Length;
+		for (int j = 0; j < this.mRunWideCount.Length; j++)
+		{
+			this.mRunWideCount[j] = new RunningWideDirector.RunWidePerRaceChunk();
+			this.mRunWideCount[j].normalizedChunkStart = (float)j / (float)this.mRunWideCount.Length;
+			this.mRunWideCount[j].normalizedChunkSize = normalizedChunkSize;
+		}
+		global::Debug.LogFormat("RunWides for this race: {0} ", new object[]
+		{
+			i
+		});
+		while (i > 0)
+		{
+			i--;
+			this.mRunWideCount[RandomUtility.GetRandom(0, this.mRunWideCount.Length)].runWideCount++;
+		}
+		List<RacingVehicle> list = new List<RacingVehicle>(Game.instance.vehicleManager.GetAllVehicles());
+		int k = RandomUtility.GetRandom(0, 2);
+		while (k > 0)
+		{
+			k--;
+			RacingVehicle racingVehicle = list[RandomUtility.GetRandom(0, list.Count)];
+			Team team = racingVehicle.driver.contract.GetTeam();
+			bool flag = true;
+			for (int l = 0; l < this.mVehiclesToRunWideOnFirstCorner.Count; l++)
+			{
+				if (this.mVehiclesToRunWideOnFirstCorner[l].driver.contract.GetTeam() == team)
+				{
+					flag = false;
+					break;
+				}
+			}
+			if (flag)
+			{
+				this.mVehiclesToRunWideOnFirstCorner.Add(racingVehicle);
+			}
+			list.Remove(racingVehicle);
+		}
+	}
+
+	// Token: 0x06001BAB RID: 7083
+	public void OnLoad()
+	{
+		if (this.mRunWideCount.Length == 0)
+		{
+			this.OnSessionStarting();
+		}
+		if (this.mRunWidePathUseCount == null || this.mRunWidePathUseCount.Length != Game.instance.sessionManager.circuit.runWidePaths.Length)
+		{
+			this.mRunWidePathUseCount = new int[Game.instance.sessionManager.circuit.runWidePaths.Length];
+		}
+	}
+
+	// Token: 0x06001BAC RID: 7084
+	public bool CanRunWideOnFirstCorner(RacingVehicle inVehicle)
+	{
+		return this.mVehiclesToRunWideOnFirstCorner.Contains(inVehicle);
+	}
+
+	// Token: 0x06001BAD RID: 7085
+	public void VehicleRanWide(RacingVehicle inVehicle)
+	{
+		if (this.mVehiclesToRunWideOnFirstCorner.Count > 0 && this.mVehiclesToRunWideOnFirstCorner.Contains(inVehicle))
+		{
+			this.mVehiclesToRunWideOnFirstCorner.Remove(inVehicle);
+			return;
+		}
+		this.mActiveRunWideChunk.runWideCount--;
+	}
+
+	// Token: 0x06001BAE RID: 7086
+	public void VehicleSetBehaviour(RacingVehicle inVehicle, PathController.Path inPath)
+	{
+		this.mCooldown = 60f;
+		this.mRunWidePathUseCount[inPath.pathID]++;
+	}
+
+	// Token: 0x06001BAF RID: 7087
+	public void SimulationUpdate()
+	{
+		for (int i = 0; i < this.mRunWideCount.Length; i++)
+		{
+			if (this.mRunWideCount[i].IsActiveChunk(Game.instance.sessionManager.GetNormalizedSessionTime()))
+			{
+				this.mActiveRunWideChunk = this.mRunWideCount[i];
+				break;
+			}
+		}
+		if (this.mCooldown >= 0f)
+		{
+			this.mCooldown -= GameTimer.simulationDeltaTime;
+		}
+	}
+
+	// Token: 0x06001BB0 RID: 7088
+	public bool CanRunWide(RacingVehicle inVehicle, PathController.Path inPath)
+	{
+		if (inVehicle.sessionEvents.IsReadyTo(SessionEvents.EventType.SpinOut))
+		{
+			return true;
+		}
+		if (RandomUtility.GetRandom01() < (float)this.mRunWidePathUseCount[inPath.pathID] / 3f)
+		{
+			return false;
+		}
+		bool flag = inVehicle.setup.tyreSet.GetTread() != SessionStrategy.GetRecommendedTreadRightNow() && RandomUtility.GetRandom01() < 0.1f;
+		if (this.mActiveRunWideChunk.runWideCount <= 0 || this.mCooldown >= 0f)
+		{
+			return false;
+		}
+		float t = inVehicle.driver.GetDriverStats().focus / 20f;
+		float num = Mathf.Lerp(2f, 0.5f, t);
+		SessionWeatherDetails currentSessionWeather = Game.instance.sessionManager.currentSessionWeather;
+		bool flag2 = Game.instance.sessionManager.flag == SessionManager.Flag.Green;
+		bool flag3 = currentSessionWeather.GetNormalizedTrackWater() > inVehicle.driver.GetDriverStats().adaptability / 20f;
+		bool flag4 = inVehicle.timer.gapToAhead > 0.1f && inVehicle.timer.gapToAhead < num;
+		bool flag5 = (inVehicle.timer.gapToBehind > 0.1f && inVehicle.timer.gapToBehind < num) || flag4;
+		return flag2 && (flag5 || flag || flag3);
+	}
+
+	// Token: 0x04001988 RID: 6536
+	private int[] mRunWidePathUseCount;
+
+	// Token: 0x04001989 RID: 6537
+	private float mCooldown;
+
+	// Token: 0x0400198A RID: 6538
+	private RunningWideDirector.RunWidePerRaceChunk[] mRunWideCount = new RunningWideDirector.RunWidePerRaceChunk[0];
+
+	// Token: 0x0400198B RID: 6539
+	private RunningWideDirector.RunWidePerRaceChunk mActiveRunWideChunk;
+
+	// Token: 0x0400198C RID: 6540
+	private List<RacingVehicle> mVehiclesToRunWideOnFirstCorner = new List<RacingVehicle>();
+
+	// Token: 0x020003DE RID: 990
+	public enum Behaviour
+	{
+		// Token: 0x0400198E RID: 6542
+		CuttingCorner,
+		// Token: 0x0400198F RID: 6543
+		RunningWide,
+		// Token: 0x04001990 RID: 6544
+		Count
+	}
+
+	// Token: 0x020003DF RID: 991
+	[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+	private class RunWidePerRaceChunk
+	{
+		// Token: 0x06001BB1 RID: 7089
+		public RunWidePerRaceChunk()
+		{
+		}
+
+		// Token: 0x06001BB2 RID: 7090
+		public bool IsActiveChunk(float inNormalizedRaceTime)
+		{
+			return inNormalizedRaceTime >= this.normalizedChunkStart && inNormalizedRaceTime < this.normalizedChunkStart + this.normalizedChunkSize;
+		}
+
+		// Token: 0x04001991 RID: 6545
+		public float normalizedChunkSize;
+
+		// Token: 0x04001992 RID: 6546
+		public float normalizedChunkStart;
+
+		// Token: 0x04001993 RID: 6547
+		public int runWideCount;
+	}
+}

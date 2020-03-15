@@ -1,0 +1,267 @@
+using System;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000449 RID: 1097
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class AISpinBehaviour : AIRacingBehaviour
+{
+	// Token: 0x06001F8A RID: 8074
+	public AISpinBehaviour()
+	{
+	}
+
+	// Token: 0x06001F8B RID: 8075
+	static AISpinBehaviour()
+	{
+	}
+
+	// Token: 0x06001F8C RID: 8076
+	public override void Start(Vehicle inVehicle)
+	{
+		base.Start(inVehicle);
+	}
+
+	// Token: 0x06001F8D RID: 8077
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		this.SetState(AISpinBehaviour.SpinState.SpiningOut);
+		this.mRacingVehicle.behaviourManager.SetCanDefendVehicle(false);
+		float currentForm = this.mRacingVehicle.driver.driverForm.GetCurrentFormForUI() / 10f;
+		float num = this.mRacingVehicle.driver.GetDriverStats().braking / 20f;
+		this.mInitialBraking = 15f + num * currentForm;
+		float num2 = num / 20f;
+		this.mRecoveryTime = Mathf.Lerp(4f, 1f, currentForm * this.mRacingVehicle.driver.GetDriverStats().focus / 20f);
+		this.mCurrentAngle = 0f;
+		this.mTargetAngle = RandomUtility.GetRandom(0.5f, 2f) * 180f;
+		if (Mathf.Acos(Vector3.Dot((this.mRacingVehicle.pathController.GetPreviousGate().position - this.mRacingVehicle.pathController.GetNextGate().position).normalized, this.mRacingVehicle.transform.forward)) * 57.29578f < 0f)
+		{
+			this.mTargetAngle = -this.mTargetAngle;
+		}
+		this.SetTarget();
+		Game.instance.sessionManager.raceDirector.SetYellowFlag(this.mRacingVehicle.timer.sectorVehicleIsIn, this.mRecoveryTime * 10f + 10f);
+		CommentaryManager.SendComment(this.mRacingVehicle, Comment.CommentType.Spins, new object[]
+		{
+			this.mRacingVehicle.driver
+		});
+	}
+
+	// Token: 0x06001F8E RID: 8078
+	public override void Destroy()
+	{
+		SafeAction.NullAnAction(ref this.OnSpinMessage);
+	}
+
+	// Token: 0x06001F8F RID: 8079
+	private void SetState(AISpinBehaviour.SpinState inState)
+	{
+		this.mState = inState;
+		this.mTimer = 0f;
+		AISpinBehaviour.SpinState spinState = this.mState;
+		if (spinState != AISpinBehaviour.SpinState.Refocus)
+		{
+			if (spinState == AISpinBehaviour.SpinState.GoBackToTrack)
+			{
+				this.mRacingVehicle.SetBraking(0f);
+				this.mRacingVehicle.steeringManager.DeactivateAllBehaviours();
+				SteeringManager.Behaviour[] steeringBehaviours = this.mRacingVehicle.behaviourManager.GetBehaviour(AIBehaviourStateManager.Behaviour.Racing).steeringBehaviours;
+				for (int i = 0; i < steeringBehaviours.Length; i++)
+				{
+					this.mRacingVehicle.steeringManager.GetBehaviour(steeringBehaviours[i]).SetActive(true);
+				}
+				this.mRacingVehicle.speedManager.DeactivateAllControllers();
+				SpeedManager.Controller[] speedControllers = this.mRacingVehicle.behaviourManager.GetBehaviour(AIBehaviourStateManager.Behaviour.Racing).speedControllers;
+				for (int j = 0; j < speedControllers.Length; j++)
+				{
+					this.mRacingVehicle.speedManager.GetController(speedControllers[j]).SetActive(true);
+				}
+				return;
+			}
+		}
+		else
+		{
+			float random = RandomUtility.GetRandom(0f, 0.05f);
+			if (Mathf.Approximately(random, 0f))
+			{
+				this.mRacingVehicle.setup.tyreSet.ApplyTyreWearFromLockUp(random);
+			}
+			if (this.OnSpinMessage != null)
+			{
+				this.OnSpinMessage();
+			}
+		}
+	}
+
+	// Token: 0x06001F90 RID: 8080
+	private void SetTarget()
+	{
+		AISpinBehaviour.SpinState spinState = this.mState;
+		if (spinState != AISpinBehaviour.SpinState.SpiningOut)
+		{
+			if (spinState == AISpinBehaviour.SpinState.Refocus)
+			{
+				this.mCurrentAngle = Mathf.MoveTowardsAngle(this.mCurrentAngle, 0f, (Mathf.Clamp01(this.mTimer) * (this.mCurrentAngle / 2f) + 20f) * GameTimer.simulationDeltaTime);
+				this.mRotation = Quaternion.AngleAxis(this.mCurrentAngle, Vector3.up) * this.mVehicle.transform.forward;
+				this.SetTarget(this.mRotation);
+				return;
+			}
+		}
+		else
+		{
+			this.mCurrentAngle = Mathf.MoveTowards(this.mCurrentAngle, this.mTargetAngle, Mathf.Clamp01(this.mTimer) * this.mTargetAngle / 2f * GameTimer.simulationDeltaTime);
+			this.mRotation = Quaternion.AngleAxis(this.mCurrentAngle, Vector3.up) * this.mVehicle.transform.forward;
+			this.SetBraking(this.mCurrentAngle);
+			this.SetTarget(this.mRotation);
+		}
+	}
+
+	// Token: 0x06001F91 RID: 8081
+	private void SetTarget(Vector3 inVector)
+	{
+		this.mRacingVehicle.unityVehicle.SetRotationTargetType(UnityVehicle.RotationTarget.Target);
+		this.mRacingVehicle.unityVehicle.SetRotationTarget(inVector);
+	}
+
+	// Token: 0x06001F92 RID: 8082
+	private void SetBraking(float inRotation)
+	{
+		inRotation -= inRotation % 90f;
+		float num = 1f - Mathf.Clamp01(Mathf.Abs(inRotation) / 90f);
+		float num2 = this.mRacingVehicle.driver.GetDriverStats().braking + this.mRacingVehicle.driver.driverForm.GetCurrentFormForUI();
+		this.mRacingVehicle.SetBraking(num2 + this.mInitialBraking * 0.5f + num2 + this.mInitialBraking * num * 0.5f);
+	}
+
+	// Token: 0x06001F93 RID: 8083
+	public override void OnExit()
+	{
+		base.OnExit();
+		this.mRacingVehicle.unityVehicle.SetRotationTargetType(UnityVehicle.RotationTarget.ForwardVector);
+		this.mRacingVehicle.behaviourManager.SetCanDefendVehicle(true);
+	}
+
+	// Token: 0x06001F94 RID: 8084
+	public override void SimulationUpdate()
+	{
+		this.SetTarget();
+		switch (this.mState)
+		{
+		case AISpinBehaviour.SpinState.SpiningOut:
+			this.mTimer += GameTimer.simulationDeltaTime;
+			if (this.mRacingVehicle.HasStopped())
+			{
+				this.SetState(AISpinBehaviour.SpinState.Refocus);
+				this.mRacingVehicle.unityVehicle.ActivateCrashParticleEffect(PathData.GateParticleType.TyreWhiteSmoke, false);
+				return;
+			}
+			break;
+		case AISpinBehaviour.SpinState.Refocus:
+			this.mTimer += GameTimer.simulationDeltaTime;
+			if (this.mTimer > this.mRecoveryTime)
+			{
+				this.SetState(AISpinBehaviour.SpinState.GoBackToTrack);
+				return;
+			}
+			break;
+		case AISpinBehaviour.SpinState.GoBackToTrack:
+			this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.Racing);
+			return;
+		default:
+			return;
+		}
+	}
+
+	// Token: 0x06001F95 RID: 8085
+	public override bool HandleMessage(Vehicle inSender, AIMessage.Type inType, object inData)
+	{
+		return false;
+	}
+
+	// Token: 0x06001F96 RID: 8086
+	public override void OnEnterGate(int inGateID, PathData.GateType inGateType)
+	{
+		base.OnEnterGate(inGateID, inGateType);
+	}
+
+	// Token: 0x06001F97 RID: 8087
+	public override void OnFlagChange(SessionManager.Flag inFlag)
+	{
+	}
+
+	// Token: 0x17000459 RID: 1113
+	// (get) Token: 0x06001F98 RID: 8088
+	public override AIBehaviourStateManager.Behaviour behaviourType
+	{
+		get
+		{
+			return AIBehaviourStateManager.Behaviour.Spin;
+		}
+	}
+
+	// Token: 0x1700045A RID: 1114
+	// (get) Token: 0x06001F99 RID: 8089
+	public override SteeringManager.Behaviour[] steeringBehaviours
+	{
+		get
+		{
+			return AISpinBehaviour.mSteeringBehaviours;
+		}
+	}
+
+	// Token: 0x1700045B RID: 1115
+	// (get) Token: 0x06001F9A RID: 8090
+	public override SpeedManager.Controller[] speedControllers
+	{
+		get
+		{
+			return AISpinBehaviour.mSpeedControllers;
+		}
+	}
+
+	// Token: 0x04001BC1 RID: 7105
+	public Action OnSpinMessage;
+
+	// Token: 0x04001BC2 RID: 7106
+	private static readonly SpeedManager.Controller[] mSpeedControllers = new SpeedManager.Controller[]
+	{
+		SpeedManager.Controller.SpiningOut
+	};
+
+	// Token: 0x04001BC3 RID: 7107
+	private static readonly SteeringManager.Behaviour[] mSteeringBehaviours = new SteeringManager.Behaviour[]
+	{
+		SteeringManager.Behaviour.SpinOut
+	};
+
+	// Token: 0x04001BC4 RID: 7108
+	private float mTimer;
+
+	// Token: 0x04001BC5 RID: 7109
+	private float mRecoveryTime;
+
+	// Token: 0x04001BC6 RID: 7110
+	private Vector3 mRotation;
+
+	// Token: 0x04001BC7 RID: 7111
+	private float mTargetAngle;
+
+	// Token: 0x04001BC8 RID: 7112
+	private float mCurrentAngle;
+
+	// Token: 0x04001BC9 RID: 7113
+	private float mInitialBraking;
+
+	// Token: 0x04001BCA RID: 7114
+	private AISpinBehaviour.SpinState mState;
+
+	// Token: 0x0200044A RID: 1098
+	public enum SpinState
+	{
+		// Token: 0x04001BCC RID: 7116
+		SpiningOut,
+		// Token: 0x04001BCD RID: 7117
+		Refocus,
+		// Token: 0x04001BCE RID: 7118
+		GoBackToTrack
+	}
+}

@@ -1,3 +1,13 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020003CA RID: 970
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class CuttingCornersDirector
+{
+	// Token: 0x06001B49 RID: 6985
 	public bool CanCutCorner(RacingVehicle inVehicle, PathController.Path inPath)
 	{
 		SessionManager sessionManager = Game.instance.sessionManager;
@@ -27,3 +37,4 @@
 		bool flag5 = flag4  || flag3;
 		return flag && (flag5 || flag2);
 	}
+}

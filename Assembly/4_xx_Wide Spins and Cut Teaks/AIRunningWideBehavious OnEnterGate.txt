@@ -1,0 +1,28 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000447 RID: 1095
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class AIRunningWideBehaviour : AIBehaviour
+{
+	// Token: 0x06001F74 RID: 8052
+	public override void OnEnterGate(int inGateID, PathData.GateType inGateType)
+	{
+		base.OnEnterGate(inGateID, inGateType);
+		AICrashingBehaviour.SetEffects(inGateID, this.mVehicle);
+		if (inGateID == Game.instance.sessionManager.circuit.runWidePathsAdditionalData.firstIDOutsideOfTrackBounds[this.mPathID])
+		{
+			this.mIsOutOfTrack = true;
+			if (this.mRacingVehicle.sessionEvents.IsReadyTo(SessionEvents.EventType.SpinOut))
+			{
+				this.mRacingVehicle.sessionEvents.EventActivated(SessionEvents.EventType.SpinOut);
+				this.mRacingVehicle.behaviourManager.ChangeBehaviour(AIBehaviourStateManager.Behaviour.Spin);
+				Game.instance.sessionManager.raceDirector.spinOutDirector.OnSpinOutIncident(this.mRacingVehicle);
+			}
+		}
+		if (this.mTargetSpaceOffset != 0f && (float)inGateID >= (float)this.mVehicle.pathController.GetCurrentPathData().GetLastGate().id / 2f)
+		{
+			this.mTargetSpaceOffset = 0f;
+		}
+	}
+}

@@ -1,0 +1,172 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020003CA RID: 970
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public class CuttingCornersDirector
+{
+	// Token: 0x06001B43 RID: 6979 RVA: 0x00010C58 File Offset: 0x0000EE58
+	public CuttingCornersDirector()
+	{
+	}
+
+	// Token: 0x06001B44 RID: 6980
+	public void OnSessionStarting()
+	{
+		SessionManager sessionManager = Game.instance.sessionManager;
+		if (sessionManager.eventDetails.currentSession.sessionType != SessionDetails.SessionType.Race)
+		{
+			return;
+		}
+		this.mTeamsToCutCorner = sessionManager.championship.seasonDirector.cutCornerSeasonDirector.GetCutCornerTeamsForEvent(sessionManager.eventDetails);
+		this.mCutCornerChunks = new CuttingCornersDirector.CutCornerRaceChunk[10];
+		int num = RandomUtility.GetRandomInc(0, 2);
+		if (Game.instance.sessionManager.championship.GetNextTierChampionship() != null && Game.instance.sessionManager.championship.GetPreviousTierChampionship() != null)
+		{
+			num = RandomUtility.GetRandomInc(0, 4);
+		}
+		else if (Game.instance.sessionManager.championship.GetNextTierChampionship() != null)
+		{
+			num = RandomUtility.GetRandomInc(0, 8);
+		}
+		int i = num;
+		if (sessionManager.circuit.HasPathOfType(PathController.PathType.CutCornerLane))
+		{
+			this.mPathUseCount = new int[Game.instance.sessionManager.circuit.cutCornersPaths.Length];
+		}
+		for (int j = 0; j < this.mCutCornerChunks.Length; j++)
+		{
+			this.mCutCornerChunks[j] = new CuttingCornersDirector.CutCornerRaceChunk();
+			this.mCutCornerChunks[j].normalizedChunkStart = (float)j / ((float)this.mCutCornerChunks.Length - 1f);
+			this.mCutCornerChunks[j].normalizedChunkSize = 1f / ((float)this.mCutCornerChunks.Length - 1f);
+		}
+		if (Game.instance.gameType == Game.GameType.SingleEvent)
+		{
+			i = RandomUtility.GetRandomInc(0, 1);
+		}
+		global::Debug.LogFormat("CutCorners for this race: {0} ", new object[]
+		{
+			i
+		});
+		while (i > 0)
+		{
+			i--;
+			this.mCutCornerChunks[RandomUtility.GetRandom(0, this.mCutCornerChunks.Length)].cutCornerCount++;
+		}
+	}
+
+	// Token: 0x06001B45 RID: 6981 RVA: 0x000CB5CC File Offset: 0x000C97CC
+	public void OnLoad()
+	{
+		if (this.mCutCornerChunks.Length == 0)
+		{
+			this.OnSessionStarting();
+		}
+		if (this.mPathUseCount == null || this.mPathUseCount.Length != Game.instance.sessionManager.circuit.cutCornersPaths.Length)
+		{
+			this.mPathUseCount = new int[Game.instance.sessionManager.circuit.cutCornersPaths.Length];
+		}
+	}
+
+	// Token: 0x06001B46 RID: 6982 RVA: 0x00010C6C File Offset: 0x0000EE6C
+	public void VehicleCutCorner(RacingVehicle inVehicle)
+	{
+		this.mTeamsToCutCorner.Remove(inVehicle.driver.contract.GetTeam());
+		this.mActiveChunk.cutCornerCount--;
+	}
+
+	// Token: 0x06001B47 RID: 6983 RVA: 0x00010C9D File Offset: 0x0000EE9D
+	public void VehicleSetBehaviour(RacingVehicle inVehicle, PathController.Path inPath)
+	{
+		this.mCooldown = 60f;
+		this.mPathUseCount[inPath.pathID]++;
+	}
+
+	// Token: 0x06001B48 RID: 6984 RVA: 0x000CB63C File Offset: 0x000C983C
+	public void SimulationUpdate()
+	{
+		for (int i = 0; i < this.mCutCornerChunks.Length; i++)
+		{
+			if (this.mCutCornerChunks[i].IsActiveChunk(Game.instance.sessionManager.GetNormalizedSessionTime()))
+			{
+				this.mActiveChunk = this.mCutCornerChunks[i];
+				break;
+			}
+		}
+		if (this.mCooldown >= 0f)
+		{
+			this.mCooldown -= GameTimer.simulationDeltaTime;
+		}
+	}
+
+	// Token: 0x06001B49 RID: 6985
+	public bool CanCutCorner(RacingVehicle inVehicle, PathController.Path inPath)
+	{
+		if (Game.instance.sessionManager.eventDetails.currentSession.sessionType != SessionDetails.SessionType.Race)
+		{
+			return false;
+		}
+		if (RandomUtility.GetRandom01() < (float)this.mPathUseCount[inPath.pathID] / 3f)
+		{
+			return false;
+		}
+		if (!this.mTeamsToCutCorner.Contains(inVehicle.driver.contract.GetTeam()))
+		{
+			return false;
+		}
+		if (this.mActiveChunk.cutCornerCount <= 0 || this.mCooldown >= 0f)
+		{
+			return false;
+		}
+		float t = inVehicle.driver.GetDriverStats().focus / 20f;
+		float num = Mathf.Lerp(2f, 0.5f, t);
+		SessionWeatherDetails currentSessionWeather = Game.instance.sessionManager.currentSessionWeather;
+		bool flag = Game.instance.sessionManager.flag == SessionManager.Flag.Green;
+		bool flag2 = currentSessionWeather.GetNormalizedTrackWater() > inVehicle.driver.GetDriverStats().adaptability / 20f;
+		bool flag3 = inVehicle.timer.gapToAhead > 0.1f && inVehicle.timer.gapToAhead < num;
+		bool flag4 = (inVehicle.timer.gapToBehind > 0.1f && inVehicle.timer.gapToBehind < num) || flag3;
+		return flag && (flag4 || flag2);
+	}
+
+	// Token: 0x04001949 RID: 6473
+	private int[] mPathUseCount;
+
+	// Token: 0x0400194A RID: 6474
+	private float mCooldown;
+
+	// Token: 0x0400194B RID: 6475
+	private CuttingCornersDirector.CutCornerRaceChunk[] mCutCornerChunks = new CuttingCornersDirector.CutCornerRaceChunk[0];
+
+	// Token: 0x0400194C RID: 6476
+	private CuttingCornersDirector.CutCornerRaceChunk mActiveChunk;
+
+	// Token: 0x0400194D RID: 6477
+	private List<Team> mTeamsToCutCorner;
+
+	// Token: 0x020003CB RID: 971
+	[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+	private class CutCornerRaceChunk
+	{
+		// Token: 0x06001B4A RID: 6986 RVA: 0x00002649 File Offset: 0x00000849
+		public CutCornerRaceChunk()
+		{
+		}
+
+		// Token: 0x06001B4B RID: 6987 RVA: 0x00010CC0 File Offset: 0x0000EEC0
+		public bool IsActiveChunk(float inNormalizedRaceTime)
+		{
+			return inNormalizedRaceTime >= this.normalizedChunkStart && inNormalizedRaceTime < this.normalizedChunkStart + this.normalizedChunkSize;
+		}
+
+		// Token: 0x0400194E RID: 6478
+		public float normalizedChunkSize;
+
+		// Token: 0x0400194F RID: 6479
+		public float normalizedChunkStart;
+
+		// Token: 0x04001950 RID: 6480
+		public int cutCornerCount;
+	}
+}

@@ -1,4 +1,13 @@
-public void OnSessionStarting()
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020003DD RID: 989
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class RunningWideDirector
+{
+	// Token: 0x06001BAA RID: 7082
+	public void OnSessionStarting()
 	{
 		this.mRunWideCount = new RunningWideDirector.RunWidePerRaceChunk[10];
 		int num = 5;
@@ -10,8 +19,7 @@ public void OnSessionStarting()
 		{
 			num = 15;
 		}
-		int i;
-		i = 0;
+		int i = 0;
 		if (Game.instance.sessionManager.circuit.HasPathOfType(PathController.PathType.RunWideLane))
 		{
 			i = RandomUtility.GetRandom(0, 5 + num);
@@ -37,7 +45,7 @@ public void OnSessionStarting()
 		int k = RandomUtility.GetRandom(0, 2);
 		while (k > 0)
 		{
-		k--;
+			k--;
 			RacingVehicle racingVehicle = list[RandomUtility.GetRandom(0, list.Count)];
 			Team team = racingVehicle.driver.contract.GetTeam();
 			bool flag = true;
@@ -56,3 +64,4 @@ public void OnSessionStarting()
 			list.Remove(racingVehicle);
 		}
 	}
+}

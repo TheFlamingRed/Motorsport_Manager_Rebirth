@@ -1,3 +1,11 @@
+using System;
+using FullSerializer;
+
+// Token: 0x020003E7 RID: 999
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TyreLockUpDirector
+{
+	// Token: 0x06001BDB RID: 7131
 	public bool IsTyreLockUpViable(RacingVehicle inVehicle)
 	{
 		bool isTutorialActiveInCurrentGameState = Game.instance.tutorialSystem.isTutorialActiveInCurrentGameState;
@@ -6,5 +14,6 @@
 		bool flag3 = Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackWater() > inVehicle.driver.GetDriverStats().adaptability / 20f;
 		bool flag4 = Game.instance.sessionManager.currentSessionWeather.GetNormalizedTrackRubber() < (20f - inVehicle.driver.GetDriverStats().cornering) / 20f;
 		bool flag5 = Game.instance.sessionManager.GetNormalizedSessionTime() > inVehicle.driver.GetDriverStats().fitness / 20f;
-		return inVehicle.speed <= GameUtility.MilesPerHourToMetersPerSecond(50f) && !isTutorialActiveInCurrentGameState && !inVehicle.behaviourManager.isOutOfRace && (!flag & (flag2 | flag3 | flag4 | flag5)) && inVehicle.sessionEvents.IsReadyTo(SessionEvents.EventType.LockUp);
+		return inVehicle.speed <= 50f && !isTutorialActiveInCurrentGameState && !inVehicle.behaviourManager.isOutOfRace && (!flag & (flag2 || flag3 || flag4 || flag5)) && inVehicle.sessionEvents.IsReadyTo(SessionEvents.EventType.LockUp);
 	}
+}

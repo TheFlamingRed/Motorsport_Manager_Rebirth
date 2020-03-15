@@ -1,3 +1,12 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020003CA RID: 970
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class CuttingCornersDirector
+{
+	// Token: 0x06001B44 RID: 6980 RVA: 0x000CB104 File Offset: 0x000C9304
 public void OnSessionStarting()
 	{
 		SessionManager sessionManager = Game.instance.sessionManager;
@@ -41,3 +50,4 @@ public void OnSessionStarting()
 			this.mCutCornerChunks[RandomUtility.GetRandom(0, this.mCutCornerChunks.Length)].cutCornerCount++;
 		}
 	}
+}

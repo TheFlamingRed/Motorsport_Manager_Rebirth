@@ -2,26 +2,26 @@ using System;
 using FullSerializer;
 using UnityEngine;
 
-// Token: 0x02000495 RID: 1173
+// Token: 0x02000499 RID: 1177
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public class SessionEvents : InstanceCounter
 {
-	// Token: 0x0600227B RID: 8827
+	// Token: 0x0600228D RID: 8845 RVA: 0x000145DF File Offset: 0x000127DF
 	public SessionEvents()
 	{
 	}
 
-	// Token: 0x0600227C RID: 8828
+	// Token: 0x0600228E RID: 8846 RVA: 0x000EF42C File Offset: 0x000ED62C
 	public void Start(RacingVehicle inVehicle)
 	{
 		this.mVehicle = inVehicle;
 		this.mDriverStats = this.mVehicle.driver.GetDriverStats();
-		this.mSpinOutPointsLimit = (float)RandomUtility.GetRandom(0, 1);
-		this.mLockUpPoints = (float)RandomUtility.GetRandom(0, 1);
-		this.mCrashPointsLimit = (float)RandomUtility.GetRandom(0, 2);
+		this.mSpinOutImmunity = RandomUtility.GetRandom(0f, 4f);
+		this.mLockUpPoints = RandomUtility.GetRandom(0f, 2f);
+		this.mSectorForEvent = RandomUtility.GetRandom(0f, 2f);
 	}
 
-	// Token: 0x0600227D RID: 8829
+	// Token: 0x0600228F RID: 8847 RVA: 0x000145F4 File Offset: 0x000127F4
 	public void OnEnterGate(int inGateID, PathData.GateType inGateType)
 	{
 		if (inGateID == this.mPreviousGate)
@@ -32,7 +32,7 @@ public class SessionEvents : InstanceCounter
 		this.UpdatePoints();
 	}
 
-	// Token: 0x0600227E RID: 8830
+	// Token: 0x06002290 RID: 8848 RVA: 0x000EF480 File Offset: 0x000ED680
 	private void UpdatePoints()
 	{
 		if (this.mDriverStats == null)
@@ -41,37 +41,37 @@ public class SessionEvents : InstanceCounter
 		}
 		for (SessionEvents.EventType eventType = SessionEvents.EventType.Crash; eventType < SessionEvents.EventType.Count; eventType++)
 		{
-			float num0 = SessionEvents.GetPointsForWeatherType(eventType, Game.instance.sessionManager.currentSessionWeather);
-			this.mPointsPerType[(int)eventType, 0] += num0;
-			float num = SessionEvents.GetPointsForTyreStats(eventType, this.mVehicle);
-			this.mPointsPerType[(int)eventType, 1] += num;
-			float num2 = SessionEvents.GetPointsForDrivingSytle(eventType, this.mVehicle);
-			this.mPointsPerType[(int)eventType, 2] += num2;
-			float num3 = SessionEvents.GetPointsForDriverStats(eventType, this.mDriverStats, Game.instance.sessionManager.GetNormalizedSessionTime() > 0.7f);
-			this.mPointsPerType[(int)eventType, 3] += num3;
-			float num4 = SessionEvents.GetPointsForEngineMode(eventType, this.mVehicle);
-			this.mPointsPerType[(int)eventType, 4] += num4;
-			float num5 = SessionEvents.GetPointsForBehaviourType(eventType, this.mVehicle);
-			this.mPointsPerType[(int)eventType, 5] += num5;
-			float num6 = SessionEvents.GetPointsForVehicleData(eventType, this.mVehicle);
-			this.mPointsPerType[(int)eventType, 6] += num6;
-			float numfinal = num + num0 + num2 + num3 + num4 + num5 + num6;
+			float pointsForWeatherType = SessionEvents.GetPointsForWeatherType(eventType, Game.instance.sessionManager.currentSessionWeather, this.mVehicle);
+			this.mPointsPerType[(int)eventType, 0] += pointsForWeatherType;
+			float pointsForTyreStats = SessionEvents.GetPointsForTyreStats(eventType, this.mVehicle);
+			this.mPointsPerType[(int)eventType, 1] += pointsForTyreStats;
+			float pointsForDrivingSytle = SessionEvents.GetPointsForDrivingSytle(eventType, this.mVehicle);
+			this.mPointsPerType[(int)eventType, 2] += pointsForDrivingSytle;
+			float pointsForDriverStats = SessionEvents.GetPointsForDriverStats(eventType, this.mDriverStats, Game.instance.sessionManager.GetNormalizedSessionTime() > 0.7f);
+			this.mPointsPerType[(int)eventType, 3] += pointsForDriverStats;
+			float pointsForEngineMode = SessionEvents.GetPointsForEngineMode(eventType, this.mVehicle);
+			this.mPointsPerType[(int)eventType, 4] += pointsForEngineMode;
+			float pointsForBehaviourType = SessionEvents.GetPointsForBehaviourType(eventType, this.mVehicle);
+			this.mPointsPerType[(int)eventType, 5] += pointsForBehaviourType;
+			float pointsForVehicleData = SessionEvents.GetPointsForVehicleData(eventType, this.mVehicle);
+			this.mPointsPerType[(int)eventType, 6] += pointsForVehicleData;
+			float num = pointsForTyreStats + pointsForWeatherType + pointsForDrivingSytle + pointsForDriverStats + pointsForEngineMode + pointsForBehaviourType + pointsForVehicleData;
 			switch (eventType)
 			{
 			case SessionEvents.EventType.Crash:
-				this.mCrashPoints = numfinal;
+				this.mCrashPoints = num;
 				break;
 			case SessionEvents.EventType.SpinOut:
-				this.mSpinOutPoints = numfinal;
+				this.mSpinOutPoints = num;
 				break;
 			case SessionEvents.EventType.LockUp:
-				this.mLockUpPoints = numfinal;
+				this.mLockUpPoints = num;
 				break;
 			}
 		}
 	}
 
-	// Token: 0x0600227F RID: 8831
+	// Token: 0x06002291 RID: 8849 RVA: 0x000EF600 File Offset: 0x000ED800
 	private void LogReport(SessionEvents.EventType inType)
 	{
 		string text = inType.ToString() + " {" + this.mVehicle.driver.lastName + "} : ";
@@ -94,7 +94,7 @@ public class SessionEvents : InstanceCounter
 		});
 	}
 
-	// Token: 0x06002280 RID: 8832
+	// Token: 0x06002292 RID: 8850 RVA: 0x0001460D File Offset: 0x0001280D
 	public void SetPoints(SessionEvents.EventType inEventType, int inPoints)
 	{
 		if (inEventType == SessionEvents.EventType.SpinOut)
@@ -110,7 +110,7 @@ public class SessionEvents : InstanceCounter
 		this.mLockUpPoints = (float)inPoints;
 	}
 
-	// Token: 0x06002281 RID: 8833
+	// Token: 0x06002293 RID: 8851 RVA: 0x00014631 File Offset: 0x00012831
 	public void ResetAllPoints()
 	{
 		this.mCrashPoints = 0f;
@@ -118,14 +118,14 @@ public class SessionEvents : InstanceCounter
 		this.mSpinOutPoints = 0f;
 	}
 
-	// Token: 0x06002282 RID: 8834
+	// Token: 0x06002294 RID: 8852 RVA: 0x000EF6B4 File Offset: 0x000ED8B4
 	public void EventActivated(SessionEvents.EventType inEventType)
 	{
 		if (inEventType == SessionEvents.EventType.SpinOut)
 		{
 			this.mSpinOutPoints = 0f;
-			this.mSpinOutPointsLimit += (float)this.mVehicle.timer.lap + RandomUtility.GetRandom01() * 100f;
-			this.mCrashPointsLimit = (float)RandomUtility.GetRandom(0, 2);
+			this.mSpinOutImmunity += (float)this.mVehicle.timer.lap + RandomUtility.GetRandom01() * 100f;
+			this.mSectorForEvent = (float)RandomUtility.GetRandom(0, 2);
 			return;
 		}
 		if (inEventType != SessionEvents.EventType.LockUp)
@@ -134,48 +134,48 @@ public class SessionEvents : InstanceCounter
 			return;
 		}
 		this.mLockUpPoints = 0f;
-		this.mLockUpPointsLimit += (float)this.mVehicle.timer.lap + RandomUtility.GetRandom01() * 10f;
-		this.mCrashPointsLimit = (float)RandomUtility.GetRandom(0, 2);
+		this.mLockUpImmunity += (float)this.mVehicle.timer.lap + RandomUtility.GetRandom01() * 10f;
+		this.mSectorForEvent = (float)RandomUtility.GetRandom(0, 2);
 	}
 
-	// Token: 0x06002283 RID: 8835
+	// Token: 0x06002295 RID: 8853 RVA: 0x000EF75C File Offset: 0x000ED95C
 	public bool IsReadyTo(SessionEvents.EventType inEventType)
 	{
 		if (inEventType == SessionEvents.EventType.SpinOut)
 		{
 			Game.instance.player.debugValue = Mathf.FloorToInt(this.mLockUpPoints);
-			return this.mVehicle.driver.driverForm.GetCurrentFormForUI() < Game.instance.player.spinOutSensitivity + this.mSpinOutPoints && Mathf.FloorToInt(this.mSpinOutPointsLimit) <= this.mVehicle.timer.lap && Mathf.FloorToInt(this.mCrashPointsLimit) == this.mVehicle.timer.sectorVehicleIsIn;
+			return this.mVehicle.driver.driverForm.GetCurrentFormForUI() < Game.instance.player.spinOutSensitivity + this.mSpinOutPoints && Mathf.FloorToInt(this.mSpinOutImmunity) <= this.mVehicle.timer.lap && Mathf.FloorToInt(this.mSectorForEvent) == this.mVehicle.timer.sectorVehicleIsIn;
 		}
 		if (inEventType != SessionEvents.EventType.LockUp && inEventType != SessionEvents.EventType.SpinOut)
 		{
-			return this.mVehicle.driver.driverForm.GetCurrentFormForUI() < Game.instance.player.crashSensitivity + this.mCrashPoints && Mathf.FloorToInt(this.mCrashPointsLimit) == this.mVehicle.timer.sectorVehicleIsIn;
+			return this.mVehicle.driver.driverForm.GetCurrentFormForUI() < Game.instance.player.crashSensitivity + this.mCrashPoints && Mathf.FloorToInt(this.mSectorForEvent) == this.mVehicle.timer.sectorVehicleIsIn;
 		}
-		return this.mVehicle.driver.driverForm.GetCurrentFormForUI() < Game.instance.player.lockupSensitivity + this.mLockUpPoints && Mathf.FloorToInt(this.mLockUpPointsLimit) <= this.mVehicle.timer.lap && Mathf.RoundToInt(this.mCrashPointsLimit) == this.mVehicle.timer.sectorVehicleIsIn;
+		return this.mVehicle.driver.driverForm.GetCurrentFormForUI() < Game.instance.player.lockupSensitivity + this.mLockUpPoints && Mathf.FloorToInt(this.mLockUpImmunity) <= this.mVehicle.timer.lap && Mathf.RoundToInt(this.mSectorForEvent) == this.mVehicle.timer.sectorVehicleIsIn;
 	}
 
-	// Token: 0x06002284 RID: 8836
+	// Token: 0x06002296 RID: 8854 RVA: 0x000EF8B4 File Offset: 0x000EDAB4
 	private static float GetPointsForVehicleData(SessionEvents.EventType inEventType, RacingVehicle inVehicle)
 	{
 		bool flag = inVehicle.championship.series == Championship.Series.GTSeries;
 		float num = 0f;
 		if (inVehicle.pathController.currentPathType != PathController.PathType.Track)
 		{
-			return -0f;
+			return 0f;
 		}
 		if (inVehicle.timer.gapToLeader > 0f)
 		{
 			if (inVehicle.timer.gapToAhead < 2f)
 			{
-				num += 0.3f;
+				num += 1f - (inVehicle.driver.GetDriverStats().overtaking / 25f);
 			}
 		}
 		else
 		{
-			num += 0.5f;
+			num += 0.2f;
 		}
 		if (inVehicle.timer.gapToBehind < 2f)
 		{
-			num += 0.5f;
+			num += 1f - (inVehicle.driver.GetDriverStats().overtaking / 25f);
 		}
 		if (inEventType != SessionEvents.EventType.Crash && inVehicle.speed < 50f)
 		{
@@ -188,28 +188,30 @@ public class SessionEvents : InstanceCounter
 		return num;
 	}
 
-	// Token: 0x06002285 RID: 8837
-	private static float GetPointsForWeatherType(SessionEvents.EventType inEventType, SessionWeatherDetails inWeatherDetails)
+	// Token: 0x06002297 RID: 8855 RVA: 0x000EF95C File Offset: 0x000EDB5C
+	private static float GetPointsForWeatherType(SessionEvents.EventType inEventType, SessionWeatherDetails inWeatherDetails,  RacingVehicle inVehicle)
 	{
 		float num = 0f;
+
 		switch (inWeatherDetails.GetCachedCurrentWeather().rainType)
 		{
 		case Weather.RainType.None:
 			num = 0f;
 			break;
 		case Weather.RainType.Light:
-			num = 0.1f;
-			break;
-		case Weather.RainType.Medium:
-			num = 0.2f;
-			break;
-		case Weather.RainType.Heavy:
-			num = 0.4f;
-			break;
-		case Weather.RainType.Monsooon:
 			num = 0.5f;
 			break;
+		case Weather.RainType.Medium:
+			num = 1f;
+			break;
+		case Weather.RainType.Heavy:
+			num = 1.5f;
+			break;
+		case Weather.RainType.Monsooon:
+			num = 2f;
+			break;
 		}
+		num = num * (1f - (inVehicle.driver.GetDriverStats().adaptability / 25f));
 		num += inWeatherDetails.GetNormalizedTrackWater();
 		if (inEventType == SessionEvents.EventType.LockUp && num > 0f)
 		{
@@ -218,7 +220,7 @@ public class SessionEvents : InstanceCounter
 		return num;
 	}
 
-	// Token: 0x06002286 RID: 8838
+	// Token: 0x06002298 RID: 8856 RVA: 0x000EF9DC File Offset: 0x000EDBDC
 	private static float GetPointsForTyreStats(SessionEvents.EventType inEventType, RacingVehicle inVehicle)
 	{
 		float num = 0f;
@@ -240,7 +242,7 @@ public class SessionEvents : InstanceCounter
 		return num;
 	}
 
-	// Token: 0x06002287 RID: 8839
+	// Token: 0x06002299 RID: 8857 RVA: 0x000EFA5C File Offset: 0x000EDC5C
 	private static float GetPointsForDrivingSytle(SessionEvents.EventType inEventType, RacingVehicle inVehicle)
 	{
 		float num = 0f;
@@ -251,28 +253,30 @@ public class SessionEvents : InstanceCounter
 		switch (inVehicle.performance.drivingStyleMode)
 		{
 		case DrivingStyle.Mode.Attack:
-			num += 1f;
+			num += 2f;
 			break;
 		case DrivingStyle.Mode.Push:
-			num += 0.33f;
+			num += 1f;
 			break;
 		case DrivingStyle.Mode.Neutral:
-			num += 0.15f;
+			num += 0.5f;
 			break;
 		case DrivingStyle.Mode.Conserve:
-			num += 0.05f;
+			num += 0.25f;
 			break;
 		case DrivingStyle.Mode.BackUp:
 			num += 0f;
 			break;
 		}
+		num = num * (1f - (inVehicle.driver.GetDriverStats().fitness / 25f));
 		return num;
 	}
 
-	// Token: 0x06002288 RID: 8840
+	// Token: 0x0600229A RID: 8858 RVA: 0x000EFADC File Offset: 0x000EDCDC
 	private static float GetPointsForEngineMode(SessionEvents.EventType inEventType, RacingVehicle inVehicle)
 	{
-		float num = 0f;
+		// I'm not really a fan of this as an impact for lockups / spins. May replace it. 
+		float result = 0f;
 		if (inVehicle.pathController.currentPathType != PathController.PathType.Track)
 		{
 			return 0f;
@@ -282,36 +286,36 @@ public class SessionEvents : InstanceCounter
 			switch (inVehicle.performance.fuel.engineMode)
 			{
 			case Fuel.EngineMode.SuperOvertake:
-				num = 1f;
+				result = 1f;
 				break;
 			case Fuel.EngineMode.Overtake:
-				num = 0.4f;
+				result = 0.4f;
 				break;
 			case Fuel.EngineMode.High:
-				num = 0.2f;
+				result = 0.2f;
 				break;
 			case Fuel.EngineMode.Medium:
-				num = 0.1f;
+				result = 0.1f;
 				break;
 			case Fuel.EngineMode.Low:
-				num = 0f;
+				result = 0f;
 				break;
 			}
 		}
-		return num;
+		return result;
 	}
 
-	// Token: 0x06002289 RID: 8841
+	// Token: 0x0600229B RID: 8859 RVA: 0x000EFB5C File Offset: 0x000EDD5C
 	private static float GetPointsForDriverStats(SessionEvents.EventType inEventType, DriverStats inStats, bool addFitness)
 	{
-		float num = 1f - inStats.focus / 40f;
+		float num = 1f - inStats.focus / 20f;
 		if (inEventType == SessionEvents.EventType.SpinOut)
 		{
-			num += 1f - inStats.cornering / 40f;
+			num += 1f - inStats.cornering / 20f;
 		}
 		if (inEventType == SessionEvents.EventType.LockUp)
 		{
-			num += 1f - inStats.braking / 40f;
+			num += 1f - inStats.braking / 20f;
 		}
 		if (addFitness)
 		{
@@ -320,7 +324,7 @@ public class SessionEvents : InstanceCounter
 		return num;
 	}
 
-	// Token: 0x0600228A RID: 8842
+	// Token: 0x0600229C RID: 8860 RVA: 0x000EFBC8 File Offset: 0x000EDDC8
 	private static float GetPointsForBehaviourType(SessionEvents.EventType inEventType, RacingVehicle inVehicle)
 	{
 		bool flag = inVehicle.championship.series == Championship.Series.GTSeries;
@@ -358,8 +362,8 @@ public class SessionEvents : InstanceCounter
 		return num;
 	}
 
-	// Token: 0x17000501 RID: 1281
-	// (get) Token: 0x0600228B RID: 8843
+	// Token: 0x17000503 RID: 1283
+	// (get) Token: 0x0600229D RID: 8861 RVA: 0x00014654 File Offset: 0x00012854
 	public float crashPoints
 	{
 		get
@@ -368,8 +372,8 @@ public class SessionEvents : InstanceCounter
 		}
 	}
 
-	// Token: 0x17000502 RID: 1282
-	// (get) Token: 0x0600228C RID: 8844
+	// Token: 0x17000504 RID: 1284
+	// (get) Token: 0x0600229E RID: 8862 RVA: 0x0001465C File Offset: 0x0001285C
 	public float spinOutPoints
 	{
 		get
@@ -378,8 +382,8 @@ public class SessionEvents : InstanceCounter
 		}
 	}
 
-	// Token: 0x17000503 RID: 1283
-	// (get) Token: 0x0600228D RID: 8845
+	// Token: 0x17000505 RID: 1285
+	// (get) Token: 0x0600229F RID: 8863 RVA: 0x00014664 File Offset: 0x00012864
 	public float lockUpPoints
 	{
 		get
@@ -388,67 +392,67 @@ public class SessionEvents : InstanceCounter
 		}
 	}
 
-	// Token: 0x04001DD7 RID: 7639
+	// Token: 0x04001DEE RID: 7662
 	private float mCrashPoints;
 
-	// Token: 0x04001DD8 RID: 7640
-	private float mCrashPointsLimit;
+	// Token: 0x04001DEF RID: 7663
+	private float mSectorForEvent;
 
-	// Token: 0x04001DD9 RID: 7641
+	// Token: 0x04001DF0 RID: 7664
 	private float mSpinOutPoints;
 
-	// Token: 0x04001DDA RID: 7642
-	private float mSpinOutPointsLimit;
+	// Token: 0x04001DF1 RID: 7665
+	private float mSpinOutImmunity;
 
-	// Token: 0x04001DDB RID: 7643
+	// Token: 0x04001DF2 RID: 7666
 	private float mLockUpPoints;
 
-	// Token: 0x04001DDC RID: 7644
-	private float mLockUpPointsLimit;
+	// Token: 0x04001DF3 RID: 7667
+	private float mLockUpImmunity;
 
-	// Token: 0x04001DDD RID: 7645
+	// Token: 0x04001DF4 RID: 7668
 	private RacingVehicle mVehicle;
 
-	// Token: 0x04001DDE RID: 7646
+	// Token: 0x04001DF5 RID: 7669
 	private DriverStats mDriverStats;
 
-	// Token: 0x04001DDF RID: 7647
+	// Token: 0x04001DF6 RID: 7670
 	private int mPreviousGate;
 
-	// Token: 0x04001DE0 RID: 7648
+	// Token: 0x04001DF7 RID: 7671
 	private float[,] mPointsPerType = new float[3, 7];
 
-	// Token: 0x02000496 RID: 1174
+	// Token: 0x0200049A RID: 1178
 	public enum EventType
 	{
-		// Token: 0x04001DE2 RID: 7650
+		// Token: 0x04001DF9 RID: 7673
 		Crash,
-		// Token: 0x04001DE3 RID: 7651
+		// Token: 0x04001DFA RID: 7674
 		SpinOut,
-		// Token: 0x04001DE4 RID: 7652
+		// Token: 0x04001DFB RID: 7675
 		LockUp,
-		// Token: 0x04001DE5 RID: 7653
+		// Token: 0x04001DFC RID: 7676
 		Count
 	}
 
-	// Token: 0x02000497 RID: 1175
+	// Token: 0x0200049B RID: 1179
 	public enum PointsType
 	{
-		// Token: 0x04001DE7 RID: 7655
+		// Token: 0x04001DFE RID: 7678
 		Weather,
-		// Token: 0x04001DE8 RID: 7656
+		// Token: 0x04001DFF RID: 7679
 		Tyre,
-		// Token: 0x04001DE9 RID: 7657
+		// Token: 0x04001E00 RID: 7680
 		DrivingStyle,
-		// Token: 0x04001DEA RID: 7658
+		// Token: 0x04001E01 RID: 7681
 		DriverStats,
-		// Token: 0x04001DEB RID: 7659
+		// Token: 0x04001E02 RID: 7682
 		EngineMode,
-		// Token: 0x04001DEC RID: 7660
+		// Token: 0x04001E03 RID: 7683
 		AIBehaviourType,
-		// Token: 0x04001DED RID: 7661
+		// Token: 0x04001E04 RID: 7684
 		ClosestVehiclesPressure,
-		// Token: 0x04001DEE RID: 7662
+		// Token: 0x04001E05 RID: 7685
 		Count
 	}
 }

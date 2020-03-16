@@ -1,0 +1,19 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000318 RID: 792
+[fsObject("v1", new Type[]
+{
+	typeof(HQsBuilding)
+}, MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class HQsBuilding_v1 : Entity
+{
+	// Token: 0x06004CFB RID: 19707
+	public void BuildingDecay()
+	{
+		if (this.currentLevel > 0)
+		{
+			this.currentLevel--;
+		}
+	}
+}

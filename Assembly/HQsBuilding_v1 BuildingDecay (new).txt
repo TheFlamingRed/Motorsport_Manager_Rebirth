@@ -1,9 +1,0 @@
-//HQsBuilding_v1	
-	public void BuildingDecay()
-	{
-		if (this.currentLevel > 0)
-		{
-			this.currentLevel--;
-			//Should add code for an email
-		}
-	}

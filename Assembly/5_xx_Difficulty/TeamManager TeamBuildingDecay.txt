@@ -1,0 +1,49 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x020002B5 RID: 693
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class TeamManager : GenericManager<Team>
+{
+	// Token: 0x06004CFA RID: 19706
+	public void TeamBuildingDecay()
+	{
+		int numberofteams = Game.instance.teamManager.count;
+		for (int i = 0; i < numberofteams; i++)
+		{
+			if (Game.instance.player.buildingDecayChance > RandomUtility.GetRandom01() && Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.TestTrack).currentLevel > 0)
+			{
+				Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.TestTrack).BuildingDecay();
+			}
+			if (Game.instance.player.buildingDecayChance > RandomUtility.GetRandom01() && Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.TelemetryCentre).currentLevel > 0)
+			{
+				Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.TelemetryCentre).BuildingDecay();
+			}
+			if (Game.instance.player.buildingDecayChance > RandomUtility.GetRandom01() && Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.BrakesResearchFacility).currentLevel > 0)
+			{
+				Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.BrakesResearchFacility).BuildingDecay();
+			}
+			if (Game.instance.player.buildingDecayChance > RandomUtility.GetRandom01() && Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.WindTunnel).currentLevel > 0)
+			{
+				Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.WindTunnel).BuildingDecay();
+			}
+			if (Game.instance.player.buildingDecayChance > RandomUtility.GetRandom01() && Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.Simulator).currentLevel > 0)
+			{
+				Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.Simulator).BuildingDecay();
+			}
+			if (Game.instance.player.buildingDecayChance > RandomUtility.GetRandom01() && Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.RideHandlingDevelopment).currentLevel > 0)
+			{
+				Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.RideHandlingDevelopment).BuildingDecay();
+			}
+			if (Game.instance.player.buildingDecayChance > RandomUtility.GetRandom01() && Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.Factory).currentLevel > 0)
+			{
+				Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.Factory).BuildingDecay();
+			}
+			if (Game.instance.player.buildingDecayChance > RandomUtility.GetRandom01() && Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.DesignCentre).currentLevel > 0)
+			{
+				Game.instance.teamManager.GetEntity(i).headquarters.GetBuilding(HQsBuildingInfo.Type.DesignCentre).BuildingDecay();
+			}
+		}
+	}
+}

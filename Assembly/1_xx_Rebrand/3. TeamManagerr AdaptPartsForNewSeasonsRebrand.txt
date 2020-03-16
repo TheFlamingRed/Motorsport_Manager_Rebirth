@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using FullSerializer;
 
-// Token: 0x020002B4 RID: 692
+// Token: 0x020002B5 RID: 693
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public partial class TeamManager : GenericManager<Team>
 {
-	// Token: 0x06004E36 RID: 20022
-	public void AdaptPartsForNewSeasonsRebrand(float min, float max, Team inTeam)
+	// Token: 0x0600143B RID: 5179
+	public void AdaptPartsForNewSeasonsRebrand(float min, float max, Team inTeam, bool breakthrough)
 	{
 		CarPart carPart = null;
 		List<CarPart> list = new List<CarPart>();
@@ -26,6 +26,7 @@ public partial class TeamManager : GenericManager<Team>
 		}
 		inTeam.carManager.partInventory.DestroyAllParts();
 		Engineer personOnJob = inTeam.contractManager.GetPersonOnJob<Engineer>(Contract.Job.EngineerLead);
+		int j = RandomUtility.GetRandom(0, list.Count);
 		for (int k = 0; k < list.Count; k++)
 		{
 			CarPart carPart2 = list[k];
@@ -45,7 +46,41 @@ public partial class TeamManager : GenericManager<Team>
 				float stat = personOnJob.stats.partContributionStats.GetStat(CarPart.GetStatForPartType(carPart2.GetPartType()));
 				if (carPart == null)
 				{
-					carPart2.stats.SetStat(CarPartStats.CarPartStat.MainStat, (statWithPerformance + stat) * RandomUtility.GetRandom(min, max));
+					if (!breakthrough)
+					{
+						carPart2.stats.SetStat(CarPartStats.CarPartStat.MainStat, (statWithPerformance + stat) * RandomUtility.GetRandom(min, max));
+					}
+					if (breakthrough && k == j)
+					{
+						float rand = RandomUtility.GetRandom(min, max);
+						carPart2.stats.SetStat(CarPartStats.CarPartStat.MainStat, (statWithPerformance + stat) * rand);
+						if (rand < 1.2f)
+						{
+							StringVariableParser.rumourTeam = inTeam;
+							StringVariableParser.carPart = carPart2;
+							Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+							{
+								new DialogCriteria("Who", "MediaPerson"),
+								new DialogCriteria("Source", "SmallBoost"),
+								new DialogCriteria("Type", "Header")
+							});
+						}
+						else
+						{
+							StringVariableParser.rumourTeam = inTeam;
+							StringVariableParser.carPart = carPart2;
+							Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+							{
+								new DialogCriteria("Who", "MediaPerson"),
+								new DialogCriteria("Source", "BigBoost"),
+								new DialogCriteria("Type", "Header")
+							});
+						}
+					}
+					if (breakthrough && k != j)
+					{
+						carPart2.stats.SetStat(CarPartStats.CarPartStat.MainStat, statWithPerformance + stat);
+					}
 				}
 				else
 				{

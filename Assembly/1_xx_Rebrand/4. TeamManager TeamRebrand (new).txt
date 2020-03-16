@@ -11,6 +11,13 @@ public partial class TeamManager : GenericManager<Team>
 	public void TeamRebrand()
 	{
 	
+			// this is a set day to do the building decay checks. 
+			if (Game.instance.time.now.Day == 2 && Game.instance.time.now.Month == 1)
+			{
+			this.TeamBuildingDecay();
+			}
+
+
 // Setting up the lists. 
 		List<Team> teamList = Game.instance.championshipManager.GetChampionshipByID(0).standings.GetTeamList();
 		EntityManager entityManager = Game.instance.entityManager;
@@ -33,6 +40,17 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 				// Done for each team, this is a bit redundant and can be moved elsewhere, but this works well.
 				base.GetEntity(p).liveryID = RandomUtility.GetRandomInc(0, 74);
 			}
+		int teamForBreakthrough = RandomUtility.GetRandomInc(0, num - 1);
+		if (RandomUtility.GetRandom01() < Game.instance.player.breakthroughAIChance && !base.GetEntity(teamForBreakthrough).IsPlayersTeam())
+		{
+			this.AdaptPartsForNewSeasonsRebrand(1f, 1.4f, base.GetEntity(teamForBreakthrough), true);
+			base.GetEntity(teamForBreakthrough).carManager.carPartDesign.SetSeasonStartingStats();
+		}
+		else if (RandomUtility.GetRandom01() < Game.instance.player.breakthroughPlayerChance && base.GetEntity(teamForBreakthrough).IsPlayersTeam())
+		{
+			this.AdaptPartsForNewSeasonsRebrand(1f, 1.4f, base.GetEntity(teamForBreakthrough), true);
+			base.GetEntity(teamForBreakthrough).carManager.carPartDesign.SetSeasonStartingStats();
+		}
 
 				// Pick team to rebrand check. 
 				int i = RandomUtility.GetRandomInc(0, num1 - 1);
@@ -167,7 +185,8 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					}
 					if (RandomUtility.GetRandom01() < 1f)
 					{
-						this.AdaptPartsForNewSeasonsRebrand(0.7f, 1f,base.GetEntity(i));
+						this.AdaptPartsForNewSeasonsRebrand(0.7f, 1f,base.GetEntity(i), false);
+						base.GetEntity(randomInc).carManager.carPartDesign.SetSeasonStartingStats();
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i);
 					StringVariableParser.rumourTeam = base.GetEntity(i);
@@ -225,7 +244,8 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					}
 					if (RandomUtility.GetRandom01() < 0.8f)
 					{
-						this.AdaptPartsForNewSeasonsRebrand(0.7f, 1.3f,base.GetEntity(i));
+						this.AdaptPartsForNewSeasonsRebrand(0.7f, 1.3f,base.GetEntity(i), false);
+						base.GetEntity(randomInc).carManager.carPartDesign.SetSeasonStartingStats();
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i);
 					StringVariableParser.rumourTeam = base.GetEntity(i);
@@ -274,7 +294,8 @@ num1 = num1 + Game.instance.championshipManager.GetChampionshipByID(6).standings
 					}
 					if (RandomUtility.GetRandom01() < 1f)
 					{
-						this.AdaptPartsForNewSeasonsRebrand(1f, 1.3f,base.GetEntity(i));
+						this.AdaptPartsForNewSeasonsRebrand(1f, 1.3f,base.GetEntity(i), false);
+						base.GetEntity(randomInc).carManager.carPartDesign.SetSeasonStartingStats();
 					}
 					StringVariableParser.promotedTeam = base.GetEntity(i);
 					StringVariableParser.rumourTeam = base.GetEntity(i);

@@ -1,0 +1,146 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x02000157 RID: 343
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class Championship : Entity
+{
+	// Token: 0x06000800 RID: 2048
+	public void OnPartAdaptation(bool inResetPartDevelopment = false)
+	{
+		for (int i = 0; i < this.standings.teamEntryCount; i++)
+		{
+			this.standings.GetTeamEntry(i).GetEntity<Team>().carManager.carPartDesign.FinishPartImmediatly();
+		}
+		Team team = (this.inPromotedTeamFromLowerTier == null) ? null : this.inPromotedTeamFromLowerTier.team;
+		Team team2 = (this.inRelegatedTeamFromHigherTier == null) ? null : this.inRelegatedTeamFromHigherTier.team;
+		List<CarPart.PartType> list = new List<CarPart.PartType>();
+		List<CarPart.PartType> list2 = new List<CarPart.PartType>();
+		for (CarStats.StatType statType = CarStats.StatType.TopSpeed; statType < CarStats.StatType.Count; statType++)
+		{
+			int num = int.MaxValue;
+			int num2 = int.MinValue;
+			List<Car> carStandingsOnStat = CarManager.GetCarStandingsOnStat(statType, this, new Team[]
+			{
+				team,
+				team2
+			});
+			CarPart.PartType partForStatType = CarPart.GetPartForStatType(statType, this.series);
+			if (partForStatType != CarPart.PartType.None)
+			{
+				PartTypeSlotSettings partTypeSlotSettings = Game.instance.partSettingsManager.championshipPartSettings[this.championshipID][partForStatType];
+				for (int j = 0; j < carStandingsOnStat.Count; j++)
+				{
+					CarPart part = carStandingsOnStat[j].GetPart(partForStatType);
+					if (part != null)
+					{
+						float statWithPerformance = part.stats.statWithPerformance;
+						num2 = (int)Mathf.Max((float)num2, statWithPerformance);
+						num = (int)Mathf.Min((float)num, statWithPerformance);
+					}
+				}
+				this.rules.partStatSeasonMinValue[partForStatType] = num;
+				this.rules.partStatSeasonMaxValue[partForStatType] = num2 + GameStatsConstants.newSeasonMaxPartCap;
+				if (num2 > partTypeSlotSettings.championshipMaxStat)
+				{
+					list.Add(partForStatType);
+				}
+				list2.Add(partForStatType);
+			}
+		}
+		if (this.inPromotedTeamFromLowerTier != null && !this.inPromotedTeamFromLowerTier.carStatsDataUsed)
+		{
+			this.inPromotedTeamFromLowerTier.carStatsDataUsed = true;
+			this.AdaptPartsForNewTeams(this.inPromotedTeamFromLowerTier.team, this.inPromotedTeamFromLowerTier.teamPreviousChampPartStatRankings);
+		}
+		if (this.inRelegatedTeamFromHigherTier != null && !this.inRelegatedTeamFromHigherTier.carStatsDataUsed)
+		{
+			this.inRelegatedTeamFromHigherTier.carStatsDataUsed = true;
+			this.AdaptPartsForNewTeams(this.inRelegatedTeamFromHigherTier.team, this.inRelegatedTeamFromHigherTier.teamPreviousChampPartStatRankings);
+		}
+		bool flag = list.Count > 0 && RandomUtility.GetRandom01() < Game.instance.player.carResetFullChance;
+		bool flag2 = list.Count > 0 && RandomUtility.GetRandom01() < Game.instance.player.carResetPartChance && !flag;
+		bool flag3 = RandomUtility.GetRandom01() < 0.5f && !flag && !flag2;
+		if (flag)
+		{
+			this.ResetPartTypeStatsProgression(CarPart.GetPartType(this.series, false));
+		}
+		if (flag2)
+		{
+			for (int k = 0; k < list.Count; k++)
+			{
+				for (int l = 0; l < this.standings.teamEntryCount; l++)
+				{
+					Team entity = this.standings.GetTeamEntry(l).GetEntity<Team>();
+					Game.instance.teamManager.AdaptPartsForNewSeasonsRebrand(0.2f, 0.4f, entity, false, true, list[k]);
+					if (entity.IsPlayersTeam())
+					{
+						StringVariableParser.rumourTeam = entity;
+						StringVariableParser.partFrontendUI = list[k];
+						Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+						{
+							new DialogCriteria("Who", "MediaPerson"),
+							new DialogCriteria("Source", "SmallBoost"),
+							new DialogCriteria("Type", "Header")
+						});
+					}
+				}
+			}
+		}
+		if (flag3)
+		{
+			for (int m = 0; m < list2.Count; m++)
+			{
+				if (RandomUtility.GetRandom01() >  Game.instance.player.carResetEarlyChance)
+				{
+					for (int n = 0; n < this.standings.teamEntryCount; n++)
+					{
+						Team entity2 = this.standings.GetTeamEntry(n).GetEntity<Team>();
+						Game.instance.teamManager.AdaptPartsForNewSeasonsRebrand(0.4f, 0.6f, entity2, false, true, list2[m]);
+						if (entity2.IsPlayersTeam())
+						{
+							StringVariableParser.rumourTeam = entity2;
+							StringVariableParser.partFrontendUI = list2[m];
+							Game.instance.dialogSystem.SendMail(new DialogCriteria[]
+							{
+								new DialogCriteria("Who", "MediaPerson"),
+								new DialogCriteria("Source", "SmallBoost"),
+								new DialogCriteria("Type", "Header")
+							});
+						}
+					}
+				}
+			}
+		}
+		for (int num3 = 0; num3 < this.standings.teamEntryCount; num3++)
+		{
+			Team entity3 = this.standings.GetTeamEntry(num3).GetEntity<Team>();
+			if (team != entity3 && team2 != entity3)
+			{
+				entity3.carManager.AdaptPartsForNewSeason(null);
+			}
+		}
+		if (flag)
+		{
+			List<CarStats> list3 = new List<CarStats>();
+			for (int num4 = 0; num4 < this.standings.teamEntryCount; num4++)
+			{
+				Team entity4 = this.standings.GetTeamEntry(num4).GetEntity<Team>();
+				list3.Add(TeamStatistics.GetPartRankingsForChampionship(entity4));
+			}
+			for (int num5 = 0; num5 < this.standings.teamEntryCount; num5++)
+			{
+				Team entity5 = this.standings.GetTeamEntry(num5).GetEntity<Team>();
+				CarStats inStatRankings = list3[num5];
+				entity5.carManager.ResetParts(inStatRankings);
+				if (entity5.IsPlayersTeam())
+				{
+					Game.instance.dialogSystem.OnPartReset();
+				}
+			}
+		}
+		this.rules.ApplySpecParts();
+	}
+}

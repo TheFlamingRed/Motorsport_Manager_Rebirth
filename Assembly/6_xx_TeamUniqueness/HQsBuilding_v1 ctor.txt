@@ -1,0 +1,23 @@
+using System;
+using FullSerializer;
+
+// Token: 0x02000318 RID: 792
+[fsObject("v1", new Type[]
+{
+	typeof(HQsBuilding)
+}, MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class HQsBuilding_v1 : Entity
+{
+	// Token: 0x060016B1 RID: 5809
+	static HQsBuilding_v1()
+	{
+		HQsBuilding_v1.OnBuildingNotification = null;
+		HQsBuilding_v1.designCentrePartDaysPerLevel = new float[]
+		{
+			-0f,
+			-1f,
+			-2f,
+			-4f
+		};
+	}
+}

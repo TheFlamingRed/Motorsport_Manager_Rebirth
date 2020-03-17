@@ -7,7 +7,7 @@ using FullSerializer;
 public partial class TeamManager : GenericManager<Team>
 {
 	// Token: 0x0600143B RID: 5179
-	public void AdaptPartsForNewSeasonsRebrand(float min, float max, Team inTeam, bool breakthrough)
+	public void AdaptPartsForNewSeasonsRebrand(float min, float max, Team inTeam, bool breakthrough, bool resetPart = false, CarPart.PartType partToReset = CarPart.PartType.Brakes)
 	{
 		CarPart carPart = null;
 		List<CarPart> list = new List<CarPart>();
@@ -46,7 +46,7 @@ public partial class TeamManager : GenericManager<Team>
 				float stat = personOnJob.stats.partContributionStats.GetStat(CarPart.GetStatForPartType(carPart2.GetPartType()));
 				if (carPart == null)
 				{
-					if (!breakthrough)
+					if (!breakthrough && !resetPart)
 					{
 						carPart2.stats.SetStat(CarPartStats.CarPartStat.MainStat, (statWithPerformance + stat) * RandomUtility.GetRandom(min, max));
 					}
@@ -80,6 +80,10 @@ public partial class TeamManager : GenericManager<Team>
 					if (breakthrough && k != j)
 					{
 						carPart2.stats.SetStat(CarPartStats.CarPartStat.MainStat, statWithPerformance + stat);
+					}
+					if (!breakthrough && resetPart && partToReset == carPart2.GetPartType())
+					{
+						carPart2.stats.SetStat(CarPartStats.CarPartStat.MainStat, (statWithPerformance + stat) * RandomUtility.GetRandom(min, max));
 					}
 				}
 				else

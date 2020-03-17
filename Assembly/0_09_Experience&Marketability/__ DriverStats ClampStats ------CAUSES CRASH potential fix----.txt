@@ -1,0 +1,29 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020001EF RID: 495
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class DriverStats : PersonStats
+{
+	// Token: 0x06000D75 RID: 3445
+	public void ClampStats()
+	{
+		if (Game.instance.time.now.Month > 11 || Game.instance.time.now.Month < 3)
+		{
+			this.braking = Mathf.Clamp(this.braking, 0f, 20f);
+			this.cornering = Mathf.Clamp(this.cornering, 0f, 20f);
+			this.smoothness = Mathf.Clamp(this.smoothness, 0f, 20f);
+			this.overtaking = Mathf.Clamp(this.overtaking, 0f, 20f);
+			this.consistency = Mathf.Clamp(this.consistency, 0f, 20f);
+			this.adaptability = Mathf.Clamp(this.adaptability, 0f, 20f);
+			this.fitness = Mathf.Clamp(this.fitness, 0f, 20f);
+			this.feedback = Mathf.Clamp(this.feedback, 0f, 20f);
+			this.focus = Mathf.Clamp(this.focus, 0f, 20f);
+		}
+		this.experience = Mathf.Clamp01(this.experience);
+		this.marketability = Mathf.Clamp01(this.marketability);
+		this.balance = Mathf.Clamp01(this.balance);
+	}
+}

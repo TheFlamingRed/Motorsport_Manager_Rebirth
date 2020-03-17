@@ -15,7 +15,7 @@ public partial class CarPartDesign
 		float manager = 0f;
 		if (this.mTeam.IsPlayersTeam())
 		{
-			manager = (Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement) / 100f;
+			manager = (Game.instance.player.stats.loyalty + Game.instance.player.stats.raceManagement) / 200f;
 		}
 		if (this.mCarPart.GetPartType() == CarPart.PartType.Engine || this.mCarPart.GetPartType() == CarPart.PartType.EngineGT || this.mCarPart.GetPartType() == CarPart.PartType.EngineGET)
 		{

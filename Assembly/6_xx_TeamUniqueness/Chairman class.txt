@@ -9,24 +9,24 @@ using UnityEngine;
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public class Chairman : Person
 {
-	// Token: 0x06000C19 RID: 3097 RVA: 0x000088B5 File Offset: 0x00006AB5
+	// Token: 0x06000C19 RID: 3097
 	public Chairman()
 	{
 	}
 
-	// Token: 0x06000C1A RID: 3098 RVA: 0x00072418 File Offset: 0x00070618
+	// Token: 0x06000C1A RID: 3098
 	static Chairman()
 	{
 	}
 
-	// Token: 0x06000C1B RID: 3099 RVA: 0x000088D3 File Offset: 0x00006AD3
+	// Token: 0x06000C1B RID: 3099
 	private void AddHappiness(string inHappinessHistoryEntryName, float inHappiness)
 	{
 		this.mHappiness = Mathf.Clamp(this.mHappiness + inHappiness, 0f, (float)this.GetMaxHappiness());
 		this.mHappinessModificationHistory.AddStatModificationEntry(inHappinessHistoryEntryName, inHappiness, false);
 	}
 
-	// Token: 0x06000C1C RID: 3100 RVA: 0x000724F0 File Offset: 0x000706F0
+	// Token: 0x06000C1C RID: 3100
 	public void AddRaceHappiness(int inTeamPositionEvent)
 	{
 		Team team = this.contract.GetTeam();
@@ -67,24 +67,24 @@ public class Chairman : Person
 		this.AddHappiness(Game.instance.sessionManager.eventDetails.circuit.locationNameID, num - this.mHappiness);
 	}
 
-	// Token: 0x06000C1D RID: 3101 RVA: 0x00008902 File Offset: 0x00006B02
+	// Token: 0x06000C1D RID: 3101
 	public void ResetHappiness()
 	{
 		this.mHappiness = Chairman.happinessResetValue;
 	}
 
-	// Token: 0x06000C1E RID: 3102 RVA: 0x000726FC File Offset: 0x000708FC
+	// Token: 0x06000C1E RID: 3102
 	public int GetRelationshipWithPlayer()
 	{
 		return UnityEngine.Random.Range(0, 101);
 	}
 
-	// Token: 0x06000C1F RID: 3103 RVA: 0x00072714 File Offset: 0x00070914
+	// Token: 0x06000C1F RID: 3103
 	public int GetEstimatedPosition(Chairman.EstimatedPosition inPosition, Team inTeam)
 	{
 		int startOfSeasonExpectedChampionshipResult = inTeam.startOfSeasonExpectedChampionshipResult;
 		int teamEntryCount = inTeam.championship.standings.teamEntryCount;
-		if (Game.instance.player.harderChairmanObjectives == 1)
+		if (Game.instance.player.harderChairmanObjectives != 1)
 		{
 			switch (inPosition)
 			{
@@ -103,18 +103,18 @@ public class Chairman : Person
 			switch (inPosition)
 			{
 			case Chairman.EstimatedPosition.Low:
-				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult, 2, teamEntryCount - 1);
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - inTeam.chairman.attitudeExpectation + 1, 2, teamEntryCount);
 			case Chairman.EstimatedPosition.Medium:
-				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 1, 1, teamEntryCount - 1);
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - inTeam.chairman.attitudeExpectation, 1, teamEntryCount);
 			case Chairman.EstimatedPosition.High:
-				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - 2, 1, teamEntryCount - 2);
+				return Mathf.Clamp(startOfSeasonExpectedChampionshipResult - inTeam.chairman.attitudeExpectation - 1, 1, teamEntryCount);
 			default:
 				return 0;
 			}
 		}
 	}
 
-	// Token: 0x06000C20 RID: 3104 RVA: 0x000727BC File Offset: 0x000709BC
+	// Token: 0x06000C20 RID: 3104
 	public Chairman.RequestFundsAnswer CanRequestFunds()
 	{
 		Team team = this.contract.GetTeam();
@@ -143,7 +143,7 @@ public class Chairman : Person
 		return Chairman.RequestFundsAnswer.Declined;
 	}
 
-	// Token: 0x06000C21 RID: 3105 RVA: 0x00072830 File Offset: 0x00070A30
+	// Token: 0x06000C21 RID: 3105
 	public void RequestFunds()
 	{
 		Team team = this.contract.GetTeam();
@@ -167,14 +167,14 @@ public class Chairman : Person
 		});
 	}
 
-	// Token: 0x06000C22 RID: 3106 RVA: 0x000728B0 File Offset: 0x00070AB0
+	// Token: 0x06000C22 RID: 3106
 	public Transaction GetRequestFundsTransaction()
 	{
 		long requestFundsAmmount = this.GetRequestFundsAmmount();
 		return new Transaction(Transaction.Group.ChairmanPayments, Transaction.Type.Credit, requestFundsAmmount, Localisation.LocaliseID("PSG_10011851", null));
 	}
 
-	// Token: 0x06000C23 RID: 3107 RVA: 0x000728D8 File Offset: 0x00070AD8
+	// Token: 0x06000C23 RID: 3107
 	public long GetRequestFundsAmmount()
 	{
 		Team team = this.contract.GetTeam();
@@ -185,14 +185,14 @@ public class Chairman : Person
 		return team.financeController.racePayment;
 	}
 
-	// Token: 0x06000C24 RID: 3108 RVA: 0x00072918 File Offset: 0x00070B18
+	// Token: 0x06000C24 RID: 3108
 	public bool CanMakeUltimatum()
 	{
 		Team team = this.contract.GetTeam();
 		return Mathf.Approximately(this.happinessNormalized, 0f) && team != null && !this.hasMadeUltimatum;
 	}
 
-	// Token: 0x06000C25 RID: 3109 RVA: 0x00072958 File Offset: 0x00070B58
+	// Token: 0x06000C25 RID: 3109
 	public void CheckUltimatum()
 	{
 		if (Game.instance.isCareer && this.CanMakeUltimatum())
@@ -202,7 +202,7 @@ public class Chairman : Person
 		}
 	}
 
-	// Token: 0x06000C26 RID: 3110 RVA: 0x00072994 File Offset: 0x00070B94
+	// Token: 0x06000C26 RID: 3110
 	public void GenerateUltimatum(Team inTeam)
 	{
 		if (Game.instance.isCareer && inTeam != null)
@@ -224,7 +224,7 @@ public class Chairman : Person
 		}
 	}
 
-	// Token: 0x06000C27 RID: 3111 RVA: 0x00072A30 File Offset: 0x00070C30
+	// Token: 0x06000C27 RID: 3111
 	public void CompleteUltimatum()
 	{
 		if (this.hasMadeUltimatum)
@@ -261,7 +261,7 @@ public class Chairman : Person
 		}
 	}
 
-	// Token: 0x06000C28 RID: 3112 RVA: 0x00072B6C File Offset: 0x00070D6C
+	// Token: 0x06000C28 RID: 3112
 	public void FirePlayer()
 	{
 		Game.instance.MakePlayerUnemployed();
@@ -278,26 +278,26 @@ public class Chairman : Person
 		}
 	}
 
-	// Token: 0x06000C29 RID: 3113 RVA: 0x0000890F File Offset: 0x00006B0F
+	// Token: 0x06000C29 RID: 3113
 	public long GetFinanceLowerBound()
 	{
 		return GameStatsConstants.fundsLowerBound;
 	}
 
-	// Token: 0x06000C2A RID: 3114 RVA: 0x00008916 File Offset: 0x00006B16
+	// Token: 0x06000C2A RID: 3114
 	public void OnSeasonEnd()
 	{
 		this.playerChosenExpectedTeamChampionshipPosition = 0;
 		this.ultimatumsGeneratedThisSeason = 0;
 	}
 
-	// Token: 0x06000C2B RID: 3115 RVA: 0x00008926 File Offset: 0x00006B26
+	// Token: 0x06000C2B RID: 3115
 	public void SetHappiness(int inHappiness)
 	{
 		this.mHappiness = (float)inHappiness;
 	}
 
-	// Token: 0x06000C2C RID: 3116 RVA: 0x00008930 File Offset: 0x00006B30
+	// Token: 0x06000C2C RID: 3116
 	public override void ModifyHappiness(float inHappiness, string inHappinessModifierName)
 	{
 		this.mHappiness = (float)Mathf.RoundToInt(this.mHappiness + inHappiness);
@@ -307,13 +307,13 @@ public class Chairman : Person
 		}
 	}
 
-	// Token: 0x06000C2D RID: 3117 RVA: 0x0000895F File Offset: 0x00006B5F
+	// Token: 0x06000C2D RID: 3117
 	public void ClearHappinessHistory()
 	{
 		this.mHappinessModificationHistory.ClearHistory();
 	}
 
-	// Token: 0x06000C2E RID: 3118 RVA: 0x00072BE4 File Offset: 0x00070DE4
+	// Token: 0x06000C2E RID: 3118
 	public float GetHappinessModifier()
 	{
 		float num = 0f;
@@ -328,7 +328,7 @@ public class Chairman : Person
 		return num;
 	}
 
-	// Token: 0x06000C2F RID: 3119 RVA: 0x00072C48 File Offset: 0x00070E48
+	// Token: 0x06000C2F RID: 3119
 	public List<PersonalityTrait> GetPersonalityTraitHappinessModifiers()
 	{
 		List<PersonalityTrait> list = new List<PersonalityTrait>();
@@ -346,19 +346,19 @@ public class Chairman : Person
 		return list;
 	}
 
-	// Token: 0x06000C30 RID: 3120 RVA: 0x0000896C File Offset: 0x00006B6C
+	// Token: 0x06000C30 RID: 3120
 	public int GetMaxHappiness()
 	{
 		return 100;
 	}
 
-	// Token: 0x06000C31 RID: 3121 RVA: 0x00008970 File Offset: 0x00006B70
+	// Token: 0x06000C31 RID: 3121
 	public override int GetHappiness()
 	{
 		return Mathf.RoundToInt(Mathf.Clamp(this.mHappiness + this.GetHappinessModifier(), 0f, 100f));
 	}
 
-	// Token: 0x06000C32 RID: 3122 RVA: 0x00072CC8 File Offset: 0x00070EC8
+	// Token: 0x06000C32 RID: 3122
 	public string GetHappinessModifierText()
 	{
 		float happinessModifier = this.GetHappinessModifier();
@@ -373,37 +373,43 @@ public class Chairman : Person
 		return result;
 	}
 
-	// Token: 0x06000C33 RID: 3123 RVA: 0x00072D28 File Offset: 0x00070F28
+	// Token: 0x06000C33 RID: 3123
 	private int GenerateUltimatumExpectedPosition()
 	{
 		Team team = this.contract.GetTeam();
 		int teamEntryCount = team.championship.standings.teamEntryCount;
 		int num = teamEntryCount * CarManager.carCount;
 		float t = Mathf.Clamp01((float)this.playerChosenExpectedTeamChampionshipPosition / (float)teamEntryCount);
-		int num2 = Mathf.RoundToInt(Mathf.Lerp(2f, (float)num * Chairman.ultimatumMaxPositionPercentage, t)) + (3 - team.pressure);
-		return Mathf.Clamp(num2 - this.ultimatumsGeneratedThisSeason, 1, num - 2);
+		return Mathf.Clamp(Mathf.RoundToInt(Mathf.Lerp(2f, (float)num * Chairman.ultimatumMaxPositionPercentage, t)) + (3 - team.pressure) - this.ultimatumsGeneratedThisSeason, 1, num - 2);
 	}
 
-	// Token: 0x06000C34 RID: 3124 RVA: 0x00072DA0 File Offset: 0x00070FA0
+	// Token: 0x06000C34 RID: 3124
 	public override int GetPersonIndexInManager()
 	{
-		ChairmanManager chairmanManager = Game.instance.chairmanManager;
-		return chairmanManager.GetPersonIndex(this);
+		return Game.instance.chairmanManager.GetPersonIndex(this);
 	}
 
 	// Token: 0x17000173 RID: 371
-	// (get) Token: 0x06000C35 RID: 3125 RVA: 0x00072DC0 File Offset: 0x00070FC0
+	// (get) Token: 0x06000C35 RID: 3125
 	public int expectedTeamChampionshipResult
 	{
 		get
 		{
 			Team team = this.contract.GetTeam();
-			return (!(team is NullTeam)) ? ((!team.IsPlayersTeam() || !this.hasSelectedExpectedPosition) ? team.startOfSeasonExpectedChampionshipResult : this.playerChosenExpectedTeamChampionshipPosition) : 0;
+			if (team is NullTeam)
+			{
+				return 0;
+			}
+			if (team.IsPlayersTeam() && this.hasSelectedExpectedPosition)
+			{
+				return this.playerChosenExpectedTeamChampionshipPosition;
+			}
+			return team.startOfSeasonExpectedChampionshipResult;
 		}
 	}
 
 	// Token: 0x17000174 RID: 372
-	// (get) Token: 0x06000C36 RID: 3126 RVA: 0x00008993 File Offset: 0x00006B93
+	// (get) Token: 0x06000C36 RID: 3126
 	public float happinessNormalized
 	{
 		get
@@ -413,7 +419,7 @@ public class Chairman : Person
 	}
 
 	// Token: 0x17000175 RID: 373
-	// (get) Token: 0x06000C37 RID: 3127 RVA: 0x000089A7 File Offset: 0x00006BA7
+	// (get) Token: 0x06000C37 RID: 3127
 	public bool hasMadeUltimatum
 	{
 		get
@@ -423,7 +429,7 @@ public class Chairman : Person
 	}
 
 	// Token: 0x17000176 RID: 374
-	// (get) Token: 0x06000C38 RID: 3128 RVA: 0x000089B4 File Offset: 0x00006BB4
+	// (get) Token: 0x06000C38 RID: 3128
 	public bool hasSelectedExpectedPosition
 	{
 		get
@@ -433,7 +439,7 @@ public class Chairman : Person
 	}
 
 	// Token: 0x17000177 RID: 375
-	// (get) Token: 0x06000C39 RID: 3129 RVA: 0x000089C2 File Offset: 0x00006BC2
+	// (get) Token: 0x06000C39 RID: 3129
 	public StatModificationHistory happinessModificationHistory
 	{
 		get
@@ -524,17 +530,32 @@ public class Chairman : Person
 	// Token: 0x04000B6C RID: 2924
 	private StatModificationHistory mHappinessModificationHistory = new StatModificationHistory();
 
+	// Token: 0x04004E7C RID: 20092
 	public float attitudeTypeA;
+
+	// Token: 0x04004E7D RID: 20093
 	public float attitudeTypeB;
+
+	// Token: 0x04004E7E RID: 20094
 	public float attitudeTypeC;
+
+	// Token: 0x04004E7F RID: 20095
 	public float attitudeTypeD;
+
+	// Token: 0x04004E80 RID: 20096
 	public float attitudeTypeE;
+
+	// Token: 0x04004E81 RID: 20097
 	public float attitudeTypeF;
+
+	// Token: 0x04004E82 RID: 20098
 	public float attitudeTypeG;
+
+	// Token: 0x04004E83 RID: 20099
 	public float attitudeTypeH;
 
-
-
+	// Token: 0x04004F78 RID: 20344
+	public int attitudeExpectation;
 
 	// Token: 0x020001D1 RID: 465
 	public enum EstimatedPosition

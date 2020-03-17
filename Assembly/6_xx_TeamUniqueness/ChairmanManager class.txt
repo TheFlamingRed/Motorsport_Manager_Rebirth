@@ -6,12 +6,12 @@ using FullSerializer;
 [fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
 public class ChairmanManager : PersonManager<Chairman>
 {
-	// Token: 0x06000C3C RID: 3132 RVA: 0x000089CA File Offset: 0x00006BCA
+	// Token: 0x06000C3C RID: 3132
 	public ChairmanManager()
 	{
 	}
 
-	// Token: 0x06000C3D RID: 3133 RVA: 0x00072E60 File Offset: 0x00071060
+	// Token: 0x06000C3D RID: 3133
 	protected override void AddPeopleFromDatabase(Database database)
 	{
 		EntityManager entityManager = Game.instance.entityManager;
@@ -28,23 +28,24 @@ public class ChairmanManager : PersonManager<Chairman>
 		}
 	}
 
-	// Token: 0x06000C3E RID: 3134 RVA: 0x000089D2 File Offset: 0x00006BD2
+	// Token: 0x06000C3E RID: 3134
 	private void SetChairmanStats(Chairman inChairman, DatabaseEntry inData)
 	{
 		inChairman.costFocus = inData.GetIntValue("Cost Focus");
 		inChairman.patience = inData.GetIntValue("Patience");
 		inChairman.SetHappiness(inData.GetIntValue("Happiness"));
-		inChairman.attitudeTypeA = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeB = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeC = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeD = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeE = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeF = RandomUtility.GetRandom01() + 0.5f;
+		inChairman.attitudeTypeA = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeB = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeC = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeD = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeE = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeF = RandomUtility.GetRandom01() - 0.5f;
 		inChairman.attitudeTypeG = RandomUtility.GetRandom01();
 		inChairman.attitudeTypeH = RandomUtility.GetRandom01();
+		inChairman.attitudeExpectation = RandomUtility.GetRandom(-2, 2);
 	}
 
-	// Token: 0x06000C3F RID: 3135 RVA: 0x00072ED4 File Offset: 0x000710D4
+	// Token: 0x06000C3F RID: 3135
 	private void SetContractData(Chairman inChairman, DatabaseEntry inData)
 	{
 		TeamManager teamManager = Game.instance.teamManager;
@@ -62,8 +63,9 @@ public class ChairmanManager : PersonManager<Chairman>
 			contract.GetTeam().contractManager.AddEmployeeSlot(Contract.Job.Chairman, inChairman);
 			contract.SetPerson(inChairman);
 			contract.SignContractAndSetContractEndEvents();
+			return;
 		}
-		else if (intValue > 0)
+		if (intValue > 0)
 		{
 			Game.instance.entityManager.RemoveEntity(inChairman);
 			Investor entity = Game.instance.investorManager.GetEntity(intValue - 1);
@@ -71,39 +73,38 @@ public class ChairmanManager : PersonManager<Chairman>
 			contract.job = Contract.Job.InvestorChairman;
 			contract.employeer = entity;
 			contract.SetPerson(inChairman);
+			return;
 		}
-		else
-		{
-			contract.job = Contract.Job.Unemployed;
-			contract.SetPerson(inChairman);
-		}
+		contract.job = Contract.Job.Unemployed;
+		contract.SetPerson(inChairman);
 	}
 
-	// Token: 0x06000C40 RID: 3136 RVA: 0x00073000 File Offset: 0x00071200
+	// Token: 0x06000C40 RID: 3136
 	public void PopulateWithRandomData(Chairman inChairman, DatabaseEntry inEntry, RegenManager.RegenType inType)
 	{
 		inChairman.costFocus = RandomUtility.GetRandom(0, inEntry.GetIntValue("Cost Focus"));
 		inChairman.SetPeakDuration(RandomUtility.GetRandom(inEntry.GetIntValue("Peak Duration Min"), inEntry.GetIntValue("Peak Duration Max")));
 		inChairman.peakAge = inChairman.CalculatePeakAge(inEntry.GetIntValue("Peak Age Min"), inEntry.GetIntValue("Peak Age Max"));
-		ContractPerson contract = inChairman.contract;
-		inChairman.attitudeTypeA = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeB = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeC = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeD = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeE = RandomUtility.GetRandom01() + 0.5f;
-		inChairman.attitudeTypeF = RandomUtility.GetRandom01() + 0.5f;
+		Contract contract = inChairman.contract;
+		inChairman.attitudeTypeA = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeB = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeC = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeD = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeE = RandomUtility.GetRandom01() - 0.5f;
+		inChairman.attitudeTypeF = RandomUtility.GetRandom01() - 0.5f;
 		inChairman.attitudeTypeG = RandomUtility.GetRandom01();
 		inChairman.attitudeTypeH = RandomUtility.GetRandom01();
+		inChairman.attitudeExpectation = RandomUtility.GetRandom(-2, 2);
 		contract.job = Contract.Job.Unemployed;
 	}
 
-	// Token: 0x06000C41 RID: 3137 RVA: 0x00008A07 File Offset: 0x00006C07
+	// Token: 0x06000C41 RID: 3137
 	public override void OnStartingGame()
 	{
 		this.CreateReplacementChairmanPool();
 	}
 
-	// Token: 0x06000C42 RID: 3138 RVA: 0x00073078 File Offset: 0x00071278
+	// Token: 0x06000C42 RID: 3138
 	private void CreateReplacementChairmanPool()
 	{
 		for (int i = 0; i < GameStatsConstants.replacementPeopleCount; i++)
@@ -114,7 +115,7 @@ public class ChairmanManager : PersonManager<Chairman>
 		}
 	}
 
-	// Token: 0x06000C43 RID: 3139 RVA: 0x000730C4 File Offset: 0x000712C4
+	// Token: 0x06000C43 RID: 3139
 	public Chairman GetReplacementChairman(bool moveToEndOfList = false)
 	{
 		int i = 0;

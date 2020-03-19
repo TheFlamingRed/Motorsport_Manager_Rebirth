@@ -1,0 +1,300 @@
+using System;
+using System.Collections;
+using System.IO;
+using UnityEngine;
+
+// Token: 0x0200078E RID: 1934
+public partial class CarDesignScreen : UIScreen
+{
+	// Token: 0x060035BC RID: 13756
+	public void OnGUI()
+	{
+		byte[] data = File.ReadAllBytes("texture/reg.png");
+		Texture2D a = new Texture2D(62, 62);
+		a.LoadImage(data);
+		data = File.ReadAllBytes("texture/good.png");
+		Texture2D b = new Texture2D(62, 62);
+		b.LoadImage(data);
+		data = File.ReadAllBytes("texture/great.png");
+		Texture2D c = new Texture2D(62, 62);
+		c.LoadImage(data);
+		data = File.ReadAllBytes("texture/epic.png");
+		Texture2D d = new Texture2D(62, 62);
+		d.LoadImage(data);
+		data = File.ReadAllBytes("texture/legend.png");
+		Texture2D e = new Texture2D(62, 62);
+		e.LoadImage(data);
+		data = File.ReadAllBytes("texture/brakes.png");
+		Texture2D brakes = new Texture2D(62, 62);
+		brakes.LoadImage(data);
+		data = File.ReadAllBytes("texture/brakesh.png");
+		Texture2D brakesh = new Texture2D(62, 62);
+		brakesh.LoadImage(data);
+		data = File.ReadAllBytes("texture/frontwing.png");
+		Texture2D frontwing = new Texture2D(62, 62);
+		frontwing.LoadImage(data);
+		data = File.ReadAllBytes("texture/frontwingh.png");
+		Texture2D frontwingh = new Texture2D(62, 62);
+		frontwingh.LoadImage(data);
+		data = File.ReadAllBytes("texture/rearwing.png");
+		Texture2D rearwing = new Texture2D(62, 62);
+		rearwing.LoadImage(data);
+		data = File.ReadAllBytes("texture/rearwingh.png");
+		Texture2D rearwingh = new Texture2D(62, 62);
+		rearwingh.LoadImage(data);
+		data = File.ReadAllBytes("texture/suspension.png");
+		Texture2D suspension = new Texture2D(62, 62);
+		suspension.LoadImage(data);
+		data = File.ReadAllBytes("texture/suspensionh.png");
+		Texture2D suspensionh = new Texture2D(62, 62);
+		suspensionh.LoadImage(data);
+		data = File.ReadAllBytes("texture/engine.png");
+		Texture2D engine = new Texture2D(62, 62);
+		engine.LoadImage(data);
+		data = File.ReadAllBytes("texture/engineh.png");
+		Texture2D engineh = new Texture2D(62, 62);
+		engineh.LoadImage(data);
+		data = File.ReadAllBytes("texture/gearbox.png");
+		Texture2D gearbox = new Texture2D(62, 62);
+		gearbox.LoadImage(data);
+		data = File.ReadAllBytes("texture/gearboxh.png");
+		Texture2D gearboxh = new Texture2D(62, 62);
+		gearboxh.LoadImage(data);
+		if (this.mSelectedSupplier[0] != null)
+		{
+			Texture2D supplierLogo = App.instance.assetManager.GetSupplierLogo(this.mSelectedSupplier[0]);
+			GUI.Button(new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.15f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f), supplierLogo, GUIStyle.none);
+			int area = this.mSelectedSupplier[0].areaImprovementa;
+			int quality = this.mSelectedSupplier[0].areaImprovementStrengtha;
+			Texture2D qualityTexture = new Texture2D(62, 62);
+			new Texture2D(62, 62);
+			switch (quality)
+			{
+			case 0:
+				qualityTexture = a;
+				break;
+			case 1:
+				qualityTexture = b;
+				break;
+			case 2:
+				qualityTexture = c;
+				break;
+			case 3:
+				qualityTexture = d;
+				break;
+			case 4:
+				qualityTexture = e;
+				break;
+			}
+			GUIStyle guistyle = new GUIStyle();
+			guistyle.normal.textColor = Color.white;
+			guistyle.alignment = TextAnchor.MiddleCenter;
+			guistyle.fontSize = 14;
+			switch (area)
+			{
+			case 0:
+				guistyle.normal.background = brakes;
+				guistyle.hover.background = brakesh;
+				break;
+			case 1:
+				guistyle.normal.background = frontwing;
+				guistyle.hover.background = frontwingh;
+				break;
+			case 2:
+				guistyle.normal.background = rearwing;
+				guistyle.hover.background = rearwingh;
+				break;
+			case 3:
+				guistyle.normal.background = suspension;
+				guistyle.hover.background = suspensionh;
+				break;
+			case 4:
+				guistyle.normal.background = engine;
+				guistyle.hover.background = engineh;
+				break;
+			case 5:
+				guistyle.normal.background = gearbox;
+				guistyle.hover.background = gearboxh;
+				break;
+			}
+			GUI.Button(new Rect((float)Screen.width * 0.8f, (float)Screen.height * 0.16f, 31f, 31f), qualityTexture, guistyle);
+		}
+		if (this.mSelectedSupplier[2] != null)
+		{
+			Texture2D supplierLogo2 = App.instance.assetManager.GetSupplierLogo(this.mSelectedSupplier[2]);
+			GUI.Button(new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.25f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f), supplierLogo2, GUIStyle.none);
+			int area2 = this.mSelectedSupplier[2].areaImprovementa;
+			int quality2 = this.mSelectedSupplier[2].areaImprovementStrengtha;
+			Texture2D qualityTexture2 = new Texture2D(62, 62);
+			new Texture2D(62, 62);
+			switch (quality2)
+			{
+			case 0:
+				qualityTexture2 = a;
+				break;
+			case 1:
+				qualityTexture2 = b;
+				break;
+			case 2:
+				qualityTexture2 = c;
+				break;
+			case 3:
+				qualityTexture2 = d;
+				break;
+			case 4:
+				qualityTexture2 = e;
+				break;
+			}
+			GUIStyle guistyle2 = new GUIStyle();
+			guistyle2.normal.textColor = Color.white;
+			guistyle2.alignment = TextAnchor.MiddleCenter;
+			guistyle2.fontSize = 14;
+			switch (area2)
+			{
+			case 0:
+				guistyle2.normal.background = brakes;
+				guistyle2.hover.background = brakesh;
+				break;
+			case 1:
+				guistyle2.normal.background = frontwing;
+				guistyle2.hover.background = frontwingh;
+				break;
+			case 2:
+				guistyle2.normal.background = rearwing;
+				guistyle2.hover.background = rearwingh;
+				break;
+			case 3:
+				guistyle2.normal.background = suspension;
+				guistyle2.hover.background = suspensionh;
+				break;
+			case 4:
+				guistyle2.normal.background = engine;
+				guistyle2.hover.background = engineh;
+				break;
+			case 5:
+				guistyle2.normal.background = gearbox;
+				guistyle2.hover.background = gearboxh;
+				break;
+			}
+			GUI.Button(new Rect((float)Screen.width * 0.8f, (float)Screen.height * 0.26f, 31f, 31f), qualityTexture2, guistyle2);
+		}
+		if (this.mSelectedSupplier[3] != null)
+		{
+			Texture2D supplierLogo3 = App.instance.assetManager.GetSupplierLogo(this.mSelectedSupplier[3]);
+			GUI.Button(new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.35f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f), supplierLogo3, GUIStyle.none);
+			int area3 = this.mSelectedSupplier[3].areaImprovementa;
+			int quality3 = this.mSelectedSupplier[3].areaImprovementStrengtha;
+			Texture2D qualityTexture3 = new Texture2D(62, 62);
+			new Texture2D(62, 62);
+			switch (quality3)
+			{
+			case 0:
+				qualityTexture3 = a;
+				break;
+			case 1:
+				qualityTexture3 = b;
+				break;
+			case 2:
+				qualityTexture3 = c;
+				break;
+			case 3:
+				qualityTexture3 = d;
+				break;
+			case 4:
+				qualityTexture3 = e;
+				break;
+			}
+			GUIStyle guistyle3 = new GUIStyle();
+			guistyle3.normal.textColor = Color.white;
+			guistyle3.alignment = TextAnchor.MiddleCenter;
+			guistyle3.fontSize = 14;
+			switch (area3)
+			{
+			case 0:
+				guistyle3.normal.background = brakes;
+				guistyle3.hover.background = brakesh;
+				break;
+			case 1:
+				guistyle3.normal.background = frontwing;
+				guistyle3.hover.background = frontwingh;
+				break;
+			case 2:
+				guistyle3.normal.background = rearwing;
+				guistyle3.hover.background = rearwingh;
+				break;
+			case 3:
+				guistyle3.normal.background = suspension;
+				guistyle3.hover.background = suspensionh;
+				break;
+			case 4:
+				guistyle3.normal.background = engine;
+				guistyle3.hover.background = engineh;
+				break;
+			case 5:
+				guistyle3.normal.background = gearbox;
+				guistyle3.hover.background = gearboxh;
+				break;
+			}
+			GUI.Button(new Rect((float)Screen.width * 0.8f, (float)Screen.height * 0.36f, 31f, 31f), qualityTexture3, guistyle3);
+		}
+		if (this.mSelectedSupplier[1] != null)
+		{
+			Texture2D supplierLogo4 = App.instance.assetManager.GetSupplierLogo(this.mSelectedSupplier[1]);
+			GUI.Button(new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.45f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f), supplierLogo4, GUIStyle.none);
+			int area4 = this.mSelectedSupplier[1].areaImprovementa;
+			int quality4 = this.mSelectedSupplier[1].areaImprovementStrengtha;
+			Texture2D qualityTexture4 = new Texture2D(62, 62);
+			new Texture2D(62, 62);
+			switch (quality4)
+			{
+			case 0:
+				qualityTexture4 = a;
+				break;
+			case 1:
+				qualityTexture4 = b;
+				break;
+			case 2:
+				qualityTexture4 = c;
+				break;
+			case 3:
+				qualityTexture4 = d;
+				break;
+			case 4:
+				qualityTexture4 = e;
+				break;
+			}
+			GUIStyle guistyle4 = new GUIStyle();
+			guistyle4.normal.textColor = Color.white;
+			guistyle4.alignment = TextAnchor.MiddleCenter;
+			guistyle4.fontSize = 14;
+			switch (area4)
+			{
+			case 0:
+				guistyle4.normal.background = brakes;
+				guistyle4.hover.background = brakesh;
+				break;
+			case 1:
+				guistyle4.normal.background = frontwing;
+				guistyle4.hover.background = frontwingh;
+				break;
+			case 2:
+				guistyle4.normal.background = rearwing;
+				guistyle4.hover.background = rearwingh;
+				break;
+			case 3:
+				guistyle4.normal.background = suspension;
+				guistyle4.hover.background = suspensionh;
+				break;
+			case 4:
+				guistyle4.normal.background = engine;
+				guistyle4.hover.background = engineh;
+				break;
+			case 5:
+				guistyle4.normal.background = gearbox;
+				guistyle4.hover.background = gearboxh;
+				break;
+			}
+			GUI.Button(new Rect((float)Screen.width * 0.8f, (float)Screen.height * 0.46f, 31f, 31f), qualityTexture4, guistyle4);
+		}
+	}
+}

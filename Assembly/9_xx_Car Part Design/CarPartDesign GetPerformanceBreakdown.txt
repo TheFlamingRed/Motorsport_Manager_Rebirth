@@ -1,3 +1,13 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+using UnityEngine;
+
+// Token: 0x020000FE RID: 254
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class CarPartDesign
+{
+	// Token: 0x060005E0 RID: 1504
 	public string GetPerformanceBreakdown()
 	{
 		int num = this.seasonPartStartingStat[this.mCarPart.GetPartType()];
@@ -5,8 +15,346 @@
 		string text = string.Empty;
 		StringVariableParser.ordinalNumberString = num.ToString("N0");
 		text += Localisation.LocaliseID("PSG_10010514", null);
-		StringVariableParser.ordinalNumberString = Mathf.FloorToInt(engineer.stats.partContributionStats.GetStat(this.mCarPart.stats.statType) * 3f).ToString("N0");
+		StringVariableParser.ordinalNumberString = Mathf.FloorToInt(5f * engineer.stats.partContributionStats.GetStat(this.mCarPart.stats.statType)).ToString("N0");
 		text = text + "\n" + Localisation.LocaliseID("PSG_10010515", null);
+		CarPart inPart = this.mCarPart;
+		float inValue = 0f;
+		if (this.mTeam.carManager.GetCar(0).ChassisStats.supplierEngine.areaImprovementa != 0)
+		{
+			switch (this.mTeam.carManager.GetCar(0).ChassisStats.supplierEngine.areaImprovementa)
+			{
+			case 0:
+				if (inPart.GetPartType() == CarPart.PartType.Brakes || inPart.GetPartType() == CarPart.PartType.BrakesGT || inPart.GetPartType() == CarPart.PartType.BrakesGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierEngine.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Engine Supplier"
+					});
+				}
+				break;
+			case 1:
+				if (inPart.GetPartType() == CarPart.PartType.FrontWing || inPart.GetPartType() == CarPart.PartType.FrontWingGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierEngine.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Engine Supplier"
+					});
+				}
+				break;
+			case 2:
+				if (inPart.GetPartType() == CarPart.PartType.RearWing || inPart.GetPartType() == CarPart.PartType.RearWingGT || inPart.GetPartType() == CarPart.PartType.RearWingGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierEngine.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Engine Supplier"
+					});
+				}
+				break;
+			case 3:
+				if (inPart.GetPartType() == CarPart.PartType.Suspension || inPart.GetPartType() == CarPart.PartType.SuspensionGT || inPart.GetPartType() == CarPart.PartType.SuspensionGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierEngine.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Engine Supplier"
+					});
+				}
+				break;
+			case 4:
+				if (inPart.GetPartType() == CarPart.PartType.Engine || inPart.GetPartType() == CarPart.PartType.EngineGT || inPart.GetPartType() == CarPart.PartType.EngineGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierEngine.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Engine Supplier"
+					});
+				}
+				break;
+			case 5:
+				if (inPart.GetPartType() == CarPart.PartType.Gearbox || inPart.GetPartType() == CarPart.PartType.GearboxGT || inPart.GetPartType() == CarPart.PartType.GearboxGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierEngine.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Engine Supplier"
+					});
+				}
+				break;
+			}
+		}
+		if (this.mTeam.carManager.GetCar(0).ChassisStats.supplierBrakes.areaImprovementa != 0)
+		{
+			switch (this.mTeam.carManager.GetCar(0).ChassisStats.supplierBrakes.areaImprovementa)
+			{
+			case 0:
+				if (inPart.GetPartType() == CarPart.PartType.Brakes || inPart.GetPartType() == CarPart.PartType.BrakesGT || inPart.GetPartType() == CarPart.PartType.BrakesGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierBrakes.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Brake Supplier"
+					});
+				}
+				break;
+			case 1:
+				if (inPart.GetPartType() == CarPart.PartType.FrontWing || inPart.GetPartType() == CarPart.PartType.FrontWingGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierBrakes.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Brake Supplier"
+					});
+				}
+				break;
+			case 2:
+				if (inPart.GetPartType() == CarPart.PartType.RearWing || inPart.GetPartType() == CarPart.PartType.RearWingGT || inPart.GetPartType() == CarPart.PartType.RearWingGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierBrakes.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Brake Supplier"
+					});
+				}
+				break;
+			case 3:
+				if (inPart.GetPartType() == CarPart.PartType.Suspension || inPart.GetPartType() == CarPart.PartType.SuspensionGT || inPart.GetPartType() == CarPart.PartType.SuspensionGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierBrakes.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Brake Supplier"
+					});
+				}
+				break;
+			case 4:
+				if (inPart.GetPartType() == CarPart.PartType.Engine || inPart.GetPartType() == CarPart.PartType.EngineGT || inPart.GetPartType() == CarPart.PartType.EngineGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierBrakes.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Brake Supplier"
+					});
+				}
+				break;
+			case 5:
+				if (inPart.GetPartType() == CarPart.PartType.Gearbox || inPart.GetPartType() == CarPart.PartType.GearboxGT || inPart.GetPartType() == CarPart.PartType.GearboxGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierBrakes.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Brake Supplier"
+					});
+				}
+				break;
+			}
+		}
+		if (this.mTeam.carManager.GetCar(0).ChassisStats.supplierMaterials.areaImprovementa != 0)
+		{
+			switch (this.mTeam.carManager.GetCar(0).ChassisStats.supplierMaterials.areaImprovementa)
+			{
+			case 0:
+				if (inPart.GetPartType() == CarPart.PartType.Brakes || inPart.GetPartType() == CarPart.PartType.BrakesGT || inPart.GetPartType() == CarPart.PartType.BrakesGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierMaterials.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Chassis Supplier"
+					});
+				}
+				break;
+			case 1:
+				if (inPart.GetPartType() == CarPart.PartType.FrontWing || inPart.GetPartType() == CarPart.PartType.FrontWingGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierMaterials.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Chassis Supplier"
+					});
+				}
+				break;
+			case 2:
+				if (inPart.GetPartType() == CarPart.PartType.RearWing || inPart.GetPartType() == CarPart.PartType.RearWingGT || inPart.GetPartType() == CarPart.PartType.RearWingGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierMaterials.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Chassis Supplier"
+					});
+				}
+				break;
+			case 3:
+				if (inPart.GetPartType() == CarPart.PartType.Suspension || inPart.GetPartType() == CarPart.PartType.SuspensionGT || inPart.GetPartType() == CarPart.PartType.SuspensionGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierMaterials.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Chassis Supplier"
+					});
+				}
+				break;
+			case 4:
+				if (inPart.GetPartType() == CarPart.PartType.Engine || inPart.GetPartType() == CarPart.PartType.EngineGT || inPart.GetPartType() == CarPart.PartType.EngineGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierMaterials.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Chassis Supplier"
+					});
+				}
+				break;
+			case 5:
+				if (inPart.GetPartType() == CarPart.PartType.Gearbox || inPart.GetPartType() == CarPart.PartType.GearboxGT || inPart.GetPartType() == CarPart.PartType.GearboxGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierMaterials.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Chassis Supplier"
+					});
+				}
+				break;
+			}
+		}
+		if (this.mTeam.carManager.GetCar(0).ChassisStats.supplierFuel.areaImprovementa != 0)
+		{
+			switch (this.mTeam.carManager.GetCar(0).ChassisStats.supplierFuel.areaImprovementa)
+			{
+			case 0:
+				if (inPart.GetPartType() == CarPart.PartType.Brakes || inPart.GetPartType() == CarPart.PartType.BrakesGT || inPart.GetPartType() == CarPart.PartType.BrakesGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierFuel.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Fuel Supplier"
+					});
+				}
+				break;
+			case 1:
+				if (inPart.GetPartType() == CarPart.PartType.FrontWing || inPart.GetPartType() == CarPart.PartType.FrontWingGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierFuel.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Fuel Supplier"
+					});
+				}
+				break;
+			case 2:
+				if (inPart.GetPartType() == CarPart.PartType.RearWing || inPart.GetPartType() == CarPart.PartType.RearWingGT || inPart.GetPartType() == CarPart.PartType.RearWingGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierFuel.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Fuel Supplier"
+					});
+				}
+				break;
+			case 3:
+				if (inPart.GetPartType() == CarPart.PartType.Suspension || inPart.GetPartType() == CarPart.PartType.SuspensionGT || inPart.GetPartType() == CarPart.PartType.SuspensionGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierFuel.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Fuel Supplier"
+					});
+				}
+				break;
+			case 4:
+				if (inPart.GetPartType() == CarPart.PartType.Engine || inPart.GetPartType() == CarPart.PartType.EngineGT || inPart.GetPartType() == CarPart.PartType.EngineGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierFuel.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Fuel Supplier"
+					});
+				}
+				break;
+			case 5:
+				if (inPart.GetPartType() == CarPart.PartType.Gearbox || inPart.GetPartType() == CarPart.PartType.GearboxGT || inPart.GetPartType() == CarPart.PartType.GearboxGET)
+				{
+					inValue += (float)this.mTeam.carManager.GetCar(0).ChassisStats.supplierFuel.areaTotalImprovementa;
+					text = string.Concat(new object[]
+					{
+						text,
+						"\n + ",
+						inValue,
+						" from Fuel Supplier"
+					});
+				}
+				break;
+			}
+		}
 		if (this.mCarPart.stats.performance != 0f)
 		{
 			StringVariableParser.ordinalNumberString = this.mCarPart.stats.performance.ToString("N0");
@@ -27,3 +375,4 @@
 		}
 		return text;
 	}
+}

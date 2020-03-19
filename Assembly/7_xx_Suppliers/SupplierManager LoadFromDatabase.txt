@@ -1,3 +1,12 @@
+using System;
+using System.Collections.Generic;
+using FullSerializer;
+
+// Token: 0x0200011E RID: 286
+[fsObject(MemberSerialization = fsMemberSerialization.OptOut)]
+public partial class SupplierManager : InstanceCounter
+{
+	// Token: 0x060006A6 RID: 1702 RVA: 0x00056294 File Offset: 0x00054494
 		public void LoadFromDatabase(Database database)
 	{
 		Debug.Assert(this.engineSuppliers.Count == 0 && this.brakesSuppliers.Count == 0 && this.fuelSuppliers.Count == 0, "Loading from database when content is already loaded; this will work but indicates that the game is loading in a strange unintended way.");
@@ -10,3 +19,4 @@
 		this.mSuppliers.Clear();
 		this.LoadSuppliers(database, new string[0]);
 	}
+}

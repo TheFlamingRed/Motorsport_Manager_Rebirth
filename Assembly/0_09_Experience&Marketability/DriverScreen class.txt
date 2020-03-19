@@ -46,18 +46,18 @@ public class DriverScreen : UIScreen
 	// Token: 0x06003296 RID: 12950
 	public void OnGUI()
 	{
-		byte[] data = File.ReadAllBytes("driverExperiencey.png");
+		byte[] data = File.ReadAllBytes("texture/driverExperiencey.png");
 		Texture2D texture2D = new Texture2D(200, 90);
 		texture2D.LoadImage(data);
 		GUIStyle guistyle = new GUIStyle();
 		guistyle.normal.textColor = Color.white;
 		if (this.mDriver.GetDriverStats().experience > 0.85f)
 		{
-			data = File.ReadAllBytes("driverExperienceg.png");
+			data = File.ReadAllBytes("texture/driverExperienceg.png");
 		}
 		if (this.mDriver.GetDriverStats().experience < 0.3f)
 		{
-			data = File.ReadAllBytes("driverExperiencer.png");
+			data = File.ReadAllBytes("texture/driverExperiencer.png");
 		}
 		texture2D.LoadImage(data);
 		guistyle.alignment = TextAnchor.MiddleCenter;

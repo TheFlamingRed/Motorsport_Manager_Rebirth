@@ -1,15 +1,411 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using MM2;
 using UnityEngine;
 
 // Token: 0x0200078E RID: 1934
-public partial class CarDesignScreen : UIScreen
+public class CarDesignScreen : UIScreen
 {
+	// Token: 0x060035A9 RID: 13737
+	public CarDesignScreen()
+	{
+		this.mSelectedSupplier = new Supplier[4];
+		this.mCurrentCamera = string.Empty;
+		this.mNextCamera = string.Empty;
+	}
+
+	// Token: 0x060035AA RID: 13738
+	public override void OnStart()
+	{
+		base.OnStart();
+		this.supplierSelectionWidget.OnStart();
+	}
+
+	// Token: 0x060035AB RID: 13739
+	public override void OnEnter()
+	{
+		base.OnEnter();
+		this.supplierRollover.Setup(Game.instance.player.team, true);
+		UIManager.instance.ClearNavigationStacks();
+		if (Game.instance.player.team.championship.rules.isERSAdvancedModeActive || (Game.instance.player.team.championship.rules.isEnergySystemActive && !Game.instance.player.team.championship.rules.shouldChargeUsingStandingsPosition))
+		{
+			this.mSelectedSupplier = new Supplier[5];
+		}
+		else
+		{
+			this.mSelectedSupplier = new Supplier[4];
+		}
+		this.ResetSuppliers();
+		this.estimatedOutputWidget.OnEnter();
+		this.preferencesWidget.OnEnter();
+		this.supplierSelectionWidget.OnEnter();
+		this.UpdateStats();
+		this.dontAddToBackStack = true;
+		base.canUseScreenHotkeys = false;
+		base.canEnterPreferencesScreen = false;
+		base.needsPlayerConfirmation = true;
+		base.showNavigationBars = true;
+		this.SetScene();
+		long moneyForCarDev = Game.instance.player.team.financeController.moneyForCarDev;
+		if (moneyForCarDev != 0L)
+		{
+			Transaction item = new Transaction(Transaction.Group.CarParts, Transaction.Type.Credit, moneyForCarDev, Localisation.LocaliseID("PSG_10010580", null));
+			Game.instance.player.team.financeController.unnallocatedTransactions.Add(item);
+			TeamFinanceController.ShowPopupToPlayer(null);
+			Game.instance.player.team.financeController.moneyForCarDev = 0L;
+		}
+		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionFactory, 0f);
+		base.SetBottomBarMode(UIBottomBar.Mode.Core);
+		UIManager.instance.navigationBars.bottomBar.MarkContinueButtonForUpdate();
+	}
+
+	// Token: 0x060035AC RID: 13740
+	private void SetScene()
+	{
+		SceneManager.instance.SwitchScene("GarageNextYearCar");
+		GameObject sceneGameObject = SceneManager.instance.GetSceneGameObject("GarageNextYearCar");
+		if (sceneGameObject != null && base.screenMode == UIScreen.ScreenMode.Mode3D)
+		{
+			StudioScene component = sceneGameObject.GetComponent<StudioScene>();
+			if (component != null)
+			{
+				TeamColor.LiveryColour liveryColour = new TeamColor.LiveryColour();
+				switch (Game.instance.player.team.championship.series)
+				{
+				case Championship.Series.SingleSeaterSeries:
+					this.SetCamera("RearPackageCamera");
+					this.preferencesWidget.gameObject.SetActive(true);
+					break;
+				case Championship.Series.GTSeries:
+					this.SetCamera("GTCamera");
+					this.preferencesWidget.gameObject.SetActive(false);
+					liveryColour.SetAllColours(Color.black);
+					break;
+				case Championship.Series.EnduranceSeries:
+					this.SetCamera("EnduranceCamera");
+					this.preferencesWidget.gameObject.SetActive(false);
+					liveryColour.SetAllColours(Color.white);
+					break;
+				}
+				Game.instance.player.team.carManager.nextFrontendCar.SetColours(liveryColour);
+				component.SetCarType(StudioScene.Car.NextYearCar);
+				component.SetSeries(Game.instance.player.team.championship.series);
+				component.SetCarVisualsToCurrentGame();
+			}
+		}
+	}
+
+	// Token: 0x060035AD RID: 13741
+	public override UIScreen.NavigationButtonEvent OnContinueButton()
+	{
+		if (!this.supplierSelectionWidget.IsComplete())
+		{
+			this.supplierSelectionWidget.GoToNextStep();
+		}
+		else
+		{
+			this.OnStartDesign();
+		}
+		return UIScreen.NavigationButtonEvent.HandledByScreen;
+	}
+
+	// Token: 0x060035AE RID: 13742
+	public void Update()
+	{
+		GameUtility.SetActive(this.unselectedOptionsWarningContainter, !this.supplierSelectionWidget.IsComplete());
+	}
+
+	// Token: 0x060035AF RID: 13743
+	public void OnStartDesign()
+	{
+		CarChassisStats newChassis = new CarChassisStats();
+		foreach (KeyValuePair<CarChassisStats.Stats, float> keyValuePair in this.preferencesWidget.sliderStats)
+		{
+			switch (keyValuePair.Key)
+			{
+			case CarChassisStats.Stats.TyreWear:
+				newChassis.tyreWear = keyValuePair.Value;
+				break;
+			case CarChassisStats.Stats.TyreHeating:
+				newChassis.tyreHeating = keyValuePair.Value;
+				break;
+			case CarChassisStats.Stats.FuelEfficiency:
+				newChassis.fuelEfficiency = keyValuePair.Value;
+				break;
+			case CarChassisStats.Stats.Improvability:
+				newChassis.improvability = keyValuePair.Value;
+				break;
+			}
+		}
+		for (int i = 0; i < this.mSelectedSupplier.Length; i++)
+		{
+			Supplier supplier = this.mSelectedSupplier[i];
+			switch (supplier.supplierType)
+			{
+			case Supplier.SupplierType.Engine:
+				newChassis.supplierEngine = supplier;
+				break;
+			case Supplier.SupplierType.Brakes:
+				newChassis.supplierBrakes = supplier;
+				break;
+			case Supplier.SupplierType.Fuel:
+				newChassis.supplierFuel = supplier;
+				break;
+			case Supplier.SupplierType.Materials:
+				newChassis.supplierMaterials = supplier;
+				break;
+			case Supplier.SupplierType.Battery:
+				newChassis.supplierBattery = supplier;
+				break;
+			case Supplier.SupplierType.ERSAdvanced:
+				newChassis.supplierERSAdvanced = supplier;
+				break;
+			}
+		}
+		newChassis.ApplySupplierStats();
+		Finance finance = Game.instance.player.team.financeController.finance;
+		Team team = Game.instance.player.team;
+		Transaction brakesTransaction = newChassis.GetBrakesTransaction(team);
+		Transaction engineTransaction = newChassis.GetEngineTransaction(team);
+		Transaction fuelTransaction = newChassis.GetFuelTransaction(team);
+		Transaction materialTransaction = newChassis.GetMaterialTransaction(team);
+		Transaction transaction = null;
+		Transaction transaction2 = null;
+		if (!Game.instance.player.team.championship.rules.isERSAdvancedModeActive && Game.instance.player.team.championship.rules.isEnergySystemActive && !Game.instance.player.team.championship.rules.shouldChargeUsingStandingsPosition)
+		{
+			transaction = newChassis.GetBatteryTransaction(team);
+		}
+		if (Game.instance.player.team.championship.rules.isERSAdvancedModeActive)
+		{
+			transaction2 = newChassis.GetERSTransaction(team);
+		}
+		long totalCost = brakesTransaction.amount + engineTransaction.amount + fuelTransaction.amount + materialTransaction.amount;
+		if (transaction != null)
+		{
+			totalCost += transaction.amount;
+		}
+		Action inOnTransactionSucess = delegate()
+		{
+			UIManager.instance.ClearNavigationStacks();
+			this.needsPlayerConfirmation = false;
+			Game.instance.player.team.carManager.nextYearCarDesign.StartDesign(newChassis);
+			((PreSeasonState)App.instance.gameStateManager.currentState).SetStage(PreSeasonState.PreSeasonStage.PartAdapting);
+			UIManager.instance.ChangeScreen("CarScreen", UIManager.ScreenTransition.None, 0f, null, UIManager.NavigationType.Normal);
+			this.UpdateCarDesignAchievements(totalCost);
+		};
+		if (transaction != null && transaction2 != null)
+		{
+			finance.ProcessTransactions(inOnTransactionSucess, null, true, new Transaction[]
+			{
+				engineTransaction,
+				fuelTransaction,
+				materialTransaction,
+				brakesTransaction,
+				transaction,
+				transaction2
+			});
+			return;
+		}
+		if (transaction != null)
+		{
+			finance.ProcessTransactions(inOnTransactionSucess, null, true, new Transaction[]
+			{
+				engineTransaction,
+				fuelTransaction,
+				materialTransaction,
+				brakesTransaction,
+				transaction
+			});
+			return;
+		}
+		if (transaction2 != null)
+		{
+			finance.ProcessTransactions(inOnTransactionSucess, null, true, new Transaction[]
+			{
+				engineTransaction,
+				fuelTransaction,
+				materialTransaction,
+				brakesTransaction,
+				transaction2
+			});
+			return;
+		}
+		finance.ProcessTransactions(inOnTransactionSucess, null, true, new Transaction[]
+		{
+			engineTransaction,
+			fuelTransaction,
+			materialTransaction,
+			brakesTransaction
+		});
+	}
+
+	// Token: 0x060035B0 RID: 13744
+	public override void OpenConfirmDialogBox(Action inAction)
+	{
+		GenericConfirmation dialog = UIManager.instance.dialogBoxManager.GetDialog<GenericConfirmation>();
+		Action inCancelAction = delegate()
+		{
+		};
+		string inTitle = Localisation.LocaliseID("PSG_10001275", null);
+		string inText = Localisation.LocaliseID("PSG_10009119", null);
+		string inCancelString = Localisation.LocaliseID("PSG_10009081", null);
+		UIManager.instance.dialogBoxManager.Show("GenericConfirmation");
+		dialog.Show(inCancelAction, inCancelString, null, string.Empty, inText, inTitle);
+	}
+
+	// Token: 0x060035B1 RID: 13745
+	public void SetCamera(string inString)
+	{
+		this.mNextCamera = inString;
+		if (this.mNextCamera == this.mCurrentCamera)
+		{
+			return;
+		}
+		App.instance.StopCoroutine(this.ChangeCamera());
+		App.instance.StartCoroutine(this.ChangeCamera());
+	}
+
+	// Token: 0x060035B2 RID: 13746
+	private IEnumerator ChangeCamera()
+	{
+		GameObject sceneGameObject = SceneManager.instance.GetSceneGameObject("GarageNextYearCar");
+		if (sceneGameObject != null && base.screenMode == UIScreen.ScreenMode.Mode3D)
+		{
+			StudioScene studioScene = sceneGameObject.GetComponent<StudioScene>();
+			Animator animator = null;
+			if (this.mCurrentCamera != string.Empty)
+			{
+				animator = studioScene.GetCamera(this.mCurrentCamera).GetComponent<Animator>();
+				animator.SetTrigger(AnimationHashes.FadeOut);
+			}
+			while (animator != null && animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+			{
+				yield return null;
+			}
+			studioScene.EnableCamera(this.mNextCamera);
+			this.mCurrentCamera = this.mNextCamera;
+			studioScene = null;
+			animator = null;
+			studioScene = null;
+			animator = null;
+			studioScene = null;
+			animator = null;
+		}
+		yield break;
+	}
+
+	// Token: 0x060035B3 RID: 13747
+	public void SetSupplier(Supplier.SupplierType inType, Supplier inSupplier)
+	{
+		if (inType == Supplier.SupplierType.ERSAdvanced)
+		{
+			inType = Supplier.SupplierType.Battery;
+		}
+		this.mSelectedSupplier[(int)inType] = inSupplier;
+		this.UpdateStats();
+	}
+
+	// Token: 0x060035B4 RID: 13748
+	public void UpdateStats()
+	{
+		this.estimatedOutputWidget.ResetStats();
+		for (int i = 0; i < this.mSelectedSupplier.Length; i++)
+		{
+			if (this.mSelectedSupplier[i] != null)
+			{
+				foreach (KeyValuePair<CarChassisStats.Stats, float> keyValuePair in this.mSelectedSupplier[i].supplierStats)
+				{
+					this.estimatedOutputWidget.AddToStat(keyValuePair.Key, keyValuePair.Value);
+				}
+			}
+		}
+		foreach (KeyValuePair<CarChassisStats.Stats, float> keyValuePair2 in this.preferencesWidget.sliderStats)
+		{
+			this.estimatedOutputWidget.SetMaxStat(keyValuePair2.Key, keyValuePair2.Value);
+		}
+	}
+
+	// Token: 0x060035B5 RID: 13749
+	public void ShowStatContibution(Supplier inSupplier)
+	{
+		if (inSupplier == null)
+		{
+			return;
+		}
+		foreach (KeyValuePair<CarChassisStats.Stats, float> keyValuePair in inSupplier.supplierStats)
+		{
+			this.estimatedOutputWidget.SetSupplierContribution(keyValuePair.Key, keyValuePair.Value);
+		}
+	}
+
+	// Token: 0x060035B6 RID: 13750
+	public void HideStatContribution()
+	{
+		this.estimatedOutputWidget.HideSupplierContribution();
+	}
+
+	// Token: 0x060035B7 RID: 13751
+	private void ResetSuppliers()
+	{
+		for (int i = 0; i < this.mSelectedSupplier.Length; i++)
+		{
+			this.mSelectedSupplier[i] = null;
+		}
+	}
+
+	// Token: 0x060035B8 RID: 13752
+	private bool SuppliersChosen()
+	{
+		bool result = true;
+		for (int i = 0; i < this.mSelectedSupplier.Length; i++)
+		{
+			if (this.mSelectedSupplier[i] == null)
+			{
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
+
+	// Token: 0x060035B9 RID: 13753
+	public override void OnExit()
+	{
+		base.OnExit();
+		Game.instance.player.team.carManager.frontendCar.gameObject.SetActive(false);
+		SceneManager.instance.LeaveCurrentScene();
+	}
+
+	// Token: 0x060035BA RID: 13754
+	private void UpdateCarDesignAchievements(long inTotalCost)
+	{
+		float num = 3E+07f;
+		if ((float)inTotalCost > num)
+		{
+			App.instance.steamAchievementsManager.UnlockAchievement(Achievements.AchievementEnum.Spend_30m_On_New_Car);
+		}
+	}
+
+	// Token: 0x170006F8 RID: 1784
+	// (get) Token: 0x060035BB RID: 13755
+	public Supplier[] supplierList
+	{
+		get
+		{
+			return this.mSelectedSupplier;
+		}
+	}
+
 	// Token: 0x060035BC RID: 13756
 	public void OnGUI()
 	{
-		byte[] data = File.ReadAllBytes("texture/reg.png");
+		byte[] data = File.ReadAllBytes("texture/carpartbackground.png");
+		Texture2D background = new Texture2D(62, 62);
+		background.LoadImage(data);
+		GUI.Button(new Rect((float)Screen.width * 0.5f, (float)Screen.height * 0.1f, (float)Screen.width * 750f / 1920f, (float)Screen.height * 400f / 1080f), background, GUIStyle.none);
+		data = File.ReadAllBytes("texture/reg.png");
 		Texture2D a = new Texture2D(62, 62);
 		a.LoadImage(data);
 		data = File.ReadAllBytes("texture/good.png");
@@ -70,19 +466,19 @@ public partial class CarDesignScreen : UIScreen
 			new Texture2D(62, 62);
 			switch (quality)
 			{
-			case 0:
+			case 1:
 				qualityTexture = a;
 				break;
-			case 1:
+			case 2:
 				qualityTexture = b;
 				break;
-			case 2:
+			case 3:
 				qualityTexture = c;
 				break;
-			case 3:
+			case 4:
 				qualityTexture = d;
 				break;
-			case 4:
+			case 5:
 				qualityTexture = e;
 				break;
 			}
@@ -129,19 +525,19 @@ public partial class CarDesignScreen : UIScreen
 			new Texture2D(62, 62);
 			switch (quality2)
 			{
-			case 0:
+			case 1:
 				qualityTexture2 = a;
 				break;
-			case 1:
+			case 2:
 				qualityTexture2 = b;
 				break;
-			case 2:
+			case 3:
 				qualityTexture2 = c;
 				break;
-			case 3:
+			case 4:
 				qualityTexture2 = d;
 				break;
-			case 4:
+			case 5:
 				qualityTexture2 = e;
 				break;
 			}
@@ -188,19 +584,19 @@ public partial class CarDesignScreen : UIScreen
 			new Texture2D(62, 62);
 			switch (quality3)
 			{
-			case 0:
+			case 1:
 				qualityTexture3 = a;
 				break;
-			case 1:
+			case 2:
 				qualityTexture3 = b;
 				break;
-			case 2:
+			case 3:
 				qualityTexture3 = c;
 				break;
-			case 3:
+			case 4:
 				qualityTexture3 = d;
 				break;
-			case 4:
+			case 5:
 				qualityTexture3 = e;
 				break;
 			}
@@ -247,19 +643,19 @@ public partial class CarDesignScreen : UIScreen
 			new Texture2D(62, 62);
 			switch (quality4)
 			{
-			case 0:
+			case 1:
 				qualityTexture4 = a;
 				break;
-			case 1:
+			case 2:
 				qualityTexture4 = b;
 				break;
-			case 2:
+			case 3:
 				qualityTexture4 = c;
 				break;
-			case 3:
+			case 4:
 				qualityTexture4 = d;
 				break;
-			case 4:
+			case 5:
 				qualityTexture4 = e;
 				break;
 			}
@@ -297,4 +693,28 @@ public partial class CarDesignScreen : UIScreen
 			GUI.Button(new Rect((float)Screen.width * 0.8f, (float)Screen.height * 0.46f, 31f, 31f), qualityTexture4, guistyle4);
 		}
 	}
+
+	// Token: 0x040032B0 RID: 12976
+	public UIEstimatedOutputWidget estimatedOutputWidget;
+
+	// Token: 0x040032B1 RID: 12977
+	public UIPreferencesSettingsWidget preferencesWidget;
+
+	// Token: 0x040032B2 RID: 12978
+	public UISupplierSelectionWidget supplierSelectionWidget;
+
+	// Token: 0x040032B3 RID: 12979
+	public UICarSupplierRolloverTrigger supplierRollover;
+
+	// Token: 0x040032B4 RID: 12980
+	public GameObject unselectedOptionsWarningContainter;
+
+	// Token: 0x040032B5 RID: 12981
+	private Supplier[] mSelectedSupplier;
+
+	// Token: 0x040032B6 RID: 12982
+	private string mCurrentCamera;
+
+	// Token: 0x040032B7 RID: 12983
+	private string mNextCamera;
 }

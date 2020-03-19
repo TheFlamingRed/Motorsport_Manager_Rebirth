@@ -184,13 +184,13 @@ public class HomeScreen : UIScreen
 		}
 		if (!Game.instance.player.team.isCreatedByPlayer)
 		{
-			byte[] data = File.ReadAllBytes("TeamBuyout.png");
+			byte[] data = File.ReadAllBytes("texture/TeamBuyout.png");
 			Texture2D texture2D = new Texture2D(180, 33);
 			texture2D.LoadImage(data);
-			data = File.ReadAllBytes("TeamBuyoutg.png");
+			data = File.ReadAllBytes("texture/TeamBuyoutg.png");
 			Texture2D texture2D2 = new Texture2D(180, 33);
 			texture2D2.LoadImage(data);
-			data = File.ReadAllBytes("TeamBuyouth.png");
+			data = File.ReadAllBytes("texture/TeamBuyouth.png");
 			Texture2D texture2D3 = new Texture2D(180, 33);
 			texture2D3.LoadImage(data);
 			GUIStyle guistyle = new GUIStyle();
@@ -222,11 +222,11 @@ public class HomeScreen : UIScreen
 				UIManager.instance.ClearNavigationStacks();
 				Game.instance.player.team.chairman.ModifyHappiness(100f, "Happy to invest in the team");
 			}
-			data = File.ReadAllBytes("icon.png");
+			data = File.ReadAllBytes("texture/icon.png");
 			Texture2D texture2D4 = new Texture2D(18, 19);
 			texture2D4.LoadImage(data);
 			Texture2D texture2D5 = new Texture2D(18, 19);
-			data = File.ReadAllBytes("iconh.png");
+			data = File.ReadAllBytes("texture/iconh.png");
 			texture2D5.LoadImage(data);
 			GUIStyle guistyle2 = new GUIStyle();
 			guistyle2.alignment = TextAnchor.MiddleCenter;
@@ -238,7 +238,7 @@ public class HomeScreen : UIScreen
 			}
 			if (this.buyoutHelper)
 			{
-				data = File.ReadAllBytes("BuyoutHelper.png");
+				data = File.ReadAllBytes("texture/BuyoutHelper.png");
 				Texture2D texture2D6 = new Texture2D(505, 144);
 				texture2D6.LoadImage(data);
 				GUIStyle guistyle3 = new GUIStyle();
@@ -255,10 +255,10 @@ public class HomeScreen : UIScreen
 		}
 		if (flag)
 		{
-			byte[] data2 = File.ReadAllBytes("SwitchSS.png");
+			byte[] data2 = File.ReadAllBytes("texture/SwitchSS.png");
 			Texture2D texture2D7 = new Texture2D(180, 33);
 			texture2D7.LoadImage(data2);
-			data2 = File.ReadAllBytes("SwitchSSh.png");
+			data2 = File.ReadAllBytes("texture/SwitchSSh.png");
 			Texture2D texture2D8 = new Texture2D(180, 33);
 			texture2D8.LoadImage(data2);
 			GUIStyle guistyle4 = new GUIStyle();
@@ -278,10 +278,10 @@ public class HomeScreen : UIScreen
 		}
 		if (flag2)
 		{
-			byte[] data3 = File.ReadAllBytes("SwitchGT.png");
+			byte[] data3 = File.ReadAllBytes("texture/SwitchGT.png");
 			Texture2D texture2D9 = new Texture2D(180, 33);
 			texture2D9.LoadImage(data3);
-			data3 = File.ReadAllBytes("SwitchGTh.png");
+			data3 = File.ReadAllBytes("texture/SwitchGTh.png");
 			Texture2D texture2D10 = new Texture2D(180, 33);
 			texture2D10.LoadImage(data3);
 			GUIStyle guistyle5 = new GUIStyle();
@@ -301,10 +301,10 @@ public class HomeScreen : UIScreen
 		}
 		if (flag3)
 		{
-			byte[] data4 = File.ReadAllBytes("SwitchEN.png");
+			byte[] data4 = File.ReadAllBytes("texture/SwitchEN.png");
 			Texture2D texture2D11 = new Texture2D(180, 33);
 			texture2D11.LoadImage(data4);
-			data4 = File.ReadAllBytes("SwitchENh.png");
+			data4 = File.ReadAllBytes("texture/SwitchENh.png");
 			Texture2D texture2D12 = new Texture2D(180, 33);
 			texture2D12.LoadImage(data4);
 			GUIStyle guistyle6 = new GUIStyle();
@@ -322,10 +322,10 @@ public class HomeScreen : UIScreen
 				UIManager.instance.ClearNavigationStacks();
 			}
 		}
-		byte[] data5 = File.ReadAllBytes("dark.png");
+		byte[] data5 = File.ReadAllBytes("texture/dark.png");
 		Texture2D texture2D13 = new Texture2D(180, 33);
 		texture2D13.LoadImage(data5);
-		data5 = File.ReadAllBytes("darkh.png");
+		data5 = File.ReadAllBytes("texture/darkh.png");
 		Texture2D texture2D14 = new Texture2D(180, 33);
 		texture2D14.LoadImage(data5);
 		GUIStyle guistyle7 = new GUIStyle();

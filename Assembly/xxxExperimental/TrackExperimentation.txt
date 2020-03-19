@@ -1,0 +1,38 @@
+using System;
+using System.IO;
+using UnityEngine;
+
+// Token: 0x0200038F RID: 911
+public partial class PathDataComponent : MonoBehaviour
+{
+	// Token: 0x060019E9 RID: 6633
+	private void Awake()
+	{
+		if (!File.Exists("debug.txt"))
+		{
+			File.WriteAllText("debug.txt", "debug \n \n");
+		}
+		this.Prepare();
+		if (Application.isPlaying)
+		{
+			Renderer component = base.GetComponent<Renderer>();
+			if (component != null)
+			{
+				component.enabled = false;
+			}
+			Game.instance.player.debugString = component.name;
+			if (component.name == "Track A")
+			{
+				MeshFilter initialMesh = GameObject.Find("Track A").GetComponent<MeshFilter>();
+				File.AppendAllText("debug.txt", initialMesh.name + "\n");
+				File.AppendAllText("debug.txt", initialMesh.mesh.vertexCount.ToString() + "\n");
+				Mesh newMesh = new ObjImporter().ImportFile("Track A.obj");
+				File.AppendAllText("debug.txt", newMesh.vertexCount.ToString() + "\n");
+				initialMesh.mesh = newMesh;
+				
+				Game.instance.player.debugValue = 1002;
+				File.AppendAllText("debug.txt", initialMesh.mesh.vertexCount.ToString() + "\n");
+			}
+		}
+	}
+}

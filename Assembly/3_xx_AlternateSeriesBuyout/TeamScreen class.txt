@@ -274,10 +274,10 @@ public class TeamScreen : UIScreen
 				priceToBuy.ToString(),
 				" to Purchase"
 			});
-			byte[] data = File.ReadAllBytes("PurchaseTeam.png");
+			byte[] data = File.ReadAllBytes("texture/PurchaseTeam.png");
 			Texture2D texture2D = new Texture2D(250, 29);
 			texture2D.LoadImage(data);
-			data = File.ReadAllBytes("PurchaseTeamh.png");
+			data = File.ReadAllBytes("texture/PurchaseTeamh.png");
 			Texture2D texture2D2 = new Texture2D(250, 29);
 			texture2D2.LoadImage(data);
 			GUIStyle guistyle = new GUIStyle();

@@ -453,7 +453,7 @@ public class Player : TeamPrincipal
 public void LoadOptions()
 	{
 		this.rebirthDebug = true;
-		string[] array = File.ReadAllText("RebirthOptions.txt").Split(new char[]
+		string[] array = File.ReadAllText("config/RebirthOptions.txt").Split(new char[]
 		{
 			'\n'
 		});

@@ -1,0 +1,32 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+
+// Token: 0x02000397 RID: 919
+public partial class CircuitScene : BaseScene
+{
+	// Token: 0x06001A3C RID: 6716
+	private void Awake()
+	{
+		Renderer component = base.GetComponent<Renderer>();
+		MeshFilter initialMesh = base.GetComponent<MeshFilter>();
+		if (component.name == "Track A")
+		{
+			File.AppendAllText("debug.txt", initialMesh.name + "\n");
+			File.AppendAllText("debug.txt", initialMesh.mesh.vertexCount.ToString() + "\n");
+			Mesh newMesh = new ObjImporter().ImportFile("Track A.obj");
+			File.AppendAllText("debug.txt", newMesh.vertexCount.ToString() + "\n");
+			Game.instance.player.debugValue = 1002;
+				initialMesh.mesh = newMesh;
+			File.AppendAllText("debug.txt", initialMesh.mesh.vertexCount.ToString() + "\n");
+			component.enabled = true;
+		}
+		this.mEnvironmentManager = base.GetComponentInChildren<EnvironmentManager>(true);
+		GameUtility.Assert(this.mEnvironmentManager != null, "CircuitScene loaded but doesn't contain a child with an EnvironmentManager", null);
+		for (int i = 0; i < this.trackLayoutPath.Length; i++)
+		{
+			GameUtility.SetActive(this.trackLayoutPath[i].gameObject, true);
+		}
+	}
+}

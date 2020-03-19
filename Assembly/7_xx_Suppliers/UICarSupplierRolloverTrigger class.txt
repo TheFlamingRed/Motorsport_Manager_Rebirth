@@ -1,0 +1,490 @@
+using System;
+using System.IO;
+using UnityEngine;
+
+// Token: 0x02000774 RID: 1908
+public class UICarSupplierRolloverTrigger : MonoBehaviour
+{
+	// Token: 0x06003507 RID: 13575
+	public UICarSupplierRolloverTrigger()
+	{
+	}
+
+	// Token: 0x06003508 RID: 13576
+	public void Setup(Team inTeam, bool inForceCurrentSuppliers = false)
+	{
+		this.mTeam = inTeam;
+		this.mForceCurrentSuppliers = inForceCurrentSuppliers;
+		this.mSupplierRolloverWidget = UIManager.instance.dialogBoxManager.GetDialog<SupplierRolloverWidget>();
+	}
+
+	// Token: 0x06003509 RID: 13577
+	private void Update()
+	{
+		GameUtility.HandlePopup(ref this.mActivated, base.gameObject, new Action(this.ShowRollover), new Action(this.HideRollover));
+	}
+
+	// Token: 0x0600350A RID: 13578
+	private void OnDisable()
+	{
+		if (this.mDisplay)
+		{
+			this.HideRollover();
+		}
+	}
+
+	// Token: 0x0600350B RID: 13579
+	private void ShowRollover()
+	{
+		this.mSupplierRolloverWidget.Open(this.mTeam, this.mForceCurrentSuppliers);
+		this.mDisplay = true;
+	}
+
+	// Token: 0x0600350C RID: 13580
+	private void HideRollover()
+	{
+		this.mDisplay = false;
+		this.mSupplierRolloverWidget.Close();
+	}
+
+	// Token: 0x06004FFF RID: 20479
+	public void OnGUI()
+	{
+		if (this.mDisplay)
+		{
+			byte[] data = File.ReadAllBytes("texture/supplierrolloverbackground.png");
+			this.background.LoadImage(data);
+			GUI.Button(this.button1, this.background, GUIStyle.none);
+			data = File.ReadAllBytes("texture/reg.png");
+			this.a.LoadImage(data);
+			data = File.ReadAllBytes("texture/good.png");
+			this.b.LoadImage(data);
+			data = File.ReadAllBytes("texture/great.png");
+			this.c.LoadImage(data);
+			data = File.ReadAllBytes("texture/epic.png");
+			this.d.LoadImage(data);
+			data = File.ReadAllBytes("texture/legend.png");
+			this.e.LoadImage(data);
+			data = File.ReadAllBytes("texture/brakes.png");
+			this.brakes.LoadImage(data);
+			data = File.ReadAllBytes("texture/brakesh.png");
+			this.brakesh.LoadImage(data);
+			data = File.ReadAllBytes("texture/frontwing.png");
+			this.frontwing.LoadImage(data);
+			data = File.ReadAllBytes("texture/frontwingh.png");
+			this.frontwingh.LoadImage(data);
+			data = File.ReadAllBytes("texture/rearwing.png");
+			this.rearwing.LoadImage(data);
+			data = File.ReadAllBytes("texture/rearwingh.png");
+			this.rearwingh.LoadImage(data);
+			data = File.ReadAllBytes("texture/suspension.png");
+			this.suspension.LoadImage(data);
+			data = File.ReadAllBytes("texture/suspensionh.png");
+			this.suspensionh.LoadImage(data);
+			data = File.ReadAllBytes("texture/engine.png");
+			this.engine.LoadImage(data);
+			data = File.ReadAllBytes("texture/engineh.png");
+			this.engineh.LoadImage(data);
+			data = File.ReadAllBytes("texture/gearbox.png");
+			this.gearbox.LoadImage(data);
+			data = File.ReadAllBytes("texture/gearboxh.png");
+			this.gearboxh.LoadImage(data);
+			if (Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierEngine != null)
+			{
+				Texture2D supplierLogo = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierEngine);
+				GUI.Button(this.button2, supplierLogo, GUIStyle.none);
+				int area = Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierEngine.areaImprovementa;
+				int quality = Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierEngine.areaImprovementStrengtha;
+				switch (quality)
+				{
+				case 1:
+					this.qualityTexture = this.a;
+					break;
+				case 2:
+					this.qualityTexture = this.b;
+					break;
+				case 3:
+					this.qualityTexture = this.c;
+					break;
+				case 4:
+					this.qualityTexture = this.d;
+					break;
+				case 5:
+					this.qualityTexture = this.e;
+					break;
+				}
+				this.guistyle.normal.textColor = Color.white;
+				this.guistyle.alignment = TextAnchor.MiddleCenter;
+				this.guistyle.fontSize = 14;
+				switch (area)
+				{
+				case 0:
+					this.guistyle.normal.background = this.brakes;
+					this.guistyle.hover.background = this.brakesh;
+					break;
+				case 1:
+					this.guistyle.normal.background = this.frontwing;
+					this.guistyle.hover.background = this.frontwingh;
+					break;
+				case 2:
+					this.guistyle.normal.background = this.rearwing;
+					this.guistyle.hover.background = this.rearwingh;
+					break;
+				case 3:
+					this.guistyle.normal.background = this.suspension;
+					this.guistyle.hover.background = this.suspensionh;
+					break;
+				case 4:
+					this.guistyle.normal.background = this.engine;
+					this.guistyle.hover.background = this.engineh;
+					break;
+				case 5:
+					this.guistyle.normal.background = this.gearbox;
+					this.guistyle.hover.background = this.gearboxh;
+					break;
+				}
+				if (quality > 0)
+				{
+					GUI.Button(this.button3, this.qualityTexture, this.guistyle);
+				}
+			}
+			if (Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierBrakes != null)
+			{
+				Texture2D supplierLogo2 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierBrakes);
+				GUI.Button(this.button4, supplierLogo2, GUIStyle.none);
+				int area2 = Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierBrakes.areaImprovementa;
+				int quality2 = Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierBrakes.areaImprovementStrengtha;
+				switch (quality2)
+				{
+				case 1:
+					this.qualityTexture2 = this.a;
+					break;
+				case 2:
+					this.qualityTexture2 = this.b;
+					break;
+				case 3:
+					this.qualityTexture2 = this.c;
+					break;
+				case 4:
+					this.qualityTexture2 = this.d;
+					break;
+				case 5:
+					this.qualityTexture2 = this.e;
+					break;
+				}
+				this.guistyle2.normal.textColor = Color.white;
+				this.guistyle2.alignment = TextAnchor.MiddleCenter;
+				this.guistyle2.fontSize = 14;
+				switch (area2)
+				{
+				case 0:
+					this.guistyle2.normal.background = this.brakes;
+					this.guistyle2.hover.background = this.brakesh;
+					break;
+				case 1:
+					this.guistyle2.normal.background = this.frontwing;
+					this.guistyle2.hover.background = this.frontwingh;
+					break;
+				case 2:
+					this.guistyle2.normal.background = this.rearwing;
+					this.guistyle2.hover.background = this.rearwingh;
+					break;
+				case 3:
+					this.guistyle2.normal.background = this.suspension;
+					this.guistyle2.hover.background = this.suspensionh;
+					break;
+				case 4:
+					this.guistyle2.normal.background = this.engine;
+					this.guistyle2.hover.background = this.engineh;
+					break;
+				case 5:
+					this.guistyle2.normal.background = this.gearbox;
+					this.guistyle2.hover.background = this.gearboxh;
+					break;
+				}
+				if (quality2 > 0)
+				{
+					GUI.Button(this.button5, this.qualityTexture2, this.guistyle2);
+				}
+			}
+			if (Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierMaterials != null)
+			{
+				Texture2D supplierLogo3 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierMaterials);
+				GUI.Button(this.button6, supplierLogo3, GUIStyle.none);
+				int area3 = Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierMaterials.areaImprovementa;
+				int quality3 = Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierMaterials.areaImprovementStrengtha;
+				switch (quality3)
+				{
+				case 1:
+					this.qualityTexture3 = this.a;
+					break;
+				case 2:
+					this.qualityTexture3 = this.b;
+					break;
+				case 3:
+					this.qualityTexture3 = this.c;
+					break;
+				case 4:
+					this.qualityTexture3 = this.d;
+					break;
+				case 5:
+					this.qualityTexture3 = this.e;
+					break;
+				}
+				this.guistyle3.normal.textColor = Color.white;
+				this.guistyle3.alignment = TextAnchor.MiddleCenter;
+				this.guistyle3.fontSize = 14;
+				switch (area3)
+				{
+				case 0:
+					this.guistyle3.normal.background = this.brakes;
+					this.guistyle3.hover.background = this.brakesh;
+					break;
+				case 1:
+					this.guistyle3.normal.background = this.frontwing;
+					this.guistyle3.hover.background = this.frontwingh;
+					break;
+				case 2:
+					this.guistyle3.normal.background = this.rearwing;
+					this.guistyle3.hover.background = this.rearwingh;
+					break;
+				case 3:
+					this.guistyle3.normal.background = this.suspension;
+					this.guistyle3.hover.background = this.suspensionh;
+					break;
+				case 4:
+					this.guistyle3.normal.background = this.engine;
+					this.guistyle3.hover.background = this.engineh;
+					break;
+				case 5:
+					this.guistyle3.normal.background = this.gearbox;
+					this.guistyle3.hover.background = this.gearboxh;
+					break;
+				}
+				if (quality3 > 0)
+				{
+					GUI.Button(this.button7, this.qualityTexture3, this.guistyle3);
+				}
+			}
+			if (Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierFuel != null)
+			{
+				Texture2D supplierLogo4 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierFuel);
+				GUI.Button(this.button8, supplierLogo4, GUIStyle.none);
+				int area4 = Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierFuel.areaImprovementa;
+				int quality4 = Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierFuel.areaImprovementStrengtha;
+				switch (quality4)
+				{
+				case 1:
+					this.qualityTexture4 = this.a;
+					break;
+				case 2:
+					this.qualityTexture4 = this.b;
+					break;
+				case 3:
+					this.qualityTexture4 = this.c;
+					break;
+				case 4:
+					this.qualityTexture4 = this.d;
+					break;
+				case 5:
+					this.qualityTexture4 = this.e;
+					break;
+				}
+				this.guistyle4.normal.textColor = Color.white;
+				this.guistyle4.alignment = TextAnchor.MiddleCenter;
+				this.guistyle4.fontSize = 14;
+				switch (area4)
+				{
+				case 0:
+					this.guistyle4.normal.background = this.brakes;
+					this.guistyle4.hover.background = this.brakesh;
+					break;
+				case 1:
+					this.guistyle4.normal.background = this.frontwing;
+					this.guistyle4.hover.background = this.frontwingh;
+					break;
+				case 2:
+					this.guistyle4.normal.background = this.rearwing;
+					this.guistyle4.hover.background = this.rearwingh;
+					break;
+				case 3:
+					this.guistyle4.normal.background = this.suspension;
+					this.guistyle4.hover.background = this.suspensionh;
+					break;
+				case 4:
+					this.guistyle4.normal.background = this.engine;
+					this.guistyle4.hover.background = this.engineh;
+					break;
+				case 5:
+					this.guistyle4.normal.background = this.gearbox;
+					this.guistyle4.hover.background = this.gearboxh;
+					break;
+				}
+				if (quality4 > 0)
+				{
+					GUI.Button(this.button9, this.qualityTexture4, this.guistyle4);
+				}
+			}
+		}
+	}
+
+	// Token: 0x06005023 RID: 20515
+	private void Start()
+	{
+		this.background = new Texture2D(350, 600);
+		this.a = new Texture2D(62, 62);
+		this.b = new Texture2D(62, 62);
+		this.c = new Texture2D(62, 62);
+		this.d = new Texture2D(62, 62);
+		this.e = new Texture2D(62, 62);
+		this.brakes = new Texture2D(62, 62);
+		this.brakesh = new Texture2D(62, 62);
+		this.frontwing = new Texture2D(62, 62);
+		this.frontwingh = new Texture2D(62, 62);
+		this.rearwing = new Texture2D(62, 62);
+		this.rearwingh = new Texture2D(62, 62);
+		this.suspension = new Texture2D(62, 62);
+		this.suspensionh = new Texture2D(62, 62);
+		this.engine = new Texture2D(62, 62);
+		this.engineh = new Texture2D(62, 62);
+		this.gearbox = new Texture2D(62, 62);
+		this.gearboxh = new Texture2D(62, 62);
+		this.qualityTexture = new Texture2D(62, 62);
+		this.qualityTexture2 = new Texture2D(62, 62);
+		this.qualityTexture3 = new Texture2D(62, 62);
+		this.qualityTexture4 = new Texture2D(62, 62);
+		this.guistyle = new GUIStyle();
+		this.guistyle2 = new GUIStyle();
+		this.guistyle3 = new GUIStyle();
+		this.guistyle4 = new GUIStyle();
+		this.button1 = new Rect((float)Screen.width * 0.08f, (float)Screen.height * 0.1f, (float)Screen.width * 300f / 1920f, (float)Screen.height * 900f / 1080f);
+		this.button2 = new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.15f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f);
+		this.button3 = new Rect((float)Screen.width * 0.2f, (float)Screen.height * 0.16f, 31f, 31f);
+		this.button4 = new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.25f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f);
+		this.button5 = new Rect((float)Screen.width * 0.2f, (float)Screen.height * 0.26f, 31f, 31f);
+		this.button6 = new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.35f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f);
+		this.button7 = new Rect((float)Screen.width * 0.2f, (float)Screen.height * 0.36f, 31f, 31f);
+		this.button8 = new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.45f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f);
+		this.button9 = new Rect((float)Screen.width * 0.2f, (float)Screen.height * 0.46f, 31f, 31f);
+	}
+
+	// Token: 0x0400315B RID: 12635
+	private bool mActivated;
+
+	// Token: 0x0400315C RID: 12636
+	private bool mDisplay;
+
+	// Token: 0x0400315D RID: 12637
+	private Team mTeam;
+
+	// Token: 0x0400315E RID: 12638
+	private bool mForceCurrentSuppliers;
+
+	// Token: 0x0400315F RID: 12639
+	private SupplierRolloverWidget mSupplierRolloverWidget;
+
+	// Token: 0x040051AC RID: 20908
+	private Texture2D background;
+
+	// Token: 0x040051B5 RID: 20917
+	private Texture2D a;
+
+	// Token: 0x040051B6 RID: 20918
+	private Texture2D b;
+
+	// Token: 0x040051B7 RID: 20919
+	private Texture2D c;
+
+	// Token: 0x040051B8 RID: 20920
+	private Texture2D d;
+
+	// Token: 0x040051B9 RID: 20921
+	private Texture2D e;
+
+	// Token: 0x040051BA RID: 20922
+	private Texture2D brakes;
+
+	// Token: 0x040051BB RID: 20923
+	private Texture2D brakesh;
+
+	// Token: 0x040051BC RID: 20924
+	private Texture2D frontwing;
+
+	// Token: 0x040051BD RID: 20925
+	private Texture2D frontwingh;
+
+	// Token: 0x040051BE RID: 20926
+	private Texture2D rearwing;
+
+	// Token: 0x040051BF RID: 20927
+	private Texture2D rearwingh;
+
+	// Token: 0x040051C0 RID: 20928
+	private Texture2D suspension;
+
+	// Token: 0x040051C1 RID: 20929
+	private Texture2D suspensionh;
+
+	// Token: 0x040051C2 RID: 20930
+	private Texture2D engine;
+
+	// Token: 0x040051C3 RID: 20931
+	private Texture2D engineh;
+
+	// Token: 0x040051C4 RID: 20932
+	private Texture2D gearbox;
+
+	// Token: 0x040051C5 RID: 20933
+	private Texture2D gearboxh;
+
+	// Token: 0x04005227 RID: 21031
+	private Texture2D qualityTexture;
+
+	// Token: 0x04005228 RID: 21032
+	private Texture2D qualityTexture2;
+
+	// Token: 0x04005229 RID: 21033
+	private Texture2D qualityTexture3;
+
+	// Token: 0x0400522A RID: 21034
+	private Texture2D qualityTexture4;
+
+	// Token: 0x0400527C RID: 21116
+	private GUIStyle guistyle;
+
+	// Token: 0x0400527D RID: 21117
+	private GUIStyle guistyle2;
+
+	// Token: 0x0400527E RID: 21118
+	private GUIStyle guistyle3;
+
+	// Token: 0x0400527F RID: 21119
+	private GUIStyle guistyle4;
+
+	// Token: 0x0400529F RID: 21151
+	private Rect button1;
+
+	// Token: 0x040052A0 RID: 21152
+	private Rect button2;
+
+	// Token: 0x040052A1 RID: 21153
+	private Rect button3;
+
+	// Token: 0x040052A2 RID: 21154
+	private Rect button4;
+
+	// Token: 0x040052A3 RID: 21155
+	private Rect button5;
+
+	// Token: 0x040052A4 RID: 21156
+	private Rect button6;
+
+	// Token: 0x040052A5 RID: 21157
+	private Rect button7;
+
+	// Token: 0x040052A6 RID: 21158
+	private Rect button8;
+
+	// Token: 0x040052A7 RID: 21159
+	private Rect button9;
+}

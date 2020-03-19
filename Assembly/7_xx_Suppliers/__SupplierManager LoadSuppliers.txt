@@ -45,6 +45,9 @@ public partial class SupplierManager : InstanceCounter
 				supplier.powerGates = databaseEntry.GetIntValue("Power Gates");
 				supplier.chargeSize = databaseEntry.GetIntValue("Charge Size");
 				supplier.tier = databaseEntry.GetIntValue("Tier");
+									supplier.areaImprovementa = RandomUtility.GetRandomInc(0, 5);
+					supplier.areaImprovementStrengtha = RandomUtility.GetRandomInc(0, 5);
+					supplier.areaTotalImprovementa = supplier.areaImprovementa * 20 + RandomUtility.GetRandomInc(0, 20);
 				supplier.descriptionID = databaseEntry.GetStringValue("Description");
 				string stringValue2 = databaseEntry.GetStringValue("BatteryType");
 				supplier.advancedBatteryType = (Supplier.AdvancedERSBatteryType)((!string.IsNullOrEmpty(stringValue2)) ? ((int)Enum.Parse(typeof(Supplier.AdvancedERSBatteryType), stringValue2)) : 0);
@@ -158,6 +161,9 @@ public partial class SupplierManager : InstanceCounter
 				supplier.powerGates = databaseEntry.GetIntValue("Power Gates");
 				supplier.chargeSize = databaseEntry.GetIntValue("Charge Size");
 				supplier.tier = databaseEntry.GetIntValue("Tier");
+									supplier.areaImprovementa = RandomUtility.GetRandomInc(0, 5);
+					supplier.areaImprovementStrengtha = RandomUtility.GetRandomInc(0, 5);
+					supplier.areaTotalImprovementa = supplier.areaImprovementa * 20 + RandomUtility.GetRandomInc(0, 20);
 				supplier.descriptionID = databaseEntry.GetStringValue("Description");
 				string stringValue2 = databaseEntry.GetStringValue("BatteryType");
 				supplier.advancedBatteryType = (Supplier.AdvancedERSBatteryType)((!string.IsNullOrEmpty(stringValue2)) ? ((int)Enum.Parse(typeof(Supplier.AdvancedERSBatteryType), stringValue2)) : 0);

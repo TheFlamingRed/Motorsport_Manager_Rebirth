@@ -93,7 +93,7 @@ public partial class Championship : Entity
 		{
 			for (int m = 0; m < list2.Count; m++)
 			{
-				if (RandomUtility.GetRandom01() >  Game.instance.player.carResetEarlyChance)
+				if (RandomUtility.GetRandom01() <  Game.instance.player.carResetEarlyChance)
 				{
 					for (int n = 0; n < this.standings.teamEntryCount; n++)
 					{

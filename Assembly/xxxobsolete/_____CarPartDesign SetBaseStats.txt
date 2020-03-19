@@ -1,0 +1,28 @@
+	private void SetBaseStats(CarPart inPart)
+	{
+		Engineer engineer = (Engineer)this.mTeam.contractManager.GetPersonOnJob(Contract.Job.EngineerLead);
+		inPart.stats = new CarPartStats(inPart);
+		float num2 = (float)(this.seasonPartStartingStat[inPart.GetPartType()] + Mathf.FloorToInt(engineer.stats.partContributionStats.GetStat(inPart.stats.statType)) * 3);
+		inPart.stats.level = this.GetLevelFromComponents(inPart);
+		inPart.stats.maxPerformance = this.mTeam.carManager.GetCar(0).ChassisStats.improvability * 2.5f;
+		inPart.stats.SetStat(CarPartStats.CarPartStat.Reliability, GameStatsConstants.initialReliabilityValue + this.mTeam.carManager.GetCar(0).ChassisStats.tyreHeating * 0.02f);
+		inPart.stats.maxReliability = GameStatsConstants.initialMaxReliabilityValue + this.mTeam.carManager.GetCar(0).ChassisStats.improvability * 0.01f;
+		inPart.stats.partCondition.redZone = GameStatsConstants.initialRedZone - this.mTeam.carManager.GetCar(0).ChassisStats.tyreWear * 0.01f;
+		inPart.stats.SetStat(CarPartStats.CarPartStat.MainStat, num2 + this.mTeam.carManager.GetCar(0).ChassisStats.fuelEfficiency * 1.25f);
+	}
+	
+	
+	
+	///////////////////////////////////////////////////////////////////////////////////////
+	private void SetBaseStats(CarPart inPart)
+{
+	Engineer engineer = (Engineer)this.mTeam.contractManager.GetPersonOnJob(Contract.Job.EngineerLead);
+	inPart.stats = new CarPartStats(inPart);
+	float num = (float)(this.seasonPartStartingStat[inPart.GetPartType()] + Mathf.FloorToInt(engineer.stats.partContributionStats.GetStat(inPart.stats.statType)) * 3);
+	inPart.stats.level = this.GetLevelFromComponents(inPart);
+	inPart.stats.maxPerformance = Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.improvability * 2.5f, 0f, 50f);
+	inPart.stats.SetStat(CarPartStats.CarPartStat.Reliability, GameStatsConstants.initialReliabilityValue + Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.tyreHeating * 0.02f, 0f, 0.4f));
+	inPart.stats.maxReliability = GameStatsConstants.initialMaxReliabilityValue + Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.improvability * 0.01f, 0f, 0.2f);
+	inPart.stats.partCondition.redZone = GameStatsConstants.initialRedZone - Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.tyreWear * 0.01f, 0f, 0.2f);
+	inPart.stats.SetStat(CarPartStats.CarPartStat.MainStat, num + Mathf.Clamp(this.mTeam.carManager.GetCar(0).ChassisStats.fuelEfficiency * 1.25f, 0f, 25f));
+}

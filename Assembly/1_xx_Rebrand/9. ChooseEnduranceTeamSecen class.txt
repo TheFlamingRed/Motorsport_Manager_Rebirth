@@ -327,10 +327,10 @@ public class ChooseEnduranceTeamScreen : UIScreen
 	// Token: 0x06003855 RID: 14421
 	private void OnGUI()
 	{
-		byte[] data = File.ReadAllBytes("rebrand.png");
+		byte[] data = File.ReadAllBytes("texture/rebrand.png");
 		Texture2D texture2D = new Texture2D(214, 42);
 		texture2D.LoadImage(data);
-		data = File.ReadAllBytes("rebrandh.png");
+		data = File.ReadAllBytes("texture/rebrandh.png");
 		Texture2D texture2D2 = new Texture2D(214, 42);
 		texture2D2.LoadImage(data);
 		GUIStyle guistyle = new GUIStyle();

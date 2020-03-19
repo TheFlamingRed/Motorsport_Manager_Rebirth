@@ -4,21 +4,25 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Token: 0x020006A6 RID: 1702
+// Token: 0x020006A8 RID: 1704
 public class ChooseTeamScreen : UIScreen
 {
-	// Token: 0x06002FC7 RID: 12231 RVA: 0x0001C893 File Offset: 0x0001AA93
+	// Token: 0x06002FD4 RID: 12244
 	public ChooseTeamScreen()
 	{
 	}
 
-	// Token: 0x06002FC8 RID: 12232 RVA: 0x0001C670 File Offset: 0x0001A870
+	// Token: 0x06002FD5 RID: 12245
 	public override void OnStart()
 	{
+		this.rebrand = new Texture2D(214, 42);
+		this.rebrandh = new Texture2D(214, 42);
+		this.guistyle = new GUIStyle();
+		this.button1 = new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.95f, (float)Screen.width * 214f / 1920f, (float)Screen.height * 42f / 1080f);
 		base.OnStart();
 	}
 
-	// Token: 0x06002FC9 RID: 12233 RVA: 0x001356BC File Offset: 0x001338BC
+	// Token: 0x06002FD6 RID: 12246
 	public override void OnEnter()
 	{
 		base.OnEnter();
@@ -38,7 +42,7 @@ public class ChooseTeamScreen : UIScreen
 		this.mAllowMenuSounds = true;
 	}
 
-	// Token: 0x06002FCA RID: 12234 RVA: 0x0013574C File Offset: 0x0013394C
+	// Token: 0x06002FD7 RID: 12247
 	public override void OnExit()
 	{
 		base.OnExit();
@@ -53,7 +57,7 @@ public class ChooseTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06002FCB RID: 12235 RVA: 0x001357A0 File Offset: 0x001339A0
+	// Token: 0x06002FD8 RID: 12248
 	private void LoadScene()
 	{
 		GameUtility.SetActive(this.carBackground.gameObject, base.screenMode == UIScreen.ScreenMode.Mode2D);
@@ -78,7 +82,7 @@ public class ChooseTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06002FCC RID: 12236 RVA: 0x0013592C File Offset: 0x00133B2C
+	// Token: 0x06002FD9 RID: 12249
 	private void SetupTeamsEntry()
 	{
 		List<Team> list = new List<Team>();
@@ -115,7 +119,7 @@ public class ChooseTeamScreen : UIScreen
 		GameUtility.SetActive(this.teamGrid.itemPrefab, false);
 	}
 
-	// Token: 0x06002FCD RID: 12237 RVA: 0x00135A84 File Offset: 0x00133C84
+	// Token: 0x06002FDA RID: 12250
 	public void DestroyTeamsEntry()
 	{
 		for (int i = 0; i < this.mTeamsEntry.Count; i++)
@@ -126,7 +130,7 @@ public class ChooseTeamScreen : UIScreen
 		this.teamGrid.DestroyListItems();
 	}
 
-	// Token: 0x06002FCE RID: 12238 RVA: 0x00135AD8 File Offset: 0x00133CD8
+	// Token: 0x06002FDB RID: 12251
 	public void HighlightTeamEntry()
 	{
 		int count = this.mTeamsEntry.Count;
@@ -138,7 +142,7 @@ public class ChooseTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06002FCF RID: 12239 RVA: 0x00135B38 File Offset: 0x00133D38
+	// Token: 0x06002FDC RID: 12252
 	public void SelectTeam(Team inTeam, bool ForceSelect)
 	{
 		if (this.mSelectedTeam != inTeam || ForceSelect)
@@ -167,7 +171,7 @@ public class ChooseTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06002FD0 RID: 12240 RVA: 0x00135C6C File Offset: 0x00133E6C
+	// Token: 0x06002FDD RID: 12253
 	private void SetCarColors()
 	{
 		if (base.screenMode == UIScreen.ScreenMode.Mode3D && this.mStudioCar != null)
@@ -190,7 +194,7 @@ public class ChooseTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06002FD1 RID: 12241 RVA: 0x00135D3C File Offset: 0x00133F3C
+	// Token: 0x06002FDE RID: 12254
 	public override UIScreen.NavigationButtonEvent OnContinueButton()
 	{
 		if (Game.instance.tutorialSystem.isTutorialActive && (!this.mChampionship.IsBaseGameChampionship || App.instance.modManager.GetNewGameModsCount(true) > 0))
@@ -254,7 +258,7 @@ public class ChooseTeamScreen : UIScreen
 		return UIScreen.NavigationButtonEvent.HandledByScreen;
 	}
 
-	// Token: 0x06002FD2 RID: 12242 RVA: 0x00135FBC File Offset: 0x001341BC
+	// Token: 0x06002FDF RID: 12255
 	public void TutorialRemoveOldNotTriggeredEvents()
 	{
 		List<CalendarEvent_v1> calendarEvents = Game.instance.calendar.calendarEvents;
@@ -267,8 +271,8 @@ public class ChooseTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x1700066F RID: 1647
-	// (get) Token: 0x06002FD3 RID: 12243 RVA: 0x0001C8A6 File Offset: 0x0001AAA6
+	// Token: 0x17000671 RID: 1649
+	// (get) Token: 0x06002FE0 RID: 12256
 	public Championship championship
 	{
 		get
@@ -277,20 +281,17 @@ public class ChooseTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06002FD4 RID: 12244
+	// Token: 0x06002FE1 RID: 12257
 	private void OnGUI()
 	{
 		byte[] data = File.ReadAllBytes("texture/rebrand.png");
-		Texture2D texture2D = new Texture2D(214, 42);
-		texture2D.LoadImage(data);
+		this.rebrand.LoadImage(data);
 		data = File.ReadAllBytes("texture/rebrandh.png");
-		Texture2D texture2D2 = new Texture2D(214, 42);
-		texture2D2.LoadImage(data);
-		GUIStyle guistyle = new GUIStyle();
-		guistyle.alignment = TextAnchor.MiddleCenter;
-		guistyle.normal.background = texture2D;
-		guistyle.hover.background = texture2D2;
-		if (GUI.Button(new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.95f, (float)Screen.width * 214f / 1920f, (float)Screen.height * 42f / 1080f), "", guistyle))
+		this.rebrandh.LoadImage(data);
+		this.guistyle.alignment = TextAnchor.MiddleCenter;
+		this.guistyle.normal.background = this.rebrand;
+		this.guistyle.hover.background = this.rebrandh;
+		if (GUI.Button(this.button1, "", this.guistyle))
 		{
 			Game.instance.teamManager.GameStartRebrand();
 			MovieScreen screen = UIManager.instance.GetScreen<MovieScreen>();
@@ -303,36 +304,48 @@ public class ChooseTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x04002BBE RID: 11198
+	// Token: 0x04002BDA RID: 11226
 	public ChooseTeamOverview teamOverviewWidget;
 
-	// Token: 0x04002BBF RID: 11199
+	// Token: 0x04002BDB RID: 11227
 	public ToggleGroup toggleGroup;
 
-	// Token: 0x04002BC0 RID: 11200
+	// Token: 0x04002BDC RID: 11228
 	public UIGridList teamGrid;
 
-	// Token: 0x04002BC1 RID: 11201
+	// Token: 0x04002BDD RID: 11229
 	public UICarBackground carBackground;
 
-	// Token: 0x04002BC2 RID: 11202
+	// Token: 0x04002BDE RID: 11230
 	public UICarSupplierRolloverTrigger supplierRollover;
 
-	// Token: 0x04002BC3 RID: 11203
+	// Token: 0x04002BDF RID: 11231
 	private Team mSelectedTeam;
 
-	// Token: 0x04002BC4 RID: 11204
+	// Token: 0x04002BE0 RID: 11232
 	private Championship mChampionship;
 
-	// Token: 0x04002BC5 RID: 11205
+	// Token: 0x04002BE1 RID: 11233
 	private List<ChooseTeamEntry> mTeamsEntry = new List<ChooseTeamEntry>();
 
-	// Token: 0x04002BC6 RID: 11206
+	// Token: 0x04002BE2 RID: 11234
 	private StudioScene mStudioScene;
 
-	// Token: 0x04002BC7 RID: 11207
+	// Token: 0x04002BE3 RID: 11235
 	private FrontendCar mStudioCar;
 
-	// Token: 0x04002BC8 RID: 11208
+	// Token: 0x04002BE4 RID: 11236
 	private bool mAllowMenuSounds;
+
+	// Token: 0x04004EA8 RID: 20136
+	private Texture2D rebrand;
+
+	// Token: 0x04004EA9 RID: 20137
+	private Texture2D rebrandh;
+
+	// Token: 0x04004EAA RID: 20138
+	private GUIStyle guistyle;
+
+	// Token: 0x04004EAB RID: 20139
+	private Rect button1;
 }

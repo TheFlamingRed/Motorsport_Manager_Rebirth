@@ -4,21 +4,25 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Token: 0x020007EF RID: 2031
+// Token: 0x020007F3 RID: 2035
 public class ChooseEnduranceTeamScreen : UIScreen
 {
-	// Token: 0x06003843 RID: 14403 RVA: 0x000223A7 File Offset: 0x000205A7
+	// Token: 0x0600385B RID: 14427
 	public ChooseEnduranceTeamScreen()
 	{
 	}
 
-	// Token: 0x06003844 RID: 14404 RVA: 0x0001C670 File Offset: 0x0001A870
+	// Token: 0x0600385C RID: 14428
 	public override void OnStart()
 	{
+		this.rebrand = new Texture2D(214, 42);
+		this.rebrandh = new Texture2D(214, 42);
+		this.guistyle = new GUIStyle();
+		this.button1 = new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.95f, (float)Screen.width * 214f / 1920f, (float)Screen.height * 42f / 1080f);
 		base.OnStart();
 	}
 
-	// Token: 0x06003845 RID: 14405 RVA: 0x00165374 File Offset: 0x00163574
+	// Token: 0x0600385D RID: 14429
 	private void SetupToggles()
 	{
 		this.topTierToggle.onValueChanged.RemoveAllListeners();
@@ -35,21 +39,21 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		});
 	}
 
-	// Token: 0x06003846 RID: 14406 RVA: 0x000223BA File Offset: 0x000205BA
+	// Token: 0x0600385E RID: 14430
 	private void SelectTopTier()
 	{
 		base.data = this.mChampionship.GetConcurrentChampionships()[0];
 		this.OnEnter();
 	}
 
-	// Token: 0x06003847 RID: 14407 RVA: 0x000223D9 File Offset: 0x000205D9
+	// Token: 0x0600385F RID: 14431
 	private void SelectBottomTier()
 	{
 		base.data = this.mChampionship.GetConcurrentChampionships()[1];
 		this.OnEnter();
 	}
 
-	// Token: 0x06003848 RID: 14408 RVA: 0x00165424 File Offset: 0x00163624
+	// Token: 0x06003860 RID: 14432
 	public override void OnEnter()
 	{
 		base.OnEnter();
@@ -66,7 +70,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		this.SetupToggles();
 	}
 
-	// Token: 0x06003849 RID: 14409 RVA: 0x0016549C File Offset: 0x0016369C
+	// Token: 0x06003861 RID: 14433
 	public override void OnExit()
 	{
 		base.OnExit();
@@ -81,7 +85,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x0600384A RID: 14410 RVA: 0x001654F0 File Offset: 0x001636F0
+	// Token: 0x06003862 RID: 14434
 	private void LoadScene()
 	{
 		GameUtility.SetActive(this.carBackground.gameObject, base.screenMode == UIScreen.ScreenMode.Mode2D);
@@ -94,7 +98,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x0600384B RID: 14411 RVA: 0x00165554 File Offset: 0x00163754
+	// Token: 0x06003863 RID: 14435
 	private void SetCarSeries()
 	{
 		if (base.screenMode == UIScreen.ScreenMode.Mode3D)
@@ -115,14 +119,14 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x0600384C RID: 14412 RVA: 0x000223F8 File Offset: 0x000205F8
+	// Token: 0x06003864 RID: 14436
 	private void SetTeamsEntry()
 	{
 		this.SetupTeamsEntry();
 		this.toggleGroup.SetAllTogglesOff();
 	}
 
-	// Token: 0x0600384D RID: 14413 RVA: 0x001656B0 File Offset: 0x001638B0
+	// Token: 0x06003865 RID: 14437
 	private void SetupTeamsEntry()
 	{
 		List<Team> list = new List<Team>();
@@ -158,7 +162,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		GameUtility.SetActive(this.teamGrid.itemPrefab, false);
 	}
 
-	// Token: 0x0600384E RID: 14414 RVA: 0x001657FC File Offset: 0x001639FC
+	// Token: 0x06003866 RID: 14438
 	public void DestroyTeamsEntry()
 	{
 		for (int i = 0; i < this.mTeamsEntry.Count; i++)
@@ -169,7 +173,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		this.teamGrid.DestroyListItems();
 	}
 
-	// Token: 0x0600384F RID: 14415 RVA: 0x00165850 File Offset: 0x00163A50
+	// Token: 0x06003867 RID: 14439
 	public void HighlightTeamEntry()
 	{
 		int count = this.mTeamsEntry.Count;
@@ -181,7 +185,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06003850 RID: 14416 RVA: 0x001658B0 File Offset: 0x00163AB0
+	// Token: 0x06003868 RID: 14440
 	public void SelectTeam(Team inTeam, bool ForceSelect)
 	{
 		if (this.mSelectedTeam != inTeam || ForceSelect)
@@ -210,7 +214,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06003851 RID: 14417 RVA: 0x001659E4 File Offset: 0x00163BE4
+	// Token: 0x06003869 RID: 14441
 	private void SetCarColors()
 	{
 		if (base.screenMode == UIScreen.ScreenMode.Mode3D)
@@ -237,7 +241,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06003852 RID: 14418 RVA: 0x00165ACC File Offset: 0x00163CCC
+	// Token: 0x0600386A RID: 14442
 	public override UIScreen.NavigationButtonEvent OnContinueButton()
 	{
 		if (Game.instance.tutorialSystem.isTutorialActive && (!this.mSelectedTeam.championship.IsBaseGameChampionship || App.instance.modManager.GetNewGameModsCount(true) > 0))
@@ -301,7 +305,7 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		return UIScreen.NavigationButtonEvent.HandledByScreen;
 	}
 
-	// Token: 0x06003853 RID: 14419 RVA: 0x00135FBC File Offset: 0x001341BC
+	// Token: 0x0600386B RID: 14443
 	public void TutorialRemoveOldNotTriggeredEvents()
 	{
 		List<CalendarEvent_v1> calendarEvents = Game.instance.calendar.calendarEvents;
@@ -314,8 +318,8 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x17000710 RID: 1808
-	// (get) Token: 0x06003854 RID: 14420 RVA: 0x0002240B File Offset: 0x0002060B
+	// Token: 0x17000714 RID: 1812
+	// (get) Token: 0x0600386C RID: 14444
 	public Championship championship
 	{
 		get
@@ -324,20 +328,17 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06003855 RID: 14421
+	// Token: 0x0600386D RID: 14445
 	private void OnGUI()
 	{
 		byte[] data = File.ReadAllBytes("texture/rebrand.png");
-		Texture2D texture2D = new Texture2D(214, 42);
-		texture2D.LoadImage(data);
+		this.rebrand.LoadImage(data);
 		data = File.ReadAllBytes("texture/rebrandh.png");
-		Texture2D texture2D2 = new Texture2D(214, 42);
-		texture2D2.LoadImage(data);
-		GUIStyle guistyle = new GUIStyle();
-		guistyle.alignment = TextAnchor.MiddleCenter;
-		guistyle.normal.background = texture2D;
-		guistyle.hover.background = texture2D2;
-		if (GUI.Button(new Rect((float)Screen.width * 0.1f, (float)Screen.height * 0.95f, (float)Screen.width * 214f / 1920f, (float)Screen.height * 42f / 1080f), "", guistyle))
+		this.rebrandh.LoadImage(data);
+		this.guistyle.alignment = TextAnchor.MiddleCenter;
+		this.guistyle.normal.background = this.rebrand;
+		this.guistyle.hover.background = this.rebrandh;
+		if (GUI.Button(this.button1, "", this.guistyle))
 		{
 			Game.instance.teamManager.GameStartRebrand();
 			MovieScreen screen = UIManager.instance.GetScreen<MovieScreen>();
@@ -350,42 +351,54 @@ public class ChooseEnduranceTeamScreen : UIScreen
 		}
 	}
 
-	// Token: 0x040035B1 RID: 13745
+	// Token: 0x040035F5 RID: 13813
 	public ChooseTeamOverview teamOverviewWidget;
 
-	// Token: 0x040035B2 RID: 13746
+	// Token: 0x040035F6 RID: 13814
 	public Toggle topTierToggle;
 
-	// Token: 0x040035B3 RID: 13747
+	// Token: 0x040035F7 RID: 13815
 	public Toggle bottomTierToggle;
 
-	// Token: 0x040035B4 RID: 13748
+	// Token: 0x040035F8 RID: 13816
 	public ToggleGroup toggleGroup;
 
-	// Token: 0x040035B5 RID: 13749
+	// Token: 0x040035F9 RID: 13817
 	public UIGridList teamGrid;
 
-	// Token: 0x040035B6 RID: 13750
+	// Token: 0x040035FA RID: 13818
 	public UICarBackground carBackground;
 
-	// Token: 0x040035B7 RID: 13751
+	// Token: 0x040035FB RID: 13819
 	public UICarSupplierRolloverTrigger supplierRollover;
 
-	// Token: 0x040035B8 RID: 13752
+	// Token: 0x040035FC RID: 13820
 	private Team mSelectedTeam;
 
-	// Token: 0x040035B9 RID: 13753
+	// Token: 0x040035FD RID: 13821
 	private Championship mChampionship;
 
-	// Token: 0x040035BA RID: 13754
+	// Token: 0x040035FE RID: 13822
 	private List<ChooseTeamEntry> mTeamsEntry = new List<ChooseTeamEntry>();
 
-	// Token: 0x040035BB RID: 13755
+	// Token: 0x040035FF RID: 13823
 	private StudioScene mStudioScene;
 
-	// Token: 0x040035BC RID: 13756
+	// Token: 0x04003600 RID: 13824
 	private FrontendCar mStudioCar;
 
-	// Token: 0x040035BD RID: 13757
+	// Token: 0x04003601 RID: 13825
 	private bool mAllowMenuSounds;
+
+	// Token: 0x04004EC1 RID: 20161
+	private Texture2D rebrand;
+
+	// Token: 0x04004EC2 RID: 20162
+	private Texture2D rebrandh;
+
+	// Token: 0x04004EC3 RID: 20163
+	private GUIStyle guistyle;
+
+	// Token: 0x04004EC4 RID: 20164
+	private Rect button1;
 }

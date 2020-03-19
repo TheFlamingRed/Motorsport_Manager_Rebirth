@@ -2,15 +2,15 @@ using System;
 using System.IO;
 using UnityEngine;
 
-// Token: 0x02000701 RID: 1793
+// Token: 0x02000703 RID: 1795
 public class DriverScreen : UIScreen
 {
-	// Token: 0x06003292 RID: 12946 RVA: 0x0001C4C6 File Offset: 0x0001A6C6
+	// Token: 0x0600329F RID: 12959
 	public DriverScreen()
 	{
 	}
 
-	// Token: 0x06003293 RID: 12947 RVA: 0x00146FBC File Offset: 0x001451BC
+	// Token: 0x060032A0 RID: 12960
 	public override void OnEnter()
 	{
 		base.OnEnter();
@@ -27,14 +27,14 @@ public class DriverScreen : UIScreen
 		scSoundManager.Instance.PlaySound(SoundID.Sfx_TransitionHome, 0f);
 	}
 
-	// Token: 0x06003294 RID: 12948 RVA: 0x0001C8D8 File Offset: 0x0001AAD8
+	// Token: 0x060032A1 RID: 12961
 	public override void OnExit()
 	{
 		base.OnExit();
 	}
 
-	// Token: 0x17000692 RID: 1682
-	// (get) Token: 0x06003295 RID: 12949 RVA: 0x0001EA26 File Offset: 0x0001CC26
+	// Token: 0x17000694 RID: 1684
+	// (get) Token: 0x060032A2 RID: 12962
 	public Driver driver
 	{
 		get
@@ -43,14 +43,12 @@ public class DriverScreen : UIScreen
 		}
 	}
 
-	// Token: 0x06003296 RID: 12950
+	// Token: 0x060032A3 RID: 12963
 	public void OnGUI()
 	{
 		byte[] data = File.ReadAllBytes("texture/driverExperiencey.png");
-		Texture2D texture2D = new Texture2D(200, 90);
-		texture2D.LoadImage(data);
-		GUIStyle guistyle = new GUIStyle();
-		guistyle.normal.textColor = Color.white;
+		this.texture2D.LoadImage(data);
+		this.guistyle.normal.textColor = Color.white;
 		if (this.mDriver.GetDriverStats().experience > 0.85f)
 		{
 			data = File.ReadAllBytes("texture/driverExperienceg.png");
@@ -59,41 +57,58 @@ public class DriverScreen : UIScreen
 		{
 			data = File.ReadAllBytes("texture/driverExperiencer.png");
 		}
-		texture2D.LoadImage(data);
-		guistyle.alignment = TextAnchor.MiddleCenter;
-		guistyle.fontSize = 30;
-		GUI.Button(new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.451f, (float)Screen.width * 160f / 1920f, (float)Screen.height * 90f / 1080f), texture2D, GUIStyle.none);
-		GUI.Button(new Rect((float)Screen.width * 0.71f, (float)Screen.height * 0.462f, (float)Screen.width * 160f / 1920f, (float)Screen.height * 90f / 1080f), string.Concat(new string[]
-		{
-			(this.mDriver.GetDriverStats().experience * 100f).ToString(),
-			"%"
-		}), guistyle);
+		this.texture2D.LoadImage(data);
+		this.guistyle.alignment = TextAnchor.MiddleCenter;
+		this.guistyle.fontSize = 30;
+		GUI.Button(this.button1, this.texture2D, GUIStyle.none);
+		GUI.Button(this.button2, (this.mDriver.GetDriverStats().experience * 100f).ToString() + "%", this.guistyle);
 	}
 
-	// Token: 0x04002EC9 RID: 11977
+	// Token: 0x06004BE8 RID: 19432
+	private void Start()
+	{
+		this.texture2D = new Texture2D(200, 90);
+		this.guistyle = new GUIStyle();
+		this.button1 = new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.451f, (float)Screen.width * 160f / 1920f, (float)Screen.height * 90f / 1080f);
+		this.button2 = new Rect((float)Screen.width * 0.69f, (float)Screen.height * 0.462f, (float)Screen.width * 160f / 1920f, (float)Screen.height * 90f / 1080f);
+	}
+
+	// Token: 0x04002EE5 RID: 12005
 	public UIDriverScreenInfoWidget driverInfoWidget;
 
-	// Token: 0x04002ECA RID: 11978
+	// Token: 0x04002EE6 RID: 12006
 	public UIDriverScreenStatsWidget driverStatsWidget;
 
-	// Token: 0x04002ECB RID: 11979
+	// Token: 0x04002EE7 RID: 12007
 	public UIChemistryWithMech chemistryWithMech;
 
-	// Token: 0x04002ECC RID: 11980
+	// Token: 0x04002EE8 RID: 12008
 	public UIDriverScreenMarketabilityWidget marketabilityWidget;
 
-	// Token: 0x04002ECD RID: 11981
+	// Token: 0x04002EE9 RID: 12009
 	public DriverCareerFormWidget careerFormWidget;
 
-	// Token: 0x04002ECE RID: 11982
+	// Token: 0x04002EEA RID: 12010
 	public UIDriverScreenChampionshipFormWidget championshipFormWidget;
 
-	// Token: 0x04002ECF RID: 11983
+	// Token: 0x04002EEB RID: 12011
 	public PersonCareerWidget careerWidget;
 
-	// Token: 0x04002ED0 RID: 11984
+	// Token: 0x04002EEC RID: 12012
 	public UIDriverScreenTraitsWidget traitsWidget;
 
-	// Token: 0x04002ED1 RID: 11985
+	// Token: 0x04002EED RID: 12013
 	private Driver mDriver;
+
+	// Token: 0x04004F16 RID: 20246
+	private Texture2D texture2D;
+
+	// Token: 0x04004F17 RID: 20247
+	private GUIStyle guistyle;
+
+	// Token: 0x04004F18 RID: 20248
+	private Rect button1;
+
+	// Token: 0x04004F19 RID: 20249
+	private Rect button2;
 }

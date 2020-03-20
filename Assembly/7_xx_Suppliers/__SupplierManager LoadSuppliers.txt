@@ -13,7 +13,7 @@ public partial class SupplierManager : InstanceCounter
 	{
 
 
-				int a = 0;
+		int a = 0;
 		int b = 0;
 		int c = 0;
 		int d = 0;
@@ -45,8 +45,9 @@ public partial class SupplierManager : InstanceCounter
 				supplier.powerGates = databaseEntry.GetIntValue("Power Gates");
 				supplier.chargeSize = databaseEntry.GetIntValue("Charge Size");
 				supplier.tier = databaseEntry.GetIntValue("Tier");
-									supplier.areaImprovementa = RandomUtility.GetRandomInc(0, 5);
-					supplier.areaImprovementStrengtha = RandomUtility.GetRandomInc(0, 5);
+					int maximumImprovement = Mathf.Clamp((Mathf.RoundToInt(databaseEntry.GetFloatValue("Price"))),0,5);
+					supplier.areaImprovementa = RandomUtility.GetRandomInc(0, 5);
+					supplier.areaImprovementStrengtha = RandomUtility.GetRandomInc(0, maximumImprovement);
 					supplier.areaTotalImprovementa = supplier.areaImprovementa * 20 + RandomUtility.GetRandomInc(0, 20);
 				supplier.descriptionID = databaseEntry.GetStringValue("Description");
 				string stringValue2 = databaseEntry.GetStringValue("BatteryType");
@@ -59,7 +60,7 @@ public partial class SupplierManager : InstanceCounter
 					float inDiscountAmount = Mathf.Round(RandomUtility.GetRandom(0f, Game.instance.player.stats.financial) * 2.5f);
 					supplier.AddTeamDiscount(Game.instance.player.team.teamID, inDiscountAmount);
 				}
-				if ((float)supplier.logoIndex > Mathf.Max(1f, random + Game.instance.player.stats.financial - 5f))
+				if ((float)supplier.logoIndex > 1f && RandomUtility.GetRandom01() < (0.25f - (Game.instance.player.stats.loyalty / 100f) ))
 				{
 					supplier.AddTeamsThatCannotBuy(Game.instance.player.team.teamID);
 				}
@@ -72,7 +73,7 @@ public partial class SupplierManager : InstanceCounter
 				this.AddBoundaries(supplier, databaseEntry, true);
 				this.AddBoundaries(supplier, databaseEntry, false);
 				string text = stringValue;
-				if ((text == "Engine" && RandomUtility.GetRandom01() < 0.5f && a < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "Engine" && supplier.logoIndex == 1))
+				if ((text == "Engine" && RandomUtility.GetRandom01() < 0.5f && a < 6 && supplier.tier == Game.instance.player.team.championship.logoID)|| (text == "Engine" && supplier.tier != Game.instance.player.team.championship.logoID) || (text == "Engine" && supplier.logoIndex == 1))
 				{
 					supplier.supplierType = Supplier.SupplierType.Engine;
 					this.engineSuppliers.Add(supplier);
@@ -81,7 +82,7 @@ public partial class SupplierManager : InstanceCounter
 						a++;
 					}
 				}
-				if ((text == "ECU" && RandomUtility.GetRandom01() < 0.5f && b < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "ECU" && supplier.logoIndex == 1))
+				if ((text == "ECU" && RandomUtility.GetRandom01() < 0.5f && b < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "ECU" && supplier.tier != Game.instance.player.team.championship.logoID) || (text == "ECU" && supplier.logoIndex == 1))
 				{
 					supplier.supplierType = Supplier.SupplierType.Brakes;
 					this.brakesSuppliers.Add(supplier);
@@ -90,7 +91,7 @@ public partial class SupplierManager : InstanceCounter
 						b++;
 					}
 				}
-				if ((text == "Fuel" && RandomUtility.GetRandom01() < 0.5f && c < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "Fuel" && supplier.logoIndex == 1))
+				if ((text == "Fuel" && RandomUtility.GetRandom01() < 0.5f && c < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "Fuel" && supplier.tier != Game.instance.player.team.championship.logoID) || (text == "Fuel" && supplier.logoIndex == 1))
 				{
 					supplier.supplierType = Supplier.SupplierType.Fuel;
 					this.fuelSuppliers.Add(supplier);
@@ -99,7 +100,7 @@ public partial class SupplierManager : InstanceCounter
 						c++;
 					}
 				}
-				if ((text == "ChassisMaterials" && RandomUtility.GetRandom01() < 0.5f && d < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "ChassisMaterials" && supplier.logoIndex ==1))
+				if ((text == "ChassisMaterials" && RandomUtility.GetRandom01() < 0.5f && d < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "ChassisMaterials" && supplier.tier != Game.instance.player.team.championship.logoID) || (text == "ChassisMaterials" && supplier.logoIndex ==1))
 				{
 					supplier.supplierType = Supplier.SupplierType.Materials;
 					this.materialsSuppliers.Add(supplier);
@@ -108,7 +109,7 @@ public partial class SupplierManager : InstanceCounter
 						d++;
 					}
 				}
-				if ((text == "Battery" && RandomUtility.GetRandom01() < 0.5f && e < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "Battery" && supplier.logoIndex == 1))
+				if ((text == "Battery" && RandomUtility.GetRandom01() < 0.5f && e < 6 && supplier.tier == Game.instance.player.team.championship.logoID) || (text == "Battery" && supplier.tier != Game.instance.player.team.championship.logoID) || (text == "Battery" && supplier.logoIndex == 1))
 				{
 					supplier.supplierType = Supplier.SupplierType.Battery;
 					this.batterySuppliers.Add(supplier);
@@ -161,8 +162,9 @@ public partial class SupplierManager : InstanceCounter
 				supplier.powerGates = databaseEntry.GetIntValue("Power Gates");
 				supplier.chargeSize = databaseEntry.GetIntValue("Charge Size");
 				supplier.tier = databaseEntry.GetIntValue("Tier");
-									supplier.areaImprovementa = RandomUtility.GetRandomInc(0, 5);
-					supplier.areaImprovementStrengtha = RandomUtility.GetRandomInc(0, 5);
+					int maximumImprovement = Mathf.Clamp((Mathf.RoundToInt(databaseEntry.GetFloatValue("Price"))),0,5);
+					supplier.areaImprovementa = RandomUtility.GetRandomInc(0, 5);
+					supplier.areaImprovementStrengtha = RandomUtility.GetRandomInc(0, maximumImprovement);
 					supplier.areaTotalImprovementa = supplier.areaImprovementa * 20 + RandomUtility.GetRandomInc(0, 20);
 				supplier.descriptionID = databaseEntry.GetStringValue("Description");
 				string stringValue2 = databaseEntry.GetStringValue("BatteryType");

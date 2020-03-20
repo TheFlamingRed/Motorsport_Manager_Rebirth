@@ -298,6 +298,8 @@ public class CarDesignScreen : UIScreen
 			animator = null;
 			studioScene = null;
 			animator = null;
+			studioScene = null;
+			animator = null;
 		}
 		yield break;
 	}
@@ -461,6 +463,12 @@ public class CarDesignScreen : UIScreen
 				this.guistyle.hover.background = this.texture2D18;
 				break;
 			}
+			if (this.mSelectedSupplier[0].areaImprovementStrengtha == 0)
+			{
+				this.guistyle.normal.background = null;
+				this.guistyle.hover.background = null;
+				this.image = null;
+			}
 			GUI.Button(this.button2, this.image, this.guistyle);
 		}
 		if (this.mSelectedSupplier[2] != null)
@@ -515,6 +523,12 @@ public class CarDesignScreen : UIScreen
 				this.guistyle2.normal.background = this.texture2D17;
 				this.guistyle2.hover.background = this.texture2D18;
 				break;
+			}
+			if (this.mSelectedSupplier[2].areaImprovementStrengtha == 0)
+			{
+				this.guistyle2.normal.background = null;
+				this.guistyle2.hover.background = null;
+				this.image2 = null;
 			}
 			GUI.Button(this.button4, this.image2, this.guistyle2);
 		}
@@ -571,6 +585,12 @@ public class CarDesignScreen : UIScreen
 				this.guistyle3.hover.background = this.texture2D18;
 				break;
 			}
+			if (this.mSelectedSupplier[3].areaImprovementStrengtha == 0)
+			{
+				this.guistyle3.normal.background = null;
+				this.guistyle3.hover.background = null;
+				this.image3 = null;
+			}
 			GUI.Button(this.button6, this.image3, this.guistyle3);
 		}
 		if (this.mSelectedSupplier[1] != null)
@@ -626,6 +646,12 @@ public class CarDesignScreen : UIScreen
 				this.guistyle4.hover.background = this.texture2D18;
 				break;
 			}
+			if (this.mSelectedSupplier[1].areaImprovementStrengtha == 0)
+			{
+				this.guistyle4.normal.background = null;
+				this.guistyle4.hover.background = null;
+				this.image4 = null;
+			}
 			GUI.Button(this.button8, this.image4, this.guistyle4);
 		}
 	}
@@ -633,7 +659,7 @@ public class CarDesignScreen : UIScreen
 	// Token: 0x06004CF5 RID: 19701
 	private void Start()
 	{
-		this.button0 = new Rect((float)Screen.width * 0.5f, (float)Screen.height * 0.1f, (float)Screen.width * 750f / 1920f, (float)Screen.height * 400f / 1080f);
+		this.button0 = new Rect((float)Screen.width * 0.6f, (float)Screen.height * 0.14f, (float)Screen.width * 750f / 1920f, (float)Screen.height * 400f / 1080f);
 		this.button1 = new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.15f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f);
 		this.button2 = new Rect((float)Screen.width * 0.8f, (float)Screen.height * 0.16f, 31f, 31f);
 		this.button3 = new Rect((float)Screen.width * 0.7f, (float)Screen.height * 0.25f, (float)Screen.width * 0.2f, (float)Screen.height * 0.05f);

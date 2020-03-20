@@ -16,73 +16,6 @@ public class UICarSupplierRolloverTrigger : MonoBehaviour
 		this.mTeam = inTeam;
 		this.mForceCurrentSuppliers = inForceCurrentSuppliers;
 		this.mSupplierRolloverWidget = UIManager.instance.dialogBoxManager.GetDialog<SupplierRolloverWidget>();
-	}
-
-	// Token: 0x0600350A RID: 13578
-	private void Update()
-	{
-		GameUtility.HandlePopup(ref this.mActivated, base.gameObject, new Action(this.ShowRollover), new Action(this.HideRollover));
-	}
-
-	// Token: 0x0600350B RID: 13579
-	private void OnDisable()
-	{
-		if (this.mDisplay)
-		{
-			this.HideRollover();
-		}
-	}
-
-	// Token: 0x0600350C RID: 13580
-	private void ShowRollover()
-	{
-		this.mSupplierRolloverWidget.Open(this.mTeam, this.mForceCurrentSuppliers);
-		this.mDisplay = true;
-	}
-
-	// Token: 0x0600350D RID: 13581
-	private void HideRollover()
-	{
-		this.mDisplay = false;
-		this.mSupplierRolloverWidget.Close();
-	}
-
-	// Token: 0x0600350E RID: 13582
-	public void OnGUI()
-	{
-		if (this.mDisplay)
-		{
-			GUI.Button(this.button1, this.background, GUIStyle.none);
-			Texture2D supplierLogo = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierEngine);
-			GUI.Button(this.button2, supplierLogo, GUIStyle.none);
-			if (this.areaImprovementStrengtha > 0)
-			{
-				GUI.Button(this.button3, this.qualityTexture, this.guistyle);
-			}
-			Texture2D supplierLogo2 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierBrakes);
-			GUI.Button(this.button4, supplierLogo2, GUIStyle.none);
-			if (this.areaImprovementStrengtha2 > 0)
-			{
-				GUI.Button(this.button5, this.qualityTexture2, this.guistyle2);
-			}
-			Texture2D supplierLogo3 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierMaterials);
-			GUI.Button(this.button6, supplierLogo3, GUIStyle.none);
-			if (this.areaImprovementStrengtha3 > 0)
-			{
-				GUI.Button(this.button7, this.qualityTexture3, this.guistyle3);
-			}
-			Texture2D supplierLogo4 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierFuel);
-			GUI.Button(this.button8, supplierLogo4, GUIStyle.none);
-			if (this.areaImprovementStrengtha4 > 0)
-			{
-				GUI.Button(this.button9, this.qualityTexture4, this.guistyle4);
-			}
-		}
-	}
-
-	// Token: 0x0600350F RID: 13583
-	private void Start()
-	{
 		this.background = new Texture2D(350, 600);
 		this.a = new Texture2D(62, 62);
 		this.b = new Texture2D(62, 62);
@@ -370,6 +303,70 @@ public class UICarSupplierRolloverTrigger : MonoBehaviour
 			return;
 		}
 	}
+
+	// Token: 0x0600350A RID: 13578
+	private void Update()
+	{
+		GameUtility.HandlePopup(ref this.mActivated, base.gameObject, new Action(this.ShowRollover), new Action(this.HideRollover));
+	}
+
+	// Token: 0x0600350B RID: 13579
+	private void OnDisable()
+	{
+		if (this.mDisplay)
+		{
+			this.HideRollover();
+		}
+	}
+
+	// Token: 0x0600350C RID: 13580
+	private void ShowRollover()
+	{
+		this.mSupplierRolloverWidget.Open(this.mTeam, this.mForceCurrentSuppliers);
+		this.mDisplay = true;
+	}
+
+	// Token: 0x0600350D RID: 13581
+	private void HideRollover()
+	{
+		this.mDisplay = false;
+		this.mSupplierRolloverWidget.Close();
+	}
+
+	// Token: 0x0600350E RID: 13582
+	public void OnGUI()
+	{
+		if (this.mDisplay)
+		{
+			GUI.Button(this.button1, this.background, GUIStyle.none);
+			Texture2D supplierLogo = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierEngine);
+			GUI.Button(this.button2, supplierLogo, GUIStyle.none);
+			if (this.areaImprovementStrengtha > 0)
+			{
+				GUI.Button(this.button3, this.qualityTexture, this.guistyle);
+			}
+			Texture2D supplierLogo2 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierBrakes);
+			GUI.Button(this.button4, supplierLogo2, GUIStyle.none);
+			if (this.areaImprovementStrengtha2 > 0)
+			{
+				GUI.Button(this.button5, this.qualityTexture2, this.guistyle2);
+			}
+			Texture2D supplierLogo3 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierMaterials);
+			GUI.Button(this.button6, supplierLogo3, GUIStyle.none);
+			if (this.areaImprovementStrengtha3 > 0)
+			{
+				GUI.Button(this.button7, this.qualityTexture3, this.guistyle3);
+			}
+			Texture2D supplierLogo4 = App.instance.assetManager.GetSupplierLogo(Game.instance.player.team.carManager.GetCar(0).ChassisStats.supplierFuel);
+			GUI.Button(this.button8, supplierLogo4, GUIStyle.none);
+			if (this.areaImprovementStrengtha4 > 0)
+			{
+				GUI.Button(this.button9, this.qualityTexture4, this.guistyle4);
+			}
+		}
+	}
+
+
 
 	// Token: 0x04003164 RID: 12644
 	private bool mActivated;

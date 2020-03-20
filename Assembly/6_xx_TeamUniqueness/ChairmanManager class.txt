@@ -42,6 +42,7 @@ public class ChairmanManager : PersonManager<Chairman>
 		inChairman.attitudeTypeF = RandomUtility.GetRandom01() - 0.5f;
 		inChairman.attitudeTypeG = RandomUtility.GetRandom01();
 		inChairman.attitudeTypeH = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeI = RandomUtility.GetRandom01();
 		inChairman.attitudeExpectation = RandomUtility.GetRandom(-2, 2);
 	}
 
@@ -94,6 +95,7 @@ public class ChairmanManager : PersonManager<Chairman>
 		inChairman.attitudeTypeF = RandomUtility.GetRandom01() - 0.5f;
 		inChairman.attitudeTypeG = RandomUtility.GetRandom01();
 		inChairman.attitudeTypeH = RandomUtility.GetRandom01();
+		inChairman.attitudeTypeI = RandomUtility.GetRandom01();
 		inChairman.attitudeExpectation = RandomUtility.GetRandom(-2, 2);
 		contract.job = Contract.Job.Unemployed;
 	}

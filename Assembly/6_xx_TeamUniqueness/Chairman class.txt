@@ -554,6 +554,8 @@ public class Chairman : Person
 	// Token: 0x04004E83 RID: 20099
 	public float attitudeTypeH;
 
+	public float attitudeTypeI;
+
 	// Token: 0x04004F78 RID: 20344
 	public int attitudeExpectation;
 
